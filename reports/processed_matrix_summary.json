@@ -9,5 +9,9 @@
   },
   "common_genes": 11336,
   "field_candidates_processed_matrix_sensitivity": 1654,
-  "provenance": "GEO deposited normalized series matrices; not raw-CEL RMA"
+  "provenance": "geo_deposited_series_matrix",
+  "scale_note": {
+    "GSE44076": "observed values are compatible with log2 expression",
+    "GSE41258": "deposited values are not log2; no cross-sample scale claim is made"
+  }
 }

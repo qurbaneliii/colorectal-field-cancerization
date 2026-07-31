@@ -1,10 +1,9 @@
 # Repository audit
 
-## Initial state
+## Audited state
 
-The repository contained only `data/raw/` with five deposited GEO files. There
-was no existing code, environment, documentation, Git repository, notebook, or
-conflicting implementation to preserve.
+The audit preserves the existing hybrid R/Python implementation and reads the
+five deposited GEO inputs without modifying `data/raw/`.
 
 ## Data discovered
 
@@ -24,7 +23,7 @@ conflicting implementation to preserve.
 
 - Python: 3.12.10
 - Rscript: unavailable: [WinError 2] The system cannot find the file specified
-- Git: fatal: not a git repository (or any of the parent directories): .git
+- Git: 62cce06e252cfc01582ab8bc1664d8c1cc037834
 
 ## Missing or blocked requirements
 

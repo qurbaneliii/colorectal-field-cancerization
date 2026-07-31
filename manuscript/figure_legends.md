@@ -1,25 +1,15 @@
 # Figure legends
 
-1. **Study design and pipeline.** Independent cohort preprocessing, biological
-   analysis, patient-group nested cross-validation, signature locking, and the
-   restricted external-validation claim.
-2. **Sample-count flowchart.** Deposited and eligible samples for both GEO
-   accessions, including exact primary tissue counts.
-3. **Preprocessing QC.** Deposited normalized expression distributions,
-   platform-specific PCA, and sample-correlation heatmaps.
-4. **Primary PCA and clustering.** GSE44076 PCA and top-variable-gene heatmap
-   across healthy, adjacent-normal, and tumor tissues.
-5. **Adjacent-versus-healthy volcano.** Processed-matrix sensitivity contrast;
-   red points pass FDR and effect-size thresholds. This is not the pending limma result.
-6. **Paired tumor-versus-adjacent plot.** Top patient-matched processed-matrix
-   contrasts; positive values indicate greater tumor expression.
-7. **Field-signature heatmap and trajectories.** Top candidates after FDR,
-   effect-size, and direction-consistency filtering.
-8. **Nested-CV performance.** Untouched outer-fold macro F1 across models and
-   prediction tasks.
-9. **Out-of-fold confusion matrix, ROC/PR, and calibration.** Repeated
-   predictions were averaged per sample before visualization.
-10. **Stable coefficients.** Median standardized Elastic Net coefficients for
-    frequently selected genes.
-11. **External validation.** Locked Task C model evaluated in eligible GSE41258
-    Primary Tumor and Normal Colon arrays using two cross-platform representations.
+1. Study design and leakage-safe analysis flow.
+2. Sample inclusion flow with array and patient counts.
+3. Raw and post-RMA array QC distributions and diagnostics.
+4. Raw-CEL RMA PCA, correlation, and hierarchical clustering.
+5. Raw-CEL limma adjacent-normal versus healthy volcano plot.
+6. Patient-fixed-effect tumor versus adjacent-normal volcano plot.
+7. Raw-versus-deposited log2FC concordance.
+8. Final field-candidate heatmap and group distributions.
+9. Repeated nested-CV model comparison and three-class OOF confusion matrix.
+10. Task B and Task C OOF ROC, precision-recall, and calibration.
+11. Repeat-aware stable Elastic Net coefficients and compact-panel curve.
+12. Patient-balanced GSE41258 ROC/PR, calibration, and confusion matrix.
+13. Direction- and contrast-specific GO/Reactome/ranked enrichment results.
