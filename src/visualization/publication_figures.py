@@ -52,7 +52,6 @@ def pca_plot(
     variances = expression.var(axis=1).sort_values(ascending=False)
     use = variances.head(min(5000, len(variances))).index
     x = expression.loc[use].T
-    scores = PCA(n_components=10, random_state=44076).fit_transform(x)
     model = PCA(n_components=2, random_state=44076).fit(x)
     xy = model.transform(x)
     pca = pd.DataFrame(

@@ -11,15 +11,30 @@ models/**
 !models/.gitkeep
 results/figures/**
 !results/figures/.gitkeep
+!results/figures/*.png
+!results/figures/*.svg
+!results/figures/*.pdf
+# Vector heatmaps/MA plots contain millions of primitives; retain their PNG/PDF
+# counterparts and keep SVG for compact manuscript figures.
+results/figures/GSE*_sample_correlation*.svg
+results/figures/GSE*_ma_diagnostic.svg
 results/metrics/**
 !results/metrics/.gitkeep
+!results/metrics/nested_cv_metrics.csv
+!results/metrics/patient_group_bootstrap_confidence_intervals.csv
+!results/metrics/group_preserving_permutation_tests.csv
+!results/metrics/external_validation_metrics.csv
+!results/metrics/external_validation_bootstrap_ci.csv
+!results/metrics/compact_panel_fold_metrics.csv
 results/differential_expression/**
 !results/differential_expression/.gitkeep
 results/enrichment/**
 !results/enrichment/.gitkeep
+!results/enrichment/*.csv
 
 # Python/R local state
 .venv/
+.venv-publication/
 __pycache__/
 *.py[cod]
 .pytest_cache/

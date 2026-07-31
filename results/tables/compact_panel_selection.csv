@@ -1,0 +1,4 @@
+task,selected_panel_size,full_signature_macro_f1,selected_panel_macro_f1,rule,analysis_provenance
+task_a_three_class,5,0.9432007252291525,0.9443726379800128,Smallest panel within 0.020 macro F1 of the full fold-specific signature.,raw_cel_rma
+task_b_field_effect,5,0.9926277926277927,1.0,Smallest panel within 0.020 macro F1 of the full fold-specific signature.,raw_cel_rma
+task_c_tumor_vs_adjacent,5,0.9847133562345373,0.994908980274834,Smallest panel within 0.020 macro F1 of the full fold-specific signature.,raw_cel_rma

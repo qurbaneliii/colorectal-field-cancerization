@@ -4,73 +4,278 @@ suppressPackageStartupMessages({
   library(matrixStats)
 })
 
-project_root <- function() {
-  normalizePath(getwd(), winslash = "/", mustWork = TRUE)
-}
+project_root <- function() normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 
 discover_files <- function(accession, pattern, root = "data/raw") {
-  candidates <- list.files(root, pattern = pattern, recursive = TRUE, full.names = TRUE,
-                           ignore.case = TRUE)
-  candidates[grepl(accession, candidates, ignore.case = TRUE)]
+  candidates <- list.files(root, recursive = TRUE, full.names = TRUE, all.files = FALSE)
+  candidates <- candidates[file.info(candidates)$isdir %in% FALSE]
+  candidates[grepl(accession, basename(candidates), ignore.case = TRUE) &
+               grepl(pattern, basename(candidates), ignore.case = TRUE, perl = TRUE)]
 }
 
-assert_platform <- function(files, expected) {
-  if (!length(files)) stop("No CEL files were discovered")
-  message("Expected platform: ", expected, "; CEL files: ", length(files))
+extract_gsm <- function(paths) {
+  matches <- regexpr("GSM[0-9]+", basename(paths), ignore.case = TRUE)
+  if (any(matches < 0L)) stop("CEL filenames without a GSM identifier: ",
+                              paste(basename(paths[matches < 0L]), collapse = ", "))
+  toupper(regmatches(basename(paths), matches))
 }
 
-write_expression <- function(mat, path, id_column = "gene_symbol") {
+normalized_token <- function(value) tolower(gsub("[^a-zA-Z0-9]", "", value))
+
+validate_platform <- function(files, accession, expected_geo_platform, expected_chip,
+                              annotation_package, reader) {
+  if (!length(files)) stop(accession, ": no CEL files were discovered")
+  if (anyDuplicated(tolower(basename(files)))) stop(accession, ": duplicate CEL filenames")
+  expected_token <- normalized_token(expected_chip)
+  if (reader == "oligo") {
+    first <- oligo::read.celfiles(files[[1]], verbose = FALSE)
+    detected_annotation <- as.character(Biobase::annotation(first))
+    detected_cdf <- tryCatch(class(oligo::getCdfInfo(first))[[1]],
+                             error = function(e) "not_applicable")
+  } else if (reader == "affy") {
+    first <- affy::ReadAffy(filenames = files[[1]])
+    detected_annotation <- as.character(Biobase::annotation(first))
+    detected_cdf <- as.character(affy::cdfName(first))
+  } else {
+    stop("Unknown CEL reader: ", reader)
+  }
+  observed <- normalized_token(paste(detected_annotation, detected_cdf))
+  platform_pass <- grepl(expected_token, observed, fixed = TRUE)
+  if (!platform_pass) {
+    stop(accession, ": detected CEL annotation/CDF '", detected_annotation, " / ",
+         detected_cdf, "' does not match expected chip ", expected_chip)
+  }
+  data.frame(
+    accession = accession,
+    expected_geo_platform = expected_geo_platform,
+    expected_chip = expected_chip,
+    detected_annotation = detected_annotation,
+    detected_cdf = detected_cdf,
+    annotation_package = annotation_package,
+    reader = reader,
+    cel_count = length(files),
+    first_cel = basename(files[[1]]),
+    platform_match = platform_pass,
+    stringsAsFactors = FALSE
+  )
+}
+
+validate_cel_metadata_alignment <- function(files, metadata) {
+  gsm <- extract_gsm(files)
+  if (anyDuplicated(gsm)) stop("Duplicate GSM identifiers parsed from CEL filenames")
+  expected <- toupper(metadata$geo_accession)
+  missing_cel <- setdiff(expected, gsm)
+  unexpected_cel <- setdiff(gsm, expected)
+  if (length(missing_cel) || length(unexpected_cel)) {
+    stop("CEL/metadata GSM mismatch. Missing CEL: ", paste(head(missing_cel), collapse = ", "),
+         "; unexpected CEL: ", paste(head(unexpected_cel), collapse = ", "))
+  }
+  metadata[match(gsm, expected), , drop = FALSE]
+}
+
+write_expression <- function(mat, path, id_column = "gene_symbol", accession,
+                             provenance = "raw_cel_rma") {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
   out <- data.frame(row_identifier = rownames(mat), mat, check.names = FALSE)
   names(out)[1] <- id_column
   if (requireNamespace("arrow", quietly = TRUE)) {
     arrow::write_parquet(out, path)
+    written_path <- path
   } else {
-    fallback <- sub("\\.parquet$", ".csv.gz", path)
-    data.table::fwrite(out, fallback)
-    warning("R package 'arrow' is unavailable; wrote ", fallback,
-            ". Run scripts/convert_r_outputs.py after installing pyarrow.")
+    written_path <- sub("\\.parquet$", ".csv.gz", path)
+    data.table::fwrite(out, written_path)
+    warning("R package 'arrow' is unavailable; wrote ", written_path)
   }
+  sidecar <- data.frame(
+    accession = accession,
+    artifact = basename(written_path),
+    provenance = provenance,
+    rows = nrow(mat),
+    samples = ncol(mat),
+    created_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+    stringsAsFactors = FALSE
+  )
+  write.csv(sidecar, paste0(written_path, ".provenance.csv"), row.names = FALSE)
 }
 
-unambiguous_mapping <- function(probe_ids, annotation_package) {
-  map <- AnnotationDbi::select(
-    annotation_package, keys = unique(probe_ids),
-    keytype = "PROBEID", columns = c("SYMBOL", "ENTREZID")
+complete_probe_mapping <- function(probe_ids, annotation_package) {
+  raw <- AnnotationDbi::select(
+    annotation_package, keys = unique(probe_ids), keytype = "PROBEID",
+    columns = c("SYMBOL", "ENTREZID")
   )
-  map <- map[!is.na(map$SYMBOL) & nzchar(map$SYMBOL), ]
-  symbol_count <- aggregate(SYMBOL ~ PROBEID, map, function(x) length(unique(x)))
-  valid <- symbol_count$PROBEID[symbol_count$SYMBOL == 1]
-  map <- map[map$PROBEID %in% valid, ]
-  map <- map[!duplicated(map[c("PROBEID", "SYMBOL")]), ]
-  map
+  raw$SYMBOL[is.na(raw$SYMBOL)] <- ""
+  raw$ENTREZID[is.na(raw$ENTREZID)] <- ""
+  symbol_counts <- tapply(raw$SYMBOL[raw$SYMBOL != ""], raw$PROBEID[raw$SYMBOL != ""],
+                          function(x) length(unique(x)))
+  entrez_counts <- tapply(raw$ENTREZID[raw$ENTREZID != ""], raw$PROBEID[raw$ENTREZID != ""],
+                          function(x) length(unique(x)))
+  raw$symbol_count <- unname(symbol_counts[raw$PROBEID])
+  raw$entrez_count <- unname(entrez_counts[raw$PROBEID])
+  raw$symbol_count[is.na(raw$symbol_count)] <- 0L
+  raw$entrez_count[is.na(raw$entrez_count)] <- 0L
+  raw$mapping_status <- ifelse(
+    raw$symbol_count == 0L | raw$entrez_count == 0L, "missing",
+    ifelse(raw$symbol_count == 1L & raw$entrez_count == 1L,
+           "mapped_unique", "ambiguous")
+  )
+  raw <- raw[!duplicated(raw[c("PROBEID", "SYMBOL", "ENTREZID")]), ]
+  names(raw)[names(raw) == "PROBEID"] <- "probe_id"
+  names(raw)[names(raw) == "SYMBOL"] <- "gene_symbol"
+  names(raw)[names(raw) == "ENTREZID"] <- "entrez_id"
+  raw[order(match(raw$probe_id, probe_ids), raw$gene_symbol), ]
 }
 
 aggregate_probes_by_gene <- function(expr, mapping) {
-  mapping <- mapping[match(rownames(expr), mapping$PROBEID, nomatch = 0), ]
-  expr <- expr[rownames(expr) %in% mapping$PROBEID, , drop = FALSE]
-  mapping <- mapping[match(rownames(expr), mapping$PROBEID), ]
-  groups <- split(seq_len(nrow(expr)), mapping$SYMBOL)
+  valid <- mapping[mapping$mapping_status == "mapped_unique" &
+                     mapping$gene_symbol != "" & mapping$entrez_id != "", ]
+  valid <- valid[!duplicated(valid$probe_id), ]
+  shared <- intersect(rownames(expr), valid$probe_id)
+  if (!length(shared)) stop("No uniquely annotated probes overlap expression")
+  expr <- expr[shared, , drop = FALSE]
+  valid <- valid[match(shared, valid$probe_id), ]
+  groups <- split(seq_len(nrow(expr)), valid$gene_symbol)
   gene <- t(vapply(groups, function(i) matrixStats::colMedians(expr[i, , drop = FALSE]),
                    numeric(ncol(expr))))
   colnames(gene) <- colnames(expr)
+  if (anyDuplicated(rownames(gene))) stop("Gene aggregation did not create unique symbols")
   gene
 }
 
-save_basic_qc <- function(expr, metadata, prefix) {
-  dir.create("results/figures", recursive = TRUE, showWarnings = FALSE)
-  png(file.path("results/figures", paste0(prefix, "_normalized_boxplot.png")),
-      width = 2400, height = 1600, res = 300)
-  boxplot(expr, outline = FALSE, las = 2, cex.axis = 0.3,
-          main = paste(prefix, "normalized expression"), ylab = "log2 expression")
-  dev.off()
+sampled_intensity_matrix <- function(raw_object, max_probes = 50000L) {
+  values <- if (inherits(raw_object, "FeatureSet")) {
+    oligo::intensity(raw_object)
+  } else {
+    Biobase::exprs(raw_object)
+  }
+  if (nrow(values) > max_probes) {
+    index <- unique(round(seq(1, nrow(values), length.out = max_probes)))
+    values <- values[index, , drop = FALSE]
+  }
+  values
+}
 
-  pc <- prcomp(t(expr), scale. = FALSE)
+robust_z <- function(x) {
+  center <- stats::median(x, na.rm = TRUE)
+  spread <- stats::mad(x, center = center, constant = 1, na.rm = TRUE)
+  if (!is.finite(spread) || spread == 0) return(rep(0, length(x)))
+  0.67448975 * (x - center) / spread
+}
+
+save_qc_bundle <- function(raw_object, normalized_expr, metadata, prefix,
+                           robust_z_threshold = 5) {
+  figure_dir <- "results/figures"
+  table_dir <- "results/tables"
+  dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
+  dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
+  raw_values <- sampled_intensity_matrix(raw_object)
+  normalized_values <- normalized_expr
+  stems <- c("pre_rma_boxplot", "post_rma_boxplot", "pre_rma_density",
+             "post_rma_density", "rle", "ma_diagnostic", "pca",
+             "sample_correlation", "hierarchical_clustering")
+  devices <- list(
+    png = function(path) png(path, width = 2700, height = 2100, res = 300),
+    pdf = function(path) pdf(path, width = 9, height = 7),
+    svg = function(path) svg(path, width = 9, height = 7)
+  )
+  draw <- function(stem, code) {
+    for (extension in names(devices)) {
+      devices[[extension]](file.path(figure_dir, paste0(prefix, "_", stem, ".", extension)))
+      force(code())
+      dev.off()
+    }
+  }
+  draw(stems[[1]], function() boxplot(log2(raw_values + 1), outline = FALSE, las = 2,
+                                      cex.axis = 0.25, ylab = "log2 raw intensity",
+                                      main = paste(prefix, "pre-RMA distributions")))
+  draw(stems[[2]], function() boxplot(normalized_values, outline = FALSE, las = 2,
+                                      cex.axis = 0.25, ylab = "RMA log2 expression",
+                                      main = paste(prefix, "post-RMA distributions")))
+  draw(stems[[3]], function() matplot(density(log2(raw_values[, 1] + 1))$x,
+                                      density(log2(raw_values[, 1] + 1))$y, type = "l",
+                                      xlab = "log2 raw intensity", ylab = "Density",
+                                      main = paste(prefix, "pre-RMA density")))
+  draw(stems[[4]], function() matplot(density(normalized_values[, 1])$x,
+                                      density(normalized_values[, 1])$y, type = "l",
+                                      xlab = "RMA log2 expression", ylab = "Density",
+                                      main = paste(prefix, "post-RMA density")))
+  rle <- sweep(normalized_values, 1, matrixStats::rowMedians(normalized_values), "-")
+  draw(stems[[5]], function() boxplot(rle, outline = FALSE, las = 2, cex.axis = 0.25,
+                                      ylab = "Relative log expression",
+                                      main = paste(prefix, "RLE")))
+  ref <- matrixStats::rowMedians(normalized_values)
+  draw(stems[[6]], function() {
+    sample_index <- seq_len(min(6L, ncol(normalized_values)))
+    plot(NULL, xlim = range((normalized_values[, sample_index] + ref) / 2),
+         ylim = range(normalized_values[, sample_index] - ref), xlab = "A",
+         ylab = "M", main = paste(prefix, "MA diagnostics (first six arrays)"))
+    for (i in sample_index) points((normalized_values[, i] + ref) / 2,
+                                   normalized_values[, i] - ref, pch = 16,
+                                   cex = 0.1, col = adjustcolor(i, alpha.f = 0.25))
+    abline(h = 0, lty = 2)
+  })
+  variable <- order(matrixStats::rowVars(normalized_values), decreasing = TRUE)
+  variable <- head(variable, min(5000L, length(variable)))
+  pc <- prcomp(t(normalized_values[variable, , drop = FALSE]), scale. = FALSE)
   cls <- factor(metadata$tissue_class)
-  png(file.path("results/figures", paste0(prefix, "_normalized_pca.png")),
-      width = 2100, height = 1800, res = 300)
-  plot(pc$x[, 1], pc$x[, 2], col = as.integer(cls), pch = 19,
-       xlab = "PC1", ylab = "PC2", main = paste(prefix, "normalized PCA"))
-  legend("topright", levels(cls), col = seq_along(levels(cls)), pch = 19)
-  dev.off()
+  draw(stems[[7]], function() {
+    plot(pc$x[, 1], pc$x[, 2], col = as.integer(cls), pch = 19,
+         xlab = sprintf("PC1 (%.1f%%)", 100 * summary(pc)$importance[2, 1]),
+         ylab = sprintf("PC2 (%.1f%%)", 100 * summary(pc)$importance[2, 2]),
+         main = paste(prefix, "RMA PCA"))
+    legend("topright", levels(cls), col = seq_along(levels(cls)), pch = 19)
+  })
+  correlation <- cor(normalized_values[variable, , drop = FALSE], method = "pearson")
+  draw(stems[[8]], function() heatmap(correlation, Rowv = NA, Colv = NA, labRow = NA,
+                                      labCol = NA, main = paste(prefix, "sample correlation")))
+  draw(stems[[9]], function() plot(hclust(as.dist(1 - correlation)), labels = FALSE,
+                                   main = paste(prefix, "hierarchical clustering"),
+                                   xlab = "Samples"))
+  medians <- matrixStats::colMedians(normalized_values)
+  iqrs <- matrixStats::colIQRs(normalized_values)
+  diagnostics <- data.frame(
+    accession = prefix,
+    geo_accession = colnames(normalized_values),
+    sample_median = medians,
+    sample_iqr = iqrs,
+    median_robust_z = robust_z(medians),
+    iqr_robust_z = robust_z(iqrs),
+    missing_values = colSums(is.na(normalized_values)),
+    non_finite_values = colSums(!is.finite(normalized_values)),
+    stringsAsFactors = FALSE
+  )
+  diagnostics$independent_failure_metrics <-
+    as.integer(abs(diagnostics$median_robust_z) > robust_z_threshold) +
+    as.integer(abs(diagnostics$iqr_robust_z) > robust_z_threshold) +
+    as.integer(diagnostics$missing_values > 0 | diagnostics$non_finite_values > 0)
+  diagnostics$technical_outlier_candidate <- diagnostics$independent_failure_metrics >= 2L
+  diagnostics$automatic_exclusion <- FALSE
+  write.csv(diagnostics, file.path(table_dir, paste0(prefix, "_raw_cel_qc_diagnostics.csv")),
+            row.names = FALSE)
+  write.csv(data.frame(geo_accession = colnames(normalized_values), PC1 = pc$x[, 1],
+                       PC2 = pc$x[, 2], tissue_class = metadata$tissue_class,
+                       patient_id = metadata$patient_id),
+            file.path(table_dir, paste0(prefix, "_raw_cel_pca_scores.csv")), row.names = FALSE)
+  diagnostics
+}
+
+update_sample_exclusion_log <- function(metadata, diagnostics, accession) {
+  path <- "data/metadata/sample_exclusion_log.csv"
+  candidates <- diagnostics$technical_outlier_candidate
+  current <- data.frame(
+    accession = accession,
+    geo_accession = diagnostics$geo_accession,
+    qc_candidate = candidates,
+    exclusion_applied = FALSE,
+    decision = ifelse(candidates, "borderline_include_primary_and_review_sensitivity",
+                      "include_prespecified_technically_valid_cohort"),
+    evidence = paste0("independent_failure_metrics=", diagnostics$independent_failure_metrics),
+    rule = "No PCA-only exclusion; exclusion requires severe failure supported by at least two independent QC metrics",
+    stringsAsFactors = FALSE
+  )
+  if (file.exists(path)) {
+    previous <- read.csv(path, stringsAsFactors = FALSE)
+    previous <- previous[previous$accession != accession, , drop = FALSE]
+    current <- rbind(previous, current)
+  }
+  write.csv(current[order(current$accession, current$geo_accession), ], path, row.names = FALSE)
 }

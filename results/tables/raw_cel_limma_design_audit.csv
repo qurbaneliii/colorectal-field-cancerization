@@ -1,0 +1,4 @@
+"analysis","design","samples","patients_or_donors","coefficient"
+"adjacent_vs_healthy","unpaired tissue indicator",148,148,"tissueadjacent_normal-tissuehealthy"
+"tumor_vs_healthy","unpaired tissue indicator",148,148,"tissuetumor-tissuehealthy"
+"tumor_vs_adjacent_paired","patient fixed effects plus tissue indicator",196,98,"tissue_classtumor"

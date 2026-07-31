@@ -27,6 +27,7 @@ from src.data.expression import (
     read_geo_series_matrix,
 )
 from src.data.metadata import discover_accession_files
+from src.data.provenance import expression_path, sample_metadata_path
 from src.data.validation import validate_expression
 from src.visualization.publication_figures import (
     correlation_heatmap,
@@ -71,8 +72,9 @@ def main() -> None:
             discover_accession_files(raw_root, accession)["series_matrix"],
             f"{accession} series matrix",
         )
-        gene_path = processed_root / f"{accession}_gene_expression.parquet"
-        probe_path = processed_root / f"{accession}_probe_expression.parquet"
+        provenance = "geo_deposited_series_matrix"
+        gene_path = expression_path(processed_root, accession, "gene", provenance)
+        probe_path = expression_path(processed_root, accession, "probe", provenance)
         mapping_path = metadata_root / f"{accession}_probe_gene_mapping.csv"
         if args.figures_only and gene_path.exists():
             gene_table = pd.read_parquet(gene_path)
@@ -94,7 +96,9 @@ def main() -> None:
             gene = aggregate_probe_expression(probe, mapping)
             save_expression(probe, probe_path, "probe_id")
             save_expression(gene, gene_path, "gene_symbol")
-        metadata.to_csv(processed_root / f"{accession}_sample_metadata.csv", index=False)
+        metadata = metadata.copy()
+        metadata["expression_provenance"] = provenance
+        metadata.to_csv(sample_metadata_path(processed_root, accession, provenance), index=False)
         validate_expression(gene.reset_index(), metadata, "gene_symbol")
         outputs[accession] = gene
         expression_boxplot(
@@ -142,7 +146,7 @@ def main() -> None:
     common = common_gene_symbols(
         outputs["GSE44076"].reset_index(), outputs["GSE41258"].reset_index()
     )
-    (processed_root / "common_genes_GSE44076_GSE41258.txt").write_text(
+    (processed_root / "common_genes_GSE44076_GSE41258_geo_deposited_series_matrix.txt").write_text(
         "\n".join(common) + "\n", encoding="utf-8"
     )
 
@@ -213,7 +217,11 @@ def main() -> None:
         },
         "common_genes": len(common),
         "field_candidates_processed_matrix_sensitivity": len(candidates),
-        "provenance": "GEO deposited normalized series matrices; not raw-CEL RMA",
+        "provenance": "geo_deposited_series_matrix",
+        "scale_note": {
+            "GSE44076": "observed values are compatible with log2 expression",
+            "GSE41258": "deposited values are not log2; no cross-sample scale claim is made",
+        },
     }
     (ROOT / paths["reports"] / "processed_matrix_summary.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"

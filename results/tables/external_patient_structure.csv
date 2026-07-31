@@ -1,0 +1,8 @@
+quantity,value
+eligible_arrays,233
+eligible_unique_patients,190
+patients_with_both_tissues,43
+tumor_only_patients,138
+normal_only_patients,9
+technical_replicates_removed,8
+canonical_primary_arrays,190

@@ -1,0 +1,2 @@
+"accession","expected_geo_platform","expected_chip","detected_annotation","detected_cdf","annotation_package","reader","cel_count","first_cel","platform_match","normalized_probe_sets","normalized_genes"
+"GSE44076","GPL13667","HG-U219","pd.hg.u219","not_applicable","pd.hg.u219 / hgu219.db","oligo",246,"GSM1077598_CLX_RNA_A2119_M.CEL.gz",TRUE,49386,18490

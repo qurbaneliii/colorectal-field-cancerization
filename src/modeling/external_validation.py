@@ -34,5 +34,7 @@ def locked_binary_predictions(
     )
     for class_index, label in enumerate(classes):
         frame[f"probability_{label}"] = probability[:, class_index]
-    metrics = classification_metrics(y_true, predicted, probability, classes)
+    metrics = classification_metrics(
+        y_true, predicted, probability, classes, include_calibration=True
+    )
     return frame, metrics

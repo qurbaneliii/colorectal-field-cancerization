@@ -1,0 +1,24 @@
+name: Full raw-data verification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  full-data:
+    runs-on: [self-hosted, colorectal-field-data]
+    timeout-minutes: 1440
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore locked environments
+        run: make restore-r verify-env
+      - name: Execute full publication pipeline
+        run: make all
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compact-publication-evidence
+          path: |
+            reports/
+            results/tables/
+            results/metrics/
+          retention-days: 30

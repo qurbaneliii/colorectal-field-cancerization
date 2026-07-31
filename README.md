@@ -1,62 +1,93 @@
 # Transcriptomic field cancerization in colorectal cancer
 
-Reproducible hybrid R/Python analysis for **GSE44076** (healthy colon,
-tumor-adjacent normal colon, and paired colorectal tumor) with **GSE41258**
-used only for the scientifically valid tumor-versus-normal-colon external
-validation.
+Publication-oriented, leakage-safe reanalysis of **GSE44076** with raw Affymetrix CEL
+files. **GSE41258** is used only for locked tumor-versus-normal-colon external
+validation; it cannot independently validate the healthy-versus-adjacent field-effect
+task.
 
-The project deliberately separates:
+The executed primary route is:
 
-- raw-CEL preprocessing and biological inference (R/Bioconductor);
-- leakage-safe predictive modeling and reporting (Python);
-- primary field-effect inference from external tumor/normal validation.
+- R 4.5.1 / Bioconductor 3.21 raw-CEL RMA and platform-specific annotation;
+- limma inference, including patient-fixed-effect paired contrasts;
+- patient/donor-grouped repeated nested cross-validation in Python;
+- fold-internal compact-panel selection and group-aware SVM calibration;
+- locked, patient-balanced cross-platform validation;
+- 1,000-iteration task-specific permutation tests and grouped bootstrap intervals.
 
-No random sample-level train/test split, SMOTE, or deep learning is used.
-Every predictive split is grouped by patient/donor, and every learned
-preprocessing operation is fitted inside its training fold.
+This is retrospective biomarker discovery, not a clinical-readiness claim. Three tissue
+group means are not interpreted as longitudinal progression.
 
-## Quick start
+## Executed result snapshot
+
+- GSE44076: 246 HG-U219 arrays (50 healthy, 98 adjacent, 98 tumor; 98 complete pairs).
+- GSE41258: 390 HG-U133A arrays audited; 233 tumor/normal arrays from 190 patients are
+  eligible for external validation.
+- Raw RMA assertions: 49,386 GSE44076 and 22,283 GSE41258 probe sets.
+- Task C compact panel: **FOXQ1, CEMIP, ETV4, GTF2IRD1, PACC1**.
+- External primary analysis: 190 canonical patient arrays; 4/5 panel genes are present on
+  GPL96; ROC AUC 0.9969 and macro-F1 0.7919. See the report for uncertainty,
+  calibration limitations, and sensitivity analyses.
+- Tests: 23 passed, 0 failed in the publication environment.
+- Final readiness: **PARTIAL** until the Docker image is built against a running Docker
+  engine; all scientific gates completed locally.
+
+See [the final readiness report](reports/publication_readiness_final.md),
+[the manuscript](manuscript/manuscript.md), and
+[the artifact manifest](reports/result_artifact_manifest.csv).
+
+## Reproduce
+
+The supported interpreter versions are Python 3.12 and R 4.5.x. On Windows, invoke the
+installed R executable explicitly if `Rscript` is not on `PATH`.
 
 ```powershell
-python -m venv --system-site-packages .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
-.\.venv\Scripts\python scripts/run_data_audit.py
-.\.venv\Scripts\python scripts/run_processed_matrix_pipeline.py
-.\.venv\Scripts\python scripts/run_modeling.py
-.\.venv\Scripts\python scripts/run_external_validation.py
-.\.venv\Scripts\python scripts/build_manuscript_outputs.py
-.\.venv\Scripts\python -m pytest -q
+py -3.12 -m venv .venv-publication
+.\.venv-publication\Scripts\python -m pip install -r requirements-lock.txt
+.\.venv-publication\Scripts\python -m pip install --no-deps -e .
+
+D:\R\R-4.5.1\bin\Rscript.exe R/00_install_packages.R
+D:\R\R-4.5.1\bin\Rscript.exe R/verify_environment.R
+D:\R\R-4.5.1\bin\Rscript.exe R/01_extract_and_audit_cel.R
+D:\R\R-4.5.1\bin\Rscript.exe R/02_preprocess_gse44076.R
+D:\R\R-4.5.1\bin\Rscript.exe R/03_preprocess_gse41258.R
+.\.venv-publication\Scripts\python scripts/convert_r_outputs.py
+D:\R\R-4.5.1\bin\Rscript.exe R/04_differential_expression.R
+.\.venv-publication\Scripts\python scripts/run_raw_vs_processed_sensitivity.py
+D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
+.\.venv-publication\Scripts\python scripts/run_modeling.py
+.\.venv-publication\Scripts\python scripts/run_compact_panel_analysis.py
+.\.venv-publication\Scripts\python scripts/run_permutation_tests.py
+.\.venv-publication\Scripts\python scripts/run_external_validation.py
+.\.venv-publication\Scripts\python scripts/build_manuscript_outputs.py
+.\.venv-publication\Scripts\python -m pytest -q
 ```
 
-For publication-grade raw-CEL processing, install R and run:
+`make all` expresses the same full route on systems with GNU Make. `make smoke` runs a
+no-data grouped-CV smoke test. `make sensitivity-all` reproduces the explicitly labeled
+GEO-deposited-series-matrix sensitivity route.
 
-```powershell
-Rscript R/00_install_packages.R
-Rscript R/01_extract_and_audit_cel.R
-Rscript R/02_preprocess_gse44076.R
-Rscript R/03_preprocess_gse41258.R
-Rscript R/04_differential_expression.R
-Rscript R/05_functional_enrichment.R
-```
+The custom QC bundle is the default and includes pre/post distributions, RLE, MA,
+PCA, sample correlation, hierarchical clustering, and objective multimetric exclusion
+flags. The much slower optional `arrayQualityMetrics` HTML report can be enabled with
+`RUN_ARRAY_QUALITY_METRICS=1`.
 
-The committed `renv.lock` is a bootstrap lock for R 4.5.1/Bioconductor 3.21.
-Because R was unavailable during this execution, its package section is not
-represented as resolved. `R/00_install_packages.R` installs the declared
-packages and replaces it with the fully resolved snapshot; commit that resolved
-lock before a final manuscript freeze.
+## Provenance and safeguards
 
-`make all` runs the complete raw-CEL R/Python route on systems with R and GNU
-Make. `make sensitivity-all` reproduces the deposited-series-matrix route
-executed in the current R-free environment.
-Configuration lives in `config/analysis.yaml` and `config/paths.yaml`.
+Raw inputs under `data/raw/` are never modified. Their paths, sizes, SHA-256 hashes,
+archive-member counts, GEO mappings, and platform checks are recorded under
+`data/metadata/`. Raw-CEL and deposited-matrix artifacts use separate filenames and
+result namespaces.
 
-## Scientific boundary
+All model splits preserve patient/donor groups. Variance filtering, univariate selection,
+scaling, tuning, calibration, panel ranking, and threshold use training data only. No
+SMOTE, deep learning, external-label tuning, or silent mock fallback is used.
 
-The Python processed-matrix route consumes the normalized expression deposited
-in GEO series matrices. It supports metadata audit, exploratory analysis,
-leakage-safe model development, and external validation. It is **not** a
-substitute for executing raw-CEL RMA/QC in Bioconductor. Reports label the
-provenance of each result explicitly.
+The locked environments are `requirements-lock.txt` and `renv.lock`. CI runs lint,
+no-data tests, and a synthetic grouped-CV smoke test; the manual full-data workflow is
+provided for a self-hosted runner with the local GEO inputs.
 
-Raw data and generated matrices are ignored by Git. See
-`reports/final_analysis_report.md` for the executed-state audit and limitations.
+## Data availability
+
+The raw and deposited expression inputs are public through NCBI GEO (GSE44076 and
+GSE41258). Large raw/intermediate matrices and fitted models are intentionally ignored by
+Git; the checksum manifest and generation commands make their provenance auditable.

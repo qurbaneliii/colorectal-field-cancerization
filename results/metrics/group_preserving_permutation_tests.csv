@@ -1,0 +1,4 @@
+task,null_hypothesis,observed_mean_macro_f1,null_mean,null_standard_deviation,null_95_percentile,permutation_p_value,iterations,minimum_attainable_p_value,analysis_provenance
+task_a_three_class,conditional null of no tumor-versus-adjacent information while healthy labels remain fixed,0.9434767958901464,0.6636449398853151,0.030550258088289876,0.7137750054146,0.000999000999000999,1000,0.000999000999000999,raw_cel_rma
+task_b_field_effect,global group-level null of no healthy-versus-adjacent association,0.9925353925353925,0.487507734824473,0.05286056418535064,0.5748062555558031,0.000999000999000999,1000,0.000999000999000999,raw_cel_rma
+task_c_tumor_vs_adjacent,paired null of exchangeable tumor/adjacent labels within patients,0.9894444444444443,0.49462633365612346,0.05464905209353496,0.5857393563419748,0.000999000999000999,1000,0.000999000999000999,raw_cel_rma

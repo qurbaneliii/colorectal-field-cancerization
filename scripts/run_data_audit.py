@@ -10,8 +10,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 import sklearn
 import yaml
+from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -65,7 +67,7 @@ def main() -> None:
     p_tar = require_one(primary_files, "raw_tar", "GSE44076")
     e_matrix = require_one(external_files, "series_matrix", "GSE41258")
     e_tar = require_one(external_files, "raw_tar", "GSE41258")
-    require_one(external_files, "clinical", "GSE41258")
+    e_clinical = require_one(external_files, "clinical", "GSE41258")
 
     processed_at = datetime.now(timezone.utc).isoformat()
     manifest_rows = []
@@ -79,9 +81,14 @@ def main() -> None:
                         "relative_path": path.relative_to(ROOT).as_posix(),
                         "size_bytes": path.stat().st_size,
                         "sha256": sha256(path),
+                        "archive_member_count": (
+                            len(tar_members(path)) if path.name.lower().endswith("_raw.tar") else ""
+                        ),
                         "processed_at_utc": processed_at,
-                        "python_version": platform.python_version(),
-                        "os": platform.platform(),
+                        "software_environment": (
+                            f"Python {platform.python_version()}; {platform.platform()}"
+                        ),
+                        "data_provenance": "NCBI GEO deposited file",
                     }
                 )
     manifest = pd.DataFrame(manifest_rows).sort_values(["accession", "filename"])
@@ -89,7 +96,10 @@ def main() -> None:
 
     primary, pairs = build_gse44076_metadata(p_matrix, p_tar)
     external = build_gse41258_metadata(
-        e_matrix, e_tar, config["metadata"]["technical_replicate_pattern"]
+        e_matrix,
+        e_tar,
+        config["metadata"]["technical_replicate_pattern"],
+        e_clinical,
     )
     validate_metadata(primary, {"healthy", "adjacent_normal", "tumor"})
     validate_metadata(external, {"primary_tumor", "normal_colon"})
@@ -114,13 +124,103 @@ def main() -> None:
     )
     dictionary.to_csv(ROOT / paths["metadata"] / "metadata_dictionary.csv", index=False)
 
+    covariates = [
+        "batch",
+        "processing_date",
+        "scan_date",
+        "sex",
+        "age",
+        "location",
+        "stage",
+        "msi_status",
+        "molecular_subtype",
+        "center",
+    ]
+    missingness_rows = []
+    association_rows = []
+    for accession, frame in (("GSE44076", primary), ("GSE41258", external)):
+        included = frame[frame["inclusion_status"].eq("included")].copy()
+        for covariate in covariates:
+            values = (
+                included[covariate].fillna("").astype(str).str.strip()
+                if covariate in included
+                else pd.Series([""] * len(included), index=included.index)
+            )
+            available = values.ne("") & values.str.lower().ne("nan")
+            unique_values = values[available].nunique()
+            missingness_rows.append(
+                {
+                    "accession": accession,
+                    "covariate": covariate,
+                    "included_samples": len(included),
+                    "available_values": int(available.sum()),
+                    "missing_values": int((~available).sum()),
+                    "unique_nonmissing_values": int(unique_values),
+                    "usable_for_association": bool(available.sum() >= 10 and unique_values >= 2),
+                    "source": "deposited metadata only",
+                }
+            )
+            if available.sum() >= 10 and unique_values >= 2:
+                numeric = pd.to_numeric(values[available], errors="coerce")
+                if numeric.notna().mean() >= 0.9:
+                    groups = [
+                        numeric[included.loc[available, "tissue_class"].eq(label)]
+                        for label in sorted(included.loc[available, "tissue_class"].unique())
+                    ]
+                    groups = [group.dropna().to_numpy() for group in groups if len(group.dropna())]
+                    statistic, p_value = stats.kruskal(*groups) if len(groups) >= 2 else (np.nan, np.nan)
+                    method = "Kruskal-Wallis"
+                else:
+                    contingency = pd.crosstab(
+                        included.loc[available, "tissue_class"], values[available]
+                    )
+                    statistic, p_value, _, _ = stats.chi2_contingency(contingency)
+                    method = "chi-square"
+                association_rows.append(
+                    {
+                        "accession": accession,
+                        "covariate": covariate,
+                        "method": method,
+                        "statistic": statistic,
+                        "p_value": p_value,
+                        "samples": int(available.sum()),
+                        "interpretation": "screening association only; no automatic batch correction",
+                    }
+                )
+    missingness = pd.DataFrame(missingness_rows)
+    associations = pd.DataFrame(association_rows)
+    missingness.to_csv(ROOT / paths["metadata"] / "covariate_missingness_usability.csv", index=False)
+    associations.to_csv(ROOT / paths["metadata"] / "covariate_tissue_associations.csv", index=False)
+    confounding_report = f"""# Batch and confounding audit
+
+Only deposited covariates were used; absent fields were not invented. Screening
+associations do not trigger automatic ComBat or sample exclusion.
+
+## Missingness and usability
+
+{missingness.to_markdown(index=False)}
+
+## Tissue-label association screens
+
+{associations.to_markdown(index=False) if not associations.empty else 'No covariate met the minimum usability rule.'}
+
+Any estimable covariate must be incorporated through a prespecified inferential
+design or learned inside training folds. GSE41258 labels must never be used to
+harmonize the external cohort with GSE44076.
+"""
+    (ROOT / paths["reports"] / "batch_confounding_audit.md").write_text(
+        confounding_report, encoding="utf-8"
+    )
+
     env = {
         "processed_at_utc": processed_at,
         "python": sys.version,
         "platform": platform.platform(),
         "scikit_learn": sklearn.__version__,
         "Rscript": command_version(["Rscript", "--version"]),
-        "git_commit": command_version(["git", "rev-parse", "HEAD"]),
+        "git_commit": subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=False
+        ).stdout.strip(),
         "raw_data_immutable_policy": True,
     }
     (ROOT / paths["metadata"] / "software_environment.json").write_text(
@@ -143,11 +243,10 @@ def main() -> None:
 
     repository_audit = f"""# Repository audit
 
-## Initial state
+## Audited state
 
-The repository contained only `data/raw/` with five deposited GEO files. There
-was no existing code, environment, documentation, Git repository, notebook, or
-conflicting implementation to preserve.
+The audit preserves the existing hybrid R/Python implementation and reads the
+five deposited GEO inputs without modifying `data/raw/`.
 
 ## Data discovered
 

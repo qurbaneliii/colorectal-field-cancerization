@@ -1,5 +1,5 @@
 project:
-  title: "Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable machine learning"
+  title: "Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning"
   primary_accession: GSE44076
   external_accession: GSE41258
   random_seed: 44076
@@ -12,8 +12,13 @@ expected:
     tumor: 98
     paired_patients: 98
     platform: GPL13667
+    chip_type: HG-U219
+    raw_probe_sets: 49386
   GSE41258:
+    total: 390
     platform: GPL96
+    chip_type: HG-U133A
+    raw_probe_sets: 22283
 
 metadata:
   technical_replicate_pattern: "(?i)(?:_ez|rehyb)"
@@ -33,10 +38,11 @@ annotation:
     entrez_column: Gene ID
 
 modeling:
+  expression_provenance: raw_cel_rma
   outer_splits: 5
   inner_splits: 4
-  outer_repeats: 2
-  seeds: [44076, 44077]
+  outer_repeats: 3
+  seeds: [44076, 44077, 44078]
   primary_metric: f1_macro
   max_features: [20, 50]
   variance_quantiles: [0.5]
@@ -46,14 +52,17 @@ modeling:
     class_weight: [balanced]
   linear_svm:
     C: [0.05, 0.2]
+    calibration_splits: 3
   random_forest:
     n_estimators: [200]
     max_features: [sqrt]
     min_samples_leaf: [1, 3]
   stable_selection_frequency: 0.65
+  stable_sign_consistency: 0.80
   bootstrap_iterations: 1000
-  permutation_iterations: 100
-  compact_panels: [10, 20, 30]
+  permutation_iterations: 1000
+  compact_panels: [5, 10, 15, 20, 30]
+  compact_panel_practical_tolerance: 0.02
 
 biology:
   fdr_threshold: 0.05
@@ -64,4 +73,13 @@ biology:
 external_validation:
   locked_threshold: 0.5
   bootstrap_iterations: 1000
-  representations: [training_zscore, within_sample_percentile_rank]
+  primary_representation: within_sample_percentile_rank
+  sensitivity_representations: [training_zscore]
+  patient_primary_strategy: deterministic_hash_one_array_per_patient
+  all_array_sensitivity: true
+
+quality_control:
+  sample_median_robust_z_threshold: 5.0
+  sample_iqr_robust_z_threshold: 5.0
+  minimum_independent_failure_metrics_for_exclusion: 2
+  pca_separation_is_exclusion: false

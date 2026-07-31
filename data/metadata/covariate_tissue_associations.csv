@@ -1,0 +1,10 @@
+accession,covariate,method,statistic,p_value,samples,interpretation
+GSE44076,sex,chi-square,6.305629566665675,0.04273167701420435,246,screening association only; no automatic batch correction
+GSE44076,age,Kruskal-Wallis,13.730204270928656,0.0010435758610152996,246,screening association only; no automatic batch correction
+GSE44076,location,chi-square,3.793791118728706,0.15003366760602296,246,screening association only; no automatic batch correction
+GSE44076,stage,chi-square,246.00000000000003,4.7336965139521764e-52,246,screening association only; no automatic batch correction
+GSE41258,sex,chi-square,0.0,1.0,224,screening association only; no automatic batch correction
+GSE41258,age,Kruskal-Wallis,0.02267994742702151,0.8802923419869786,224,screening association only; no automatic batch correction
+GSE41258,location,chi-square,8.309640013076123,0.4038228771691641,224,screening association only; no automatic batch correction
+GSE41258,stage,chi-square,1.4908012938592408,0.6843950085670758,224,screening association only; no automatic batch correction
+GSE41258,msi_status,chi-square,1.1937321792526692,0.5505342604388409,208,screening association only; no automatic batch correction

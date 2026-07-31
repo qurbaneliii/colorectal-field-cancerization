@@ -1,0 +1,2 @@
+"accession","expected_geo_platform","expected_chip","detected_annotation","detected_cdf","annotation_package","reader","cel_count","first_cel","platform_match","normalized_probe_sets","normalized_genes"
+"GSE41258","GPL96","HG-U133A","hgu133a","HG-U133A","hgu133acdf / hgu133a.db","affy",390,"GSM1012278_00300BR2.CEL.gz",TRUE,22283,12650
