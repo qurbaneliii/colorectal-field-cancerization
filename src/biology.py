@@ -130,7 +130,9 @@ def field_candidates(
     meta = metadata.set_index("geo_accession").loc[expression.columns]
     adjacent = expression.loc[:, meta["tissue_class"].eq("adjacent_normal")]
     healthy_median = expression.loc[:, meta["tissue_class"].eq("healthy")].median(axis=1)
-    adjacent_de = de[de["comparison"].eq("adjacent_normal_vs_healthy")].copy()
+    adjacent_de = de[
+        de["comparison"].isin(["adjacent_normal_vs_healthy", "adjacent_vs_healthy"])
+    ].copy()
     adjacent_de = adjacent_de[
         adjacent_de["adjusted_p_value"].lt(fdr)
         & adjacent_de["log2_fold_change"].abs().ge(effect)

@@ -111,6 +111,12 @@ def build_gse44076_metadata(series_path: Path, tar_path: Path) -> tuple[pd.DataF
                 "location": char.get("location", ""),
                 "sex": char.get("gender", ""),
                 "age": char.get("age", ""),
+                "msi_status": char.get("msi status", char.get("microsatellite status", "")),
+                "molecular_subtype": char.get("molecular subtype", ""),
+                "batch": char.get("batch", ""),
+                "processing_date": char.get("processing date", ""),
+                "scan_date": char.get("scan date", ""),
+                "center": char.get("center", ""),
             }
         )
     frame = pd.DataFrame(rows)
@@ -169,7 +175,10 @@ def _canonical_external_tissue(value: str) -> str:
 
 
 def build_gse41258_metadata(
-    series_path: Path, tar_path: Path, technical_pattern: str
+    series_path: Path,
+    tar_path: Path,
+    technical_pattern: str,
+    clinical_path: Path | None = None,
 ) -> pd.DataFrame:
     meta = parse_series_metadata(series_path)
     accessions = meta["!Sample_geo_accession"][0]
@@ -222,4 +231,59 @@ def build_gse41258_metadata(
                 "metadata_parsing_confidence": "high" if original_tissue and patient else "low",
             }
         )
-    return pd.DataFrame(rows)
+    frame = pd.DataFrame(rows)
+    if clinical_path is not None:
+        clinical = pd.read_csv(clinical_path, sep="\t", compression="gzip", dtype=str).fillna("")
+        clinical.columns = [re.sub(r"\s+", " ", column.strip()) for column in clinical.columns]
+        if "Patient ID" not in clinical:
+            raise ValueError("GSE41258 clinical data lacks Patient ID")
+        clinical["Patient ID"] = clinical["Patient ID"].astype(str).str.strip()
+        requested = {
+            "Sample Date": "sample_date",
+            "Age": "age",
+            "Gender": "sex",
+            "T": "t_stage",
+            "N": "n_stage",
+            "M": "m_stage",
+            "Group Stage": "stage",
+            "Microsattelite instability": "msi_status",
+            "P53 mutation status": "p53_status",
+            "Anatomic Location": "location",
+        }
+        collapsed_rows = []
+        for patient, group in clinical.groupby("Patient ID", sort=False):
+            row: dict[str, str] = {"patient_id": patient}
+            conflicting = []
+            for source, target in requested.items():
+                values = sorted({value.strip() for value in group.get(source, pd.Series(dtype=str)) if value.strip()})
+                row[target] = values[0] if len(values) == 1 else ""
+                if len(values) > 1:
+                    conflicting.append(target)
+            row["clinical_mapping_status"] = (
+                "unique_patient_covariates"
+                if not conflicting
+                else f"conflicting_fields:{','.join(conflicting)}"
+            )
+            collapsed_rows.append(row)
+        frame = frame.merge(pd.DataFrame(collapsed_rows), on="patient_id", how="left")
+    for column in [
+        "sample_date",
+        "age",
+        "sex",
+        "t_stage",
+        "n_stage",
+        "m_stage",
+        "stage",
+        "msi_status",
+        "p53_status",
+        "location",
+        "clinical_mapping_status",
+    ]:
+        if column not in frame:
+            frame[column] = ""
+    frame["batch"] = ""
+    frame["processing_date"] = ""
+    frame["scan_date"] = ""
+    frame["molecular_subtype"] = ""
+    frame["center"] = ""
+    return frame
