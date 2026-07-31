@@ -1,13 +1,3 @@
-numpy==2.4.4
-pandas==3.0.3
-scipy==1.17.1
-scikit-learn==1.8.0
-matplotlib==3.10.9
-seaborn==0.13.2
-PyYAML==6.0.3
-pyarrow==20.0.0
-joblib==1.5.3
-statsmodels==0.14.4
-shap==0.52.0
-xgboost==3.1.2
-pytest==8.4.1
+# Convenience entry point. pyproject.toml is authoritative; this compiled lock
+# is regenerated with: pip-compile pyproject.toml --extra test --output-file requirements-lock.txt
+-r requirements-lock.txt

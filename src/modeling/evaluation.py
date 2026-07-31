@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from scipy.special import expit, softmax
+from scipy.special import logit
 from sklearn.metrics import (
     average_precision_score,
     balanced_accuracy_score,
@@ -18,19 +18,19 @@ from sklearn.preprocessing import label_binarize
 def prediction_probabilities(model, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     estimator = model.named_steps["model"]
     classes = np.asarray(estimator.classes_)
-    if hasattr(model, "predict_proba"):
-        return classes, model.predict_proba(x)
-    decision = model.decision_function(x)
-    if decision.ndim == 1:
-        positive = expit(decision)
-        probability = np.column_stack([1 - positive, positive])
-    else:
-        probability = softmax(decision, axis=1)
-    return classes, probability
+    if not hasattr(model, "predict_proba"):
+        raise TypeError(
+            "Probability metrics require a probabilistic or training-only calibrated estimator"
+        )
+    return classes, model.predict_proba(x)
 
 
 def classification_metrics(
-    y_true: np.ndarray, y_pred: np.ndarray, probability: np.ndarray, classes: np.ndarray
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    probability: np.ndarray,
+    classes: np.ndarray,
+    include_calibration: bool = False,
 ) -> dict[str, float]:
     probability = np.asarray(probability, dtype=float)
     probability = probability / probability.sum(axis=1, keepdims=True)
@@ -65,6 +65,26 @@ def classification_metrics(
         result["sensitivity"] = result[f"recall_{positive}"]
         negative = classes[0]
         result["specificity"] = result[f"recall_{negative}"]
+        negative_mask = y_pred == negative
+        result["negative_predictive_value"] = (
+            float(np.mean(y_true[negative_mask] == negative)) if negative_mask.any() else np.nan
+        )
+        positive_mask = y_pred == positive
+        result["positive_predictive_value"] = (
+            float(np.mean(y_true[positive_mask] == positive)) if positive_mask.any() else np.nan
+        )
+        if include_calibration:
+            clipped = np.clip(probability[:, 1], 1e-6, 1 - 1e-6)
+            design = np.column_stack([np.ones(len(clipped)), logit(clipped)])
+            try:
+                from statsmodels.api import Logit
+
+                calibration = Logit(binary, design).fit(disp=False)
+                result["calibration_intercept"] = float(calibration.params[0])
+                result["calibration_slope"] = float(calibration.params[1])
+            except Exception:
+                result["calibration_intercept"] = np.nan
+                result["calibration_slope"] = np.nan
     else:
         binary = label_binarize(y_true, classes=classes)
         result["roc_auc_ovr_macro"] = (
@@ -102,6 +122,9 @@ def grouped_bootstrap_metrics(
             y_pred[sampled_indices],
             probabilities[sampled_indices],
             classes,
+            include_calibration=bool(
+                {"calibration_intercept", "calibration_slope"}.intersection(metrics)
+            ),
         )
         for metric in metrics:
             value = measured.get(metric, np.nan)
@@ -109,7 +132,20 @@ def grouped_bootstrap_metrics(
                 values[metric].append(float(value))
     rows = []
     for metric, observed in values.items():
-        array = np.asarray(observed)
+        array = np.asarray(observed, dtype=float)
+        if array.size == 0:
+            rows.append(
+                {
+                    "metric": metric,
+                    "mean": np.nan,
+                    "median": np.nan,
+                    "standard_deviation": np.nan,
+                    "ci_lower": np.nan,
+                    "ci_upper": np.nan,
+                    "bootstrap_iterations": 0,
+                }
+            )
+            continue
         rows.append(
             {
                 "metric": metric,

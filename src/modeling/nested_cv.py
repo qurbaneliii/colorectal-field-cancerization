@@ -23,6 +23,7 @@ def run_nested_cv(
     seeds: list[int],
     outer_splits: int,
     inner_splits: int,
+    modeling_config: dict,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     prediction_rows: list[dict[str, object]] = []
     metric_rows: list[dict[str, object]] = []
@@ -58,15 +59,18 @@ def run_nested_cv(
             )
             for model_name in models:
                 grid = GridSearchCV(
-                    build_pipeline(model_name, seed),
-                    parameter_grid(model_name),
+                    build_pipeline(model_name, seed, modeling_config),
+                    parameter_grid(model_name, modeling_config),
                     scoring="f1_macro",
                     cv=inner,
                     n_jobs=-1,
                     refit=True,
                     error_score="raise",
                 )
-                grid.fit(x[train_idx], y[train_idx], groups=groups[train_idx])
+                fit_parameters = {"groups": groups[train_idx]}
+                if model_name == "linear_svm":
+                    fit_parameters["model__groups"] = groups[train_idx]
+                grid.fit(x[train_idx], y[train_idx], **fit_parameters)
                 fitted = grid.best_estimator_
                 predicted = fitted.predict(x[test_idx])
                 classes, probability = prediction_probabilities(fitted, x[test_idx])

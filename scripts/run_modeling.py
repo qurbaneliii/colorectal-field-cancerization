@@ -6,7 +6,6 @@ import os
 import sys
 from pathlib import Path
 
-import joblib
 import numpy as np
 import pandas as pd
 import yaml
@@ -15,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from src.data.provenance import expression_path, result_root
 from src.data.validation import validate_fold_assignments
 from src.interpretation.coefficients import coefficient_plot
 from src.modeling.evaluation import grouped_bootstrap_ci
-from src.modeling.nested_cv import modal_best_parameters, run_nested_cv
-from src.modeling.pipelines import build_pipeline
+from src.modeling.nested_cv import run_nested_cv
 from src.modeling.stability import feature_stability
 
 
@@ -32,11 +31,15 @@ TASKS = {
 
 def average_repeated_predictions(frame: pd.DataFrame) -> pd.DataFrame:
     probability_columns = [
-        c for c in frame if c.startswith("probability_") and frame[c].notna().any()
+        column for column in frame if column.startswith("probability_") and frame[column].notna().any()
     ]
-    first = {"patient_id": "first", "y_true": "first"}
-    means = {column: "mean" for column in probability_columns}
-    averaged = frame.groupby("sample_id", as_index=False).agg({**first, **means})
+    averaged = frame.groupby("sample_id", as_index=False).agg(
+        {
+            "patient_id": "first",
+            "y_true": "first",
+            **{column: "mean" for column in probability_columns},
+        }
+    )
     classes = [column.removeprefix("probability_") for column in probability_columns]
     averaged["y_pred"] = np.asarray(classes)[
         np.argmax(averaged[probability_columns].to_numpy(), axis=1)
@@ -46,28 +49,31 @@ def average_repeated_predictions(frame: pd.DataFrame) -> pd.DataFrame:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--postprocess-only", action="store_true")
     parser.add_argument(
-        "--postprocess-only",
-        action="store_true",
-        help="Resume summaries/model locking from completed nested-CV CSV files.",
+        "--provenance",
+        choices=["raw_cel_rma", "geo_deposited_series_matrix"],
+        help="Override config modeling.expression_provenance.",
     )
     args = parser.parse_args()
     os.chdir(ROOT)
     config = yaml.safe_load((ROOT / "config/analysis.yaml").read_text(encoding="utf-8"))
     paths = yaml.safe_load((ROOT / "config/paths.yaml").read_text(encoding="utf-8"))
     modeling = config["modeling"]
-    metrics_root = ROOT / paths["metrics"]
-    tables_root = ROOT / paths["tables"]
-    models_root = ROOT / paths["models"]
-    figures_root = ROOT / paths["figures"]
-    reports_root = ROOT / paths["reports"]
-    for directory in (metrics_root, tables_root, models_root, figures_root, reports_root):
+    provenance = args.provenance or modeling["expression_provenance"]
+    processed_root = ROOT / paths["processed"]
+    expression_file = expression_path(processed_root, "GSE44076", "gene", provenance)
+    if not expression_file.exists():
+        raise FileNotFoundError(f"Missing {provenance} modeling matrix: {expression_file}")
+
+    metrics_root = result_root(ROOT / paths["metrics"], provenance)
+    tables_root = result_root(ROOT / paths["tables"], provenance)
+    figures_root = result_root(ROOT / paths["figures"], provenance)
+    reports_root = result_root(ROOT / paths["reports"], provenance)
+    for directory in (metrics_root, tables_root, figures_root, reports_root):
         directory.mkdir(parents=True, exist_ok=True)
 
-    expression_table = pd.read_parquet(
-        ROOT / paths["processed"] / "GSE44076_gene_expression.parquet"
-    )
-    expression = expression_table.set_index("gene_symbol")
+    expression = pd.read_parquet(expression_file).set_index("gene_symbol")
     metadata = pd.read_csv(
         ROOT / paths["metadata"] / "gse44076_samples.csv", dtype={"patient_id": str}
     )
@@ -78,47 +84,48 @@ def main() -> None:
         assignments = pd.read_csv(metrics_root / "fold_assignments.csv", dtype={"patient_id": str})
         coefficients = pd.read_csv(metrics_root / "elastic_net_fold_coefficients.csv")
     else:
-        all_predictions = []
-        all_metrics = []
-        all_assignments = []
-        all_coefficients = []
+        outputs: dict[str, list[pd.DataFrame]] = {
+            "predictions": [],
+            "metrics": [],
+            "assignments": [],
+            "coefficients": [],
+        }
         for task, labels in TASKS.items():
             selected = metadata[
-                metadata["inclusion_status"].eq("included") & metadata["tissue_class"].isin(labels)
+                metadata["inclusion_status"].eq("included")
+                & metadata["tissue_class"].isin(labels)
             ].copy()
             samples = selected["geo_accession"].tolist()
-            x = expression[samples].T.to_numpy(dtype=np.float32)
-            y = selected["tissue_class"].to_numpy()
-            groups = selected["donor_or_patient_group"].astype(str).to_numpy()
-            sample_ids = selected["geo_accession"].to_numpy()
-            task_predictions, task_metrics, task_assignments, task_coefficients = run_nested_cv(
-                x,
-                y,
-                groups,
-                sample_ids,
+            result = run_nested_cv(
+                expression[samples].T.to_numpy(dtype=np.float32),
+                selected["tissue_class"].to_numpy(),
+                selected["donor_or_patient_group"].astype(str).to_numpy(),
+                selected["geo_accession"].to_numpy(),
                 feature_names,
                 task,
                 ["elastic_net", "linear_svm", "random_forest"],
                 modeling["seeds"],
                 modeling["outer_splits"],
                 modeling["inner_splits"],
+                modeling,
             )
-            all_predictions.append(task_predictions)
-            all_metrics.append(task_metrics)
-            all_assignments.append(task_assignments)
-            all_coefficients.append(task_coefficients)
-        predictions = pd.concat(all_predictions, ignore_index=True)
-        metrics = pd.concat(all_metrics, ignore_index=True)
-        assignments = pd.concat(all_assignments, ignore_index=True)
-        coefficients = pd.concat(all_coefficients, ignore_index=True)
+            for key, frame in zip(outputs, result, strict=True):
+                outputs[key].append(frame)
+        predictions = pd.concat(outputs["predictions"], ignore_index=True)
+        metrics = pd.concat(outputs["metrics"], ignore_index=True)
+        assignments = pd.concat(outputs["assignments"], ignore_index=True)
+        coefficients = pd.concat(outputs["coefficients"], ignore_index=True)
+        for frame in (predictions, metrics, assignments, coefficients):
+            frame["analysis_provenance"] = provenance
         predictions.to_csv(metrics_root / "nested_cv_predictions.csv", index=False)
         metrics.to_csv(metrics_root / "nested_cv_metrics.csv", index=False)
         assignments.to_csv(metrics_root / "fold_assignments.csv", index=False)
         coefficients.to_csv(metrics_root / "elastic_net_fold_coefficients.csv", index=False)
     validate_fold_assignments(assignments)
 
-    total_outer = len(modeling["seeds"]) * modeling["outer_splits"]
+    total_outer = len(modeling["seeds"]) * int(modeling["outer_splits"])
     stability = feature_stability(coefficients, total_outer)
+    stability["analysis_provenance"] = provenance
     stability.to_csv(tables_root / "feature_stability.csv", index=False)
     coefficient_plot(
         stability,
@@ -126,153 +133,108 @@ def main() -> None:
         figures_root / "stable_feature_coefficient_plot_task_c",
     )
 
-    summary_path = tables_root / "table_3_model_comparison.csv"
-    ci_path = metrics_root / "patient_group_bootstrap_confidence_intervals.csv"
-    if args.postprocess_only and summary_path.exists() and ci_path.exists():
-        summary = pd.read_csv(summary_path)
-    else:
-        summary_rows = []
-        ci_rows = []
-        for (task, model), group in metrics.groupby(["task", "model"]):
-            for metric in ["f1_macro", "balanced_accuracy", "log_loss", "roc_auc", "pr_auc"]:
-                if metric not in group or group[metric].isna().all():
-                    continue
-                values = group[metric].dropna()
-                summary_rows.append(
-                    {
-                        "task": task,
-                        "model": model,
-                        "metric": metric,
-                        "mean": values.mean(),
-                        "median": values.median(),
-                        "standard_deviation": values.std(ddof=1),
-                        "fold_minimum": values.min(),
-                        "fold_maximum": values.max(),
-                    }
-                )
-            model_predictions = average_repeated_predictions(
-                predictions[(predictions["task"].eq(task)) & (predictions["model"].eq(model))]
+    summary_rows: list[dict[str, object]] = []
+    ci_rows: list[dict[str, object]] = []
+    for (task, model), group in metrics.groupby(["task", "model"]):
+        for metric in [
+            "f1_macro",
+            "balanced_accuracy",
+            "log_loss",
+            "roc_auc",
+            "pr_auc",
+            "brier_score",
+            "roc_auc_ovr_macro",
+            "brier_score_multiclass",
+        ]:
+            if metric not in group or group[metric].isna().all():
+                continue
+            values = group[metric].dropna()
+            repeat_means = group.groupby("repeat")[metric].mean().dropna()
+            summary_rows.append(
+                {
+                    "task": task,
+                    "model": model,
+                    "metric": metric,
+                    "mean": values.mean(),
+                    "median": values.median(),
+                    "standard_deviation": values.std(ddof=1),
+                    "fold_minimum": values.min(),
+                    "fold_maximum": values.max(),
+                    "repeat_mean_standard_deviation": repeat_means.std(ddof=1),
+                    "analysis_provenance": provenance,
+                }
             )
-            ci = grouped_bootstrap_ci(
-                model_predictions,
-                "f1_macro",
-                modeling["bootstrap_iterations"],
-                config["project"]["random_seed"],
-            )
-            ci_rows.append({"task": task, "model": model, **ci})
-        summary = pd.DataFrame(summary_rows)
-        summary.to_csv(summary_path, index=False)
-        pd.DataFrame(ci_rows).to_csv(ci_path, index=False)
+        averaged = average_repeated_predictions(
+            predictions[predictions["task"].eq(task) & predictions["model"].eq(model)]
+        )
+        ci = grouped_bootstrap_ci(
+            averaged,
+            "f1_macro",
+            int(modeling["bootstrap_iterations"]),
+            int(config["project"]["random_seed"]),
+        )
+        ci_rows.append({"task": task, "model": model, **ci, "analysis_provenance": provenance})
+    summary = pd.DataFrame(summary_rows)
+    summary.to_csv(tables_root / "table_3_model_comparison.csv", index=False)
+    pd.DataFrame(ci_rows).to_csv(
+        metrics_root / "patient_group_bootstrap_confidence_intervals.csv", index=False
+    )
     metrics.to_csv(tables_root / "supplementary_fold_metrics.csv", index=False)
+    metrics[["task", "model", "repeat", "outer_fold", "best_parameters", "analysis_provenance"]].to_csv(
+        metrics_root / "nested_cv_hyperparameters.csv", index=False
+    )
 
-    # Prespecified decision: Elastic Net unless its mean macro F1 is outside the
-    # uncertainty range of the best comparator. External behavior is assessed later.
     decisions = []
-    final_signatures = []
-    panels = []
+    full_signatures = []
     for task in TASKS:
         task_summary = summary[
             summary["task"].eq(task) & summary["metric"].eq("f1_macro")
         ].sort_values("mean", ascending=False)
-        elastic_mean = float(
-            task_summary.loc[task_summary["model"].eq("elastic_net"), "mean"].iloc[0]
-        )
-        best_mean = float(task_summary["mean"].iloc[0])
-        selected_model = "elastic_net"
+        elastic_mean = float(task_summary.loc[task_summary["model"].eq("elastic_net"), "mean"].iloc[0])
         decisions.append(
             {
                 "task": task,
-                "selected_model": selected_model,
+                "selected_model": "elastic_net",
                 "elastic_net_mean_macro_f1": elastic_mean,
-                "best_point_estimate": best_mean,
-                "decision_rule": "Elastic Net retained for leakage safety, parsimony, stability, and interpretability; point estimates are not the sole criterion.",
+                "best_comparator_point_estimate": float(task_summary["mean"].iloc[0]),
+                "decision_rule": "Elastic Net was prespecified as the primary scientific model; comparators are sensitivity benchmarks.",
+                "analysis_provenance": provenance,
             }
         )
         stable = stability[
             stability["task"].eq(task)
-            & stability["selection_frequency"].ge(modeling["stable_selection_frequency"])
-            & stability["sign_consistency"].ge(0.8)
+            & stability["selection_frequency"].ge(float(modeling["stable_selection_frequency"]))
+            & stability["sign_consistency"].ge(float(modeling["stable_sign_consistency"]))
         ].copy()
-        if stable.empty:
-            stable = stability[stability["task"].eq(task)].head(30).copy()
-            stable["fallback_reason"] = "no feature met prespecified stability threshold"
-        stable["selected_for_final_signature"] = True
-        final_signatures.append(stable)
-        ranked = stable.sort_values(
-            ["selection_frequency", "median_absolute_coefficient"], ascending=False
-        )
-        for size in modeling["compact_panels"]:
-            for rank, gene in enumerate(ranked["gene_symbol"].head(size), start=1):
-                panels.append(
-                    {"task": task, "panel_size": size, "rank": rank, "gene_symbol": gene}
-                )
-
+        stable["selected_for_full_stable_signature"] = True
+        full_signatures.append(stable)
     decision_frame = pd.DataFrame(decisions)
     decision_frame.to_csv(tables_root / "model_selection_decisions.csv", index=False)
-    final_signature = pd.concat(final_signatures, ignore_index=True)
-    final_signature.to_csv(tables_root / "final_signature.csv", index=False)
-    final_signature.to_csv(tables_root / "table_4_final_signature.csv", index=False)
-    pd.DataFrame(panels).to_csv(tables_root / "candidate_gene_panels.csv", index=False)
-
-    # Lock Task C model and signature using GSE44076 only.
-    task = "task_c_tumor_vs_adjacent"
-    labels = TASKS[task]
-    selected = metadata[
-        metadata["inclusion_status"].eq("included") & metadata["tissue_class"].isin(labels)
-    ].copy()
-    signature_genes = final_signature[final_signature["task"].eq(task)]["gene_symbol"].drop_duplicates().tolist()
-    if not signature_genes:
-        raise RuntimeError("Task C final signature is empty")
-    best_params = modal_best_parameters(metrics, task, "elastic_net")
-    # Panel fit uses only locked genes; selection steps are valid but set to retain all.
-    locked = build_pipeline("elastic_net", config["project"]["random_seed"])
-    locked_parameters = {
-        **best_params,
-        "variance_quantile__quantile": 0.0,
-        "univariate__k": "all",
-    }
-    locked.set_params(**locked_parameters)
-    x_locked = expression.loc[signature_genes, selected["geo_accession"]].T.to_numpy(dtype=np.float32)
-    y_locked = selected["tissue_class"].to_numpy()
-    locked.fit(x_locked, y_locked)
-    artifact = {
-        "model": locked,
-        "task": task,
-        "classes": locked.named_steps["model"].classes_.tolist(),
-        "signature_genes": signature_genes,
-        "training_samples": selected["geo_accession"].tolist(),
-        "training_groups": selected["donor_or_patient_group"].astype(str).tolist(),
-        "best_parameters_mode": best_params,
-        "threshold": config["external_validation"]["locked_threshold"],
-        "provenance": "GSE44076 only; GEO deposited normalized matrix",
-    }
-    joblib.dump(artifact, models_root / "task_c_locked_elastic_net.joblib")
-    reloaded = joblib.load(models_root / "task_c_locked_elastic_net.joblib")
-    if reloaded["model"].predict(x_locked[:5]).shape[0] != 5:
-        raise AssertionError("Serialized model reload sanity check failed")
+    full_signature = pd.concat(full_signatures, ignore_index=True)
+    full_signature.to_csv(tables_root / "full_stable_signature.csv", index=False)
 
     rationale = f"""# Model selection rationale
 
-The prespecified priority order was leakage safety, external validity, balanced
-performance, adjacent-normal recall, calibration, stability, compactness,
-interpretability, and computational simplicity. Elastic Net was retained for
-all three tasks. It was evaluated in the same repeated nested patient-group
-cross-validation as the linear SVM and Random Forest; no point estimate alone
-determined the decision.
+Elastic Net is the prespecified primary model because the study is a sparse,
+interpretable biomarker-discovery analysis. Linear SVM and Random Forest are
+benchmarks, not candidates selected by their external-cohort behavior. All
+models used the same repeated nested patient/donor-group folds, and all learned
+preprocessing and calibration occurred inside training data.
 
 {decision_frame.to_markdown(index=False)}
 
-Task C locked signature size: {len(signature_genes)} genes. The model artifact
-was serialized and reloaded successfully. External-cohort labels were not used
-in this fit or any hyperparameter decision.
+Expression provenance: `{provenance}`. Compact-panel performance and the final
+locked Task C artifact are produced separately by
+`scripts/run_compact_panel_analysis.py`.
 """
     (reports_root / "model_selection_rationale.md").write_text(rationale, encoding="utf-8")
     print(
         json.dumps(
             {
+                "provenance": provenance,
                 "fold_metric_rows": len(metrics),
                 "prediction_rows": len(predictions),
-                "task_c_signature_size": len(signature_genes),
+                "outer_repeats": len(modeling["seeds"]),
                 "models": sorted(metrics["model"].unique()),
             },
             indent=2,
