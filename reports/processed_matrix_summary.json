@@ -1,0 +1,13 @@
+{
+  "GSE44076": {
+    "genes": 19040,
+    "samples": 246
+  },
+  "GSE41258": {
+    "genes": 13299,
+    "samples": 390
+  },
+  "common_genes": 11336,
+  "field_candidates_processed_matrix_sensitivity": 1654,
+  "provenance": "GEO deposited normalized series matrices; not raw-CEL RMA"
+}

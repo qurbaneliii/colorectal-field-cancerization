@@ -1,0 +1,6 @@
+accession,platform,tissue_class,included_samples,role
+GSE44076,GPL13667,healthy,50,development
+GSE44076,GPL13667,adjacent_normal,98,development
+GSE44076,GPL13667,tumor,98,development
+GSE41258,GPL96,normal_colon,52,external validation
+GSE41258,GPL96,primary_tumor,181,external validation

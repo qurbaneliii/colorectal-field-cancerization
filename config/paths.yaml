@@ -1,0 +1,13 @@
+raw: data/raw
+interim: data/interim
+processed: data/processed
+metadata: data/metadata
+results: results
+figures: results/figures
+tables: results/tables
+metrics: results/metrics
+de: results/differential_expression
+enrichment: results/enrichment
+models: models
+reports: reports
+manuscript: manuscript

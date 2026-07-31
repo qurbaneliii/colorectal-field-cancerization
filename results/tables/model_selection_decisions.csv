@@ -1,0 +1,4 @@
+task,selected_model,elastic_net_mean_macro_f1,best_point_estimate,decision_rule
+task_a_three_class,elastic_net,0.9527514909093856,0.962038771501129,"Elastic Net retained for leakage safety, parsimony, stability, and interpretability; point estimates are not the sole criterion."
+task_b_field_effect,elastic_net,0.9926046926046924,1.0,"Elastic Net retained for leakage safety, parsimony, stability, and interpretability; point estimates are not the sole criterion."
+task_c_tumor_vs_adjacent,elastic_net,0.9872175317907026,0.9872175317907026,"Elastic Net retained for leakage safety, parsimony, stability, and interpretability; point estimates are not the sole criterion."

@@ -1,0 +1,7 @@
+comparison,direction,tested_genes,significant_genes
+adjacent_normal_vs_healthy,down,12298,673
+adjacent_normal_vs_healthy,up,6742,1027
+tumor_vs_adjacent_normal_paired,down,9657,2079
+tumor_vs_adjacent_normal_paired,up,9383,2566
+tumor_vs_healthy,down,10711,2302
+tumor_vs_healthy,up,8329,2844

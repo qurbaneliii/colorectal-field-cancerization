@@ -1,0 +1,11 @@
+field,definition,derivation,type
+geo_accession,GEO GSM identifier,GEO series matrix,string
+sample_title,Original GEO sample title,GEO series matrix,string
+original_tissue,Unmodified deposited tissue category,GEO metadata,string
+tissue_class,Canonical analysis label,explicit mapping rule,category
+patient_id,Explicit deposited individual/patient ID,GEO characteristic,string
+donor_or_patient_group,Group used for every CV split,patient_id,string
+pairing_status,Tumor/adjacent pair availability,pair audit,category
+technical_replicate_candidate,Title matches _ez or rehyb,deterministic regex,bool
+inclusion_status,Eligibility for the primary analysis of that accession,rules,category
+exclusion_reason,Semicolon-separated deterministic reasons,rules,string
