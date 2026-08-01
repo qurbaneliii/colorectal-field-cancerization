@@ -1,0 +1,7 @@
+gene_symbol,primary_panel,qc_excluded_reselected_panel,primary_panel_size,qc_excluded_panel_size,selection_origin
+APOLD1,False,True,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample
+CLC,True,True,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample
+DYNC1H1,True,True,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample
+FOS,True,True,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample
+SNORA12,True,False,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample
+VIP,True,True,5,5,full-development grouped inner CV; sensitivity excludes custom-QC borderline sample

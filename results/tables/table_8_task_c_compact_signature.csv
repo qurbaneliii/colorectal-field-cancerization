@@ -1,0 +1,4 @@
+gene_symbol,rank,final_full_data_absolute_coefficient,compact_selected_fold_count,compact_selection_frequency,selection_frequency,sign_consistency,median_coefficient,coefficient_standard_deviation,repeat_coverage,strictly_stable_gene,stability_class,compact_consensus_gene,panel_label,final_panel_size,analysis_provenance,present_on_gpl96
+FOXQ1,1,0.2209897190332412,12,0.8,1.0,1.0,0.2054244130849838,0.0726223676794756,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,False
+CEMIP,2,0.2187891602516174,11,0.7333333333333333,1.0,1.0,0.1989036202430725,0.0663951005606554,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,True
+ETV4,3,0.2134981602430343,10,0.6666666666666666,1.0,1.0,0.1979831010103225,0.0446460080597294,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,True

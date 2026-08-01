@@ -1,0 +1,3 @@
+accession,arrays,non_finite_values,one_custom_failure_metric,two_or_more_custom_failure_metrics,aqm_flagged_any,aqm_two_or_more_flags,automatic_exclusions,aqm_report_files,nuse_method,nuse_median_of_medians,nuse_minimum_median,nuse_maximum_median
+GSE44076,246,0,1,0,8,1,0,21,not technically valid for this oligo platform,,,
+GSE41258,390,0,0,0,48,13,0,21,affyPLM probe-level model; NUSE is valid for GPL96 AffyBatch only,0.9989378510382125,0.979155690008895,1.11278982671922
