@@ -3,7 +3,7 @@
 The prespecified flag set contains 24 immediate-early, AP-1,
 feedback, and acute-response genes documented from the curated immediate-early
 response analysis of Tullai et al. (Journal of Biological Chemistry 2007;
-282:23981-23995; DOI: 10.1074/jbc.M703225200). The set is versioned at
+282:23981-23995; DOI: 10.1074/jbc.M702044200). The set is versioned at
 `config/immediate_early_stress_genes.tsv`. These genes were flagged rather
 than automatically removed because acute signaling can reflect tissue handling,
 true mucosal biology, or both.
