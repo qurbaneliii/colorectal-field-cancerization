@@ -52,5 +52,18 @@
 & 'D:\\R\\R-4.5.1\\bin\\Rscript.exe' -e 'renv::status()'
 ```
 
+## GitHub Actions
+
+- Normal CI: **PASS**. Workflow run #5 completed successfully for pull request
+  #2 and commit `23d17d6300f8d2f674323842e07fc82fb3803579`:
+  <https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/30692964289>
+- The successful job executed dependency installation, `pip check`,
+  `compileall`, Ruff, the no-data test selection, synthetic smoke, and
+  configuration/documentation parsing.
+- The manual `full-data.yml` workflow was **NOT RUN** remotely. It requires a
+  self-hosted runner labeled `colorectal-field-data`; required runner and data
+  availability were not verified. The equivalent full-data suite was executed
+  locally and passed as recorded above.
+
 Docker build/runtime verification is BLOCKED by the disabled host WSL service;
 see `reports/docker_verification.md`.
