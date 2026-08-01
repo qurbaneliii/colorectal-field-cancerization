@@ -11,7 +11,7 @@ The executed primary route is:
 - limma inference, including patient-fixed-effect paired contrasts;
 - patient/donor-grouped repeated nested cross-validation in Python;
 - fold-internal compact-panel selection and group-aware SVM calibration;
-- locked, patient-balanced cross-platform validation;
+- GSE44076-locked rank threshold and patient-clustered cross-platform evaluation;
 - 1,000-iteration task-specific permutation tests and grouped bootstrap intervals.
 
 This is retrospective biomarker discovery, not a clinical-readiness claim. Three tissue
@@ -23,11 +23,16 @@ group means are not interpreted as longitudinal progression.
 - GSE41258: 390 HG-U133A arrays audited; 233 tumor/normal arrays from 190 patients are
   eligible for external validation.
 - Raw RMA assertions: 49,386 GSE44076 and 22,283 GSE41258 probe sets.
-- Task C compact panel: **FOXQ1, CEMIP, ETV4, GTF2IRD1, PACC1**.
-- External primary analysis: 190 canonical patient arrays; 4/5 panel genes are present on
-  GPL96; ROC AUC 0.9969 and macro-F1 0.7919. See the report for uncertainty,
-  calibration limitations, and sensitivity analyses.
-- Tests: 23 passed, 0 failed in the publication environment.
+- High-confidence field signature: **101 genes**; 74 retain
+  composition-adjusted support and 3 overlap the curated immediate-early/stress set.
+- Primary Task B compact panel: **CLC, DYNC1H1, FOS, VIP, SNORA12**. It is internally
+  validated only; no independent healthy-versus-adjacent cohort is available.
+- Secondary Task C compact panel: **FOXQ1, CEMIP, ETV4**. All three meet the strict
+  stability rule; only **CEMIP** and **ETV4** are present on GPL96.
+- External Task C primary analysis: 233 canonical patient-tissue arrays from 190
+  patients; patient-clustered ROC AUC 0.9829 and macro-F1 0.8282 at the
+  GSE44076-locked threshold of 0.41. The two-gene transport refit is distinct from the
+  exact three-gene primary model.
 - Final readiness: **PARTIAL** until the Docker image is built against a running Docker
   engine; all scientific gates completed locally.
 
@@ -53,12 +58,21 @@ D:\R\R-4.5.1\bin\Rscript.exe R/03_preprocess_gse41258.R
 .\.venv-publication\Scripts\python scripts/convert_r_outputs.py
 D:\R\R-4.5.1\bin\Rscript.exe R/04_differential_expression.R
 .\.venv-publication\Scripts\python scripts/run_raw_vs_processed_sensitivity.py
+.\.venv-publication\Scripts\python scripts/run_covariate_sensitivity.py
+D:\R\R-4.5.1\bin\Rscript.exe R/06_tissue_composition_sensitivity.R
+.\.venv-publication\Scripts\python scripts/run_stress_gene_sensitivity.py
 D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
-.\.venv-publication\Scripts\python scripts/run_modeling.py
-.\.venv-publication\Scripts\python scripts/run_compact_panel_analysis.py
-.\.venv-publication\Scripts\python scripts/run_permutation_tests.py
-.\.venv-publication\Scripts\python scripts/run_external_validation.py
+.\.venv-publication\Scripts\python scripts/run_modeling.py --provenance raw_cel_rma
+.\.venv-publication\Scripts\python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma
+.\.venv-publication\Scripts\python scripts/run_task_b_confounding_sensitivity.py
+.\.venv-publication\Scripts\python scripts/run_permutation_tests.py --provenance raw_cel_rma
+.\.venv-publication\Scripts\python scripts/select_task_c_threshold.py
+.\.venv-publication\Scripts\python scripts/run_external_validation.py --provenance raw_cel_rma
+.\.venv-publication\Scripts\python scripts/build_publication_figures.py
+.\.venv-publication\Scripts\python scripts/build_publication_tables.py
 .\.venv-publication\Scripts\python scripts/build_manuscript_outputs.py
+.\.venv-publication\Scripts\python -m pip check
+.\.venv-publication\Scripts\ruff check src scripts tests
 .\.venv-publication\Scripts\python -m pytest -q
 ```
 
@@ -66,10 +80,10 @@ D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
 no-data grouped-CV smoke test. `make sensitivity-all` reproduces the explicitly labeled
 GEO-deposited-series-matrix sensitivity route.
 
-The custom QC bundle is the default and includes pre/post distributions, RLE, MA,
-PCA, sample correlation, hierarchical clustering, and objective multimetric exclusion
-flags. The much slower optional `arrayQualityMetrics` HTML report can be enabled with
-`RUN_ARRAY_QUALITY_METRICS=1`.
+The executed QC bundle includes cohort-wide pre/post distributions, RLE, MA, PCA,
+sample correlation, hierarchical clustering, objective multimetric exclusion flags,
+and `arrayQualityMetrics` HTML reports for both cohorts. GPL96 also has affyPLM NUSE;
+no surrogate NUSE is used for the oligo platform.
 
 ## Provenance and safeguards
 

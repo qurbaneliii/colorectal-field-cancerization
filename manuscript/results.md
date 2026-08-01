@@ -1,42 +1,137 @@
 # Results
 
-## Cohorts and raw analysis
+## Cohort and raw-CEL audit
 
-| accession   | platform   | tissue_class    |   arrays |   unique_patients_or_donors | role                             |
-|:------------|:-----------|:----------------|---------:|----------------------------:|:---------------------------------|
-| GSE44076    | GPL13667   | healthy         |       50 |                          50 | development                      |
-| GSE44076    | GPL13667   | adjacent_normal |       98 |                          98 | development                      |
-| GSE44076    | GPL13667   | tumor           |       98 |                          98 | development                      |
-| GSE41258    | GPL96      | normal_colon    |       52 |                          52 | external tumor/normal validation |
-| GSE41258    | GPL96      | primary_tumor   |      181 |                         181 | external tumor/normal validation |
+All 246 expected GSE44076 CEL files were reconciled to 50 healthy donors and 98
+complete tumor-adjacent patient pairs. All 390 expected GSE41258 CEL files were
+reconciled to metadata and GPL96. The external primary analysis included
+233 canonical patient-tissue arrays from 190
+patients; the patient identifier, tissue role, and exclusions remain available
+for every row.
 
-Raw-CEL limma summary:
+## Raw-array quality control
 
-| comparison               | direction   |   tested_genes |   significant_genes |
-|:-------------------------|:------------|---------------:|--------------------:|
-| adjacent_vs_healthy      | down        |          11934 |                 659 |
-| adjacent_vs_healthy      | up          |           6556 |                1003 |
-| tumor_vs_adjacent_paired | down        |           9393 |                2025 |
-| tumor_vs_adjacent_paired | up          |           9097 |                2477 |
-| tumor_vs_healthy         | down        |          10401 |                2239 |
-| tumor_vs_healthy         | up          |           8089 |                2764 |
+All-array pre/post-RMA densities replaced the previous single-array diagnostic.
+arrayQualityMetrics completed for both cohorts and produced
+21 and
+21 retained report files,
+respectively. It flagged 8/246 and
+48/390 arrays on at least one criterion.
+No array met two severe custom failure criteria, so no primary exclusion changed.
+GSE41258 NUSE medians ranged from 0.979
+to 1.113. The single custom-QC
+borderline GSE44076 array was retained; excluding it changed U1 significant genes
+from 1,580 to
+1,584, with
+the full comparison in `results/tables/qc_exclusion_sensitivity.csv`.
 
-## Internal predictive validation
+## Differential expression and covariate sensitivity
 
-| task                     |   mean_macro_f1 |   median_macro_f1 |   sd_macro_f1 |   fold_minimum |   fold_maximum |
-|:-------------------------|----------------:|------------------:|--------------:|---------------:|---------------:|
-| task_a_three_class       |        0.941281 |          0.951178 |     0.02413   |       0.89418  |       0.975118 |
-| task_b_field_effect      |        0.992628 |          1        |     0.0152627 |       0.962677 |       1        |
-| task_c_tumor_vs_adjacent |        0.984713 |          1        |     0.0188782 |       0.947222 |       1        |
+At FDR <0.05 and absolute log2 fold change >=0.5, U0 identified
+1,662 adjacent-versus-healthy
+genes, U1 identified 1,580,
+and U2 identified 1,521.
+All designs were full rank. The patient-fixed-effect tumor-versus-adjacent
+contrast identified 4,502
+genes. These contrasts describe cross-sectional group differences and paired
+tumor differences; they do not establish temporal progression.
 
-The final compact Task C signature contained 5 genes:
-FOXQ1, CEMIP, ETV4, GTF2IRD1, PACC1.
+Evidence integration yielded 101 Tier 1 high-confidence and
+1,377 Tier 2 provisional field-associated genes. The complete
+gene-level table preserves adjusted estimates, subgroup direction, preprocessing
+agreement, QC sensitivity, trajectory, composition status, and evidence score.
 
-## External tumor-versus-normal validation
+## Tissue composition and stress sensitivity
 
-| representation                | evaluation_set    | is_primary   |   arrays |   unique_patients | analysis_provenance   |   f1_macro |   f1_weighted |   balanced_accuracy |   log_loss |   precision_adjacent_normal |   recall_adjacent_normal |   f1_adjacent_normal |   precision_tumor |   recall_tumor |   f1_tumor |   roc_auc |   pr_auc |   brier_score |   sensitivity |   specificity |   negative_predictive_value |   positive_predictive_value |   calibration_intercept |   calibration_slope |
-|:------------------------------|:------------------|:-------------|---------:|------------------:|:----------------------|-----------:|--------------:|--------------------:|-----------:|----------------------------:|-------------------------:|---------------------:|------------------:|---------------:|-----------:|----------:|---------:|--------------:|--------------:|--------------:|----------------------------:|----------------------------:|------------------------:|--------------------:|
-| within_sample_percentile_rank | canonical_patient | True         |      190 |               190 | raw_cel_rma           |   0.791895 |      0.874549 |            0.916667 |   0.411845 |                    0.509091 |                        1 |             0.674699 |                 1 |       0.833333 |   0.909091 |  0.996914 | 0.999447 |        0.1249 |      0.833333 |             1 |                    0.509091 |                           1 |                     nan |                 nan |
+74/101 (73.3%) high-confidence
+genes remained composition robust and 27 were composition
+sensitive. MCP-counter scores differed most strongly for fibroblasts
+(adjusted adjacent-minus-healthy 1.376)
+and endothelial cells (0.360),
+with BH FDR values 4.93e-22
+and 2.83e-25.
+This attenuation indicates substantial microenvironmental contribution but does
+not distinguish altered cell abundance from altered expression within cells.
+The curated set contained 24 genes, 22
+were measured, and 3 overlapped Tier 1; 98 Tier 1
+genes remained after removal.
 
-This external result does not validate cancer-free healthy versus
-tumor-adjacent field cancerization.
+## Biological enrichment
+
+High-confidence upregulated genes were enriched for extracellular matrix
+organization, ECM degradation, proteoglycans, collagen degradation, and
+regulation of insulin-like growth-factor transport. Composition-robust and
+composition-sensitive subsets both retained ECM themes, supporting a mixed
+epithelial/microenvironmental interpretation. Provisional downregulated genes
+were enriched for fatty-acid, organic-acid, and small-molecule catabolism,
+whereas provisional upregulated genes included angiogenesis and cell-substrate
+adhesion. The three-gene Task C panel produced exploratory hyaluronan-related
+terms; these small-set results are descriptive, not mechanistic evidence.
+
+## Internal predictive performance
+
+Task A was supporting. Elastic Net patient/donor-bootstrap aggregated OOF
+macro-F1 was 0.959 (0.929-0.982) and multiclass ROC-AUC was
+0.995 (0.988-0.999). Its conditional permutation null was
+correctly restricted to tumor-versus-adjacent information and gave p=
+0.0010.
+
+Task B was primary. The nested panel policy selected a median of
+5 genes and produced mean
+outer-fold macro-F1 1.000 (fold SD
+0.000). The final panel was
+CLC, DYNC1H1, FOS, VIP, SNORA12. Aggregated repeated OOF ROC-AUC was
+1.000 (1.000-1.000), macro-F1 1.000 (1.000-1.000),
+Brier score 0.027 (0.023-0.031), and log loss
+0.164 (0.153-0.178). The group-level permutation p value was
+0.0010.
+Four panel genes met strict stability; SNORA12
+did not and is explicitly labeled exploratory.
+
+Task B remained strong after age/sex/location residualization (macro-F1
+0.977) and
+in the age/sex-matched subset (1.000).
+The demographics-only model reached macro-F1
+0.626. By contrast,
+composition-plus-demographic residualization reduced macro-F1 to
+0.718
+(ROC-AUC 0.786),
+which is a central limitation and is consistent with a substantial stromal or
+immune contribution to the classifier signal.
+
+Task C was secondary. The nested policy selected a median of
+3 genes and mean outer-fold
+macro-F1 was 0.990 (fold SD
+0.016). The final panel was
+FOXQ1, CEMIP, ETV4; FOXQ1: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; CEMIP: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; ETV4: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000. Aggregated repeated OOF ROC-AUC was
+0.991 (0.963-1.000), Brier score 0.021 (0.014-0.033),
+and paired-permutation p=
+0.0010.
+
+## Locked threshold and external evaluation
+
+The GSE44076-only grouped OOF rank-transport analysis selected threshold
+0.41 with internal balanced accuracy
+0.995; GSE41258 labels were not accessed.
+The common platform universe contained 12,039 genes, but only
+CEMIP, ETV4 of the three panel genes were present on GPL96.
+Accordingly, external results refer to the separately serialized two-gene
+transport refit.
+
+In the primary external 233-array, 190-patient
+estimand, ROC-AUC was 0.983, PR-AUC
+0.994, macro-F1 0.828,
+balanced accuracy 0.779, sensitivity
+1.000, specificity
+0.558, Brier score
+0.053, and log loss
+0.195. Patient-cluster 95% bootstrap intervals
+were 0.985 (0.957-1.000) for ROC-AUC,
+0.831 (0.755-0.889) for macro-F1, and
+0.561 (0.417-0.692) for specificity. Calibration
+intercept was -2.066 and slope was
+2.620. Thus ranking remained strong,
+but the locked threshold produced incomplete specificity and non-ideal
+calibration transport. Threshold 0.5 and one-array-per-patient results remain
+labeled sensitivities rather than replacements for the prespecified primary
+estimand.
