@@ -36,5 +36,12 @@ if (length(missing_bioc)) {
 still_missing <- c(cran, bioc)[!vapply(c(cran, bioc), requireNamespace, logical(1), quietly = TRUE)]
 if (length(still_missing)) stop("Required R packages remain unavailable: ",
                                 paste(still_missing, collapse = ", "))
+if (!requireNamespace("MCPcounter", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) renv::install("remotes")
+  remotes::install_github(
+    "ebecht/MCPcounter", ref = "b6eac73e91c246fcff0bb1a5c68a816cd588fc48",
+    subdir = "Source", upgrade = "never", dependencies = FALSE
+  )
+}
 renv::snapshot(type = "all", prompt = FALSE)
 message("Resolved R/Bioconductor environment and updated renv.lock")

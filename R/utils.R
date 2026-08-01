@@ -169,8 +169,8 @@ save_qc_bundle <- function(raw_object, normalized_expr, metadata, prefix,
   dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
   raw_values <- sampled_intensity_matrix(raw_object)
   normalized_values <- normalized_expr
-  stems <- c("pre_rma_boxplot", "post_rma_boxplot", "pre_rma_density",
-             "post_rma_density", "rle", "ma_diagnostic", "pca",
+  stems <- c("pre_rma_boxplot", "post_rma_boxplot", "pre_rma_density_all_arrays",
+             "post_rma_density_all_arrays", "rle", "ma_diagnostic", "pca",
              "sample_correlation", "hierarchical_clustering")
   devices <- list(
     png = function(path) png(path, width = 2700, height = 2100, res = 300),
@@ -190,14 +190,33 @@ save_qc_bundle <- function(raw_object, normalized_expr, metadata, prefix,
   draw(stems[[2]], function() boxplot(normalized_values, outline = FALSE, las = 2,
                                       cex.axis = 0.25, ylab = "RMA log2 expression",
                                       main = paste(prefix, "post-RMA distributions")))
-  draw(stems[[3]], function() matplot(density(log2(raw_values[, 1] + 1))$x,
-                                      density(log2(raw_values[, 1] + 1))$y, type = "l",
-                                      xlab = "log2 raw intensity", ylab = "Density",
-                                      main = paste(prefix, "pre-RMA density")))
-  draw(stems[[4]], function() matplot(density(normalized_values[, 1])$x,
-                                      density(normalized_values[, 1])$y, type = "l",
-                                      xlab = "RMA log2 expression", ylab = "Density",
-                                      main = paste(prefix, "post-RMA density")))
+  tissue <- factor(metadata$tissue_class)
+  tissue_colors <- setNames(grDevices::hcl.colors(length(levels(tissue)), "Dark 3"),
+                            levels(tissue))
+  density_bundle <- function(values) {
+    lapply(seq_len(ncol(values)), function(i) stats::density(values[, i], na.rm = TRUE))
+  }
+  raw_density <- density_bundle(log2(raw_values + 1))
+  normalized_density <- density_bundle(normalized_values)
+  draw_density <- function(curves, xlab, title) {
+    xlim <- range(vapply(curves, function(curve) range(curve$x), numeric(2)))
+    ylim <- c(0, max(vapply(curves, function(curve) max(curve$y), numeric(1))))
+    plot(NA, xlim = xlim, ylim = ylim, xlab = xlab, ylab = "Density", main = title)
+    for (i in seq_along(curves)) {
+      lines(curves[[i]]$x, curves[[i]]$y,
+            col = grDevices::adjustcolor(tissue_colors[[as.character(tissue[[i]])]],
+                                         alpha.f = 0.20),
+            lwd = 0.55)
+    }
+    legend("topright", legend = levels(tissue), col = tissue_colors, lwd = 2,
+           bty = "n", cex = 0.72, title = "Tissue")
+    mtext(sprintf("Every array is shown (n=%d)", length(curves)), side = 3,
+          line = 0.2, cex = 0.72)
+  }
+  draw(stems[[3]], function() draw_density(raw_density, "log2 raw intensity",
+                                            paste(prefix, "pre-RMA density")))
+  draw(stems[[4]], function() draw_density(normalized_density, "RMA log2 expression",
+                                            paste(prefix, "post-RMA density")))
   rle <- sweep(normalized_values, 1, matrixStats::rowMedians(normalized_values), "-")
   draw(stems[[5]], function() boxplot(rle, outline = FALSE, las = 2, cex.axis = 0.25,
                                       ylab = "Relative log expression",
@@ -256,6 +275,119 @@ save_qc_bundle <- function(raw_object, normalized_expr, metadata, prefix,
                        patient_id = metadata$patient_id),
             file.path(table_dir, paste0(prefix, "_raw_cel_pca_scores.csv")), row.names = FALSE)
   diagnostics
+}
+
+run_array_quality_metrics <- function(eset, metadata, prefix) {
+  if (!requireNamespace("arrayQualityMetrics", quietly = TRUE)) {
+    stop("arrayQualityMetrics is required for the publication workflow")
+  }
+  outdir <- file.path("results/qc", paste0(prefix, "_array_quality_metrics"))
+  dir.create(dirname(outdir), recursive = TRUE, showWarnings = FALSE)
+  sample_ids <- extract_gsm(Biobase::sampleNames(eset))
+  Biobase::sampleNames(eset) <- sample_ids
+  metadata <- metadata[match(sample_ids, toupper(metadata$geo_accession)), ,
+                       drop = FALSE]
+  if (anyNA(metadata$geo_accession)) stop(prefix, ": AQM metadata alignment failed")
+  rownames(metadata) <- Biobase::sampleNames(eset)
+  Biobase::pData(eset) <- metadata
+  aqm <- arrayQualityMetrics::arrayQualityMetrics(
+    eset,
+    outdir = outdir,
+    force = TRUE,
+    do.logtransform = FALSE,
+    intgroup = "tissue_class",
+    spatial = FALSE,
+    reporttitle = paste(prefix, "normalized raw-CEL RMA quality report")
+  )
+  summary <- data.frame(
+    accession = prefix,
+    geo_accession = Biobase::sampleNames(eset),
+    stringsAsFactors = FALSE
+  )
+  criterion_columns <- character(0)
+  criterion_titles <- character(0)
+  for (module in aqm$modules) {
+    outliers <- methods::slot(module, "outliers")
+    statistic <- methods::slot(outliers, "statistic")
+    if (!length(statistic)) next
+    module_id <- methods::slot(module, "id")
+    module_title <- methods::slot(module, "title")
+    column <- paste0("flag_", gsub("[^a-zA-Z0-9]+", "_", tolower(module_id)))
+    summary[[column]] <- seq_len(nrow(summary)) %in% methods::slot(outliers, "which")
+    criterion_columns <- c(criterion_columns, column)
+    criterion_titles <- c(criterion_titles, paste0(column, "=", module_title))
+  }
+  if (length(criterion_columns)) {
+    summary$aqm_flag_count <- rowSums(summary[, criterion_columns, drop = FALSE])
+    summary$aqm_flagged_any <- summary$aqm_flag_count > 0
+    summary$flagged_criteria <- apply(summary[, criterion_columns, drop = FALSE], 1,
+                                      function(flags) paste(criterion_columns[flags],
+                                                             collapse = ";"))
+  } else {
+    summary$aqm_flag_count <- 0L
+    summary$aqm_flagged_any <- FALSE
+    summary$flagged_criteria <- ""
+  }
+  summary$criterion_definitions <- paste(criterion_titles, collapse = ";")
+  summary$exclusion_changed <- FALSE
+  summary$exclusion_rule <- paste(
+    "AQM flags are review signals; exclusion still requires at least two",
+    "independent severe technical failures"
+  )
+  write.csv(summary,
+            file.path("results/tables", paste0(prefix,
+                                               "_array_quality_metrics_summary.csv")),
+            row.names = FALSE)
+  summary
+}
+
+run_affyplm_nuse <- function(raw_object, metadata, prefix) {
+  if (!requireNamespace("affyPLM", quietly = TRUE)) {
+    stop("affyPLM is required for GPL96 NUSE")
+  }
+  plm <- affyPLM::fitPLM(
+    raw_object,
+    output.param = list(weights = FALSE, residuals = FALSE,
+                        varcov = "none", resid.SE = TRUE),
+    verbosity.level = 1
+  )
+  dir.create("data/interim", recursive = TRUE, showWarnings = FALSE)
+  saveRDS(plm, file.path("data/interim", paste0(prefix, "_affyplm_plmset.rds")),
+          compress = FALSE)
+  values <- affyPLM::NUSE(plm, type = "values")
+  raw_stats <- affyPLM::NUSE(plm, type = "stats")
+  if (ncol(raw_stats) == ncol(values)) {
+    stats <- as.data.frame(t(raw_stats))
+    colnames(stats) <- rownames(raw_stats)
+  } else {
+    stats <- as.data.frame(raw_stats)
+  }
+  if (nrow(stats) == ncol(values)) {
+    stats$geo_accession <- extract_gsm(colnames(values))
+  } else if (nrow(stats) == length(Biobase::sampleNames(raw_object))) {
+    stats$geo_accession <- extract_gsm(Biobase::sampleNames(raw_object))
+  } else {
+    stop(prefix, ": unexpected NUSE statistics dimensions")
+  }
+  stats$accession <- prefix
+  stats$method <- "affyPLM probe-level model; NUSE is valid for GPL96 AffyBatch only"
+  write.csv(stats, file.path("results/tables", paste0(prefix, "_nuse_summary.csv")),
+            row.names = FALSE)
+  draw_nuse <- function() {
+    boxplot(values, outline = FALSE, las = 2, cex.axis = 0.25,
+            ylab = "Normalized unscaled standard error",
+            main = paste(prefix, "affyPLM NUSE"))
+    abline(h = 1, lty = 2)
+  }
+  for (extension in c("png", "pdf", "svg")) {
+    path <- file.path("results/figures", paste0(prefix, "_nuse.", extension))
+    if (extension == "png") png(path, width = 2700, height = 2100, res = 300)
+    if (extension == "pdf") pdf(path, width = 9, height = 7)
+    if (extension == "svg") svg(path, width = 9, height = 7)
+    draw_nuse()
+    dev.off()
+  }
+  invisible(stats)
 }
 
 update_sample_exclusion_log <- function(metadata, diagnostics, accession) {

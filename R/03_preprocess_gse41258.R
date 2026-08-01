@@ -2,6 +2,7 @@ suppressPackageStartupMessages({
   library(affy)
   library(hgu133acdf)
   library(hgu133a.db)
+  library(affyPLM)
   library(arrayQualityMetrics)
 })
 source("R/utils.R")
@@ -26,6 +27,7 @@ probe_expr <- Biobase::exprs(eset)
 if (nrow(probe_expr) != 22283L) stop("Unexpected HG-U133A probe-set count: ", nrow(probe_expr))
 if (!all(is.finite(probe_expr)) || median(probe_expr) > 20) stop("Invalid GSE41258 RMA scale/values")
 colnames(probe_expr) <- extract_gsm(sampleNames(eset))
+Biobase::sampleNames(eset) <- colnames(probe_expr)
 metadata <- metadata[match(colnames(probe_expr), toupper(metadata$geo_accession)), , drop = FALSE]
 if (anyNA(metadata$geo_accession)) stop("GSE41258 post-RMA metadata alignment failed")
 
@@ -41,14 +43,12 @@ write.csv(metadata, "data/processed/GSE41258_sample_metadata_raw_cel_rma.csv", r
 saveRDS(eset, "data/interim/GSE41258_raw_cel_rma_eset.rds", compress = "xz")
 qc <- save_qc_bundle(raw, gene_expr, metadata, "GSE41258")
 update_sample_exclusion_log(metadata, qc, "GSE41258")
+run_affyplm_nuse(raw, metadata, "GSE41258")
 platform$detected_annotation <- detected_annotation
 platform$detected_cdf <- detected_cdf
 platform$normalized_probe_sets <- nrow(probe_expr)
 platform$normalized_genes <- nrow(gene_expr)
 write.csv(platform, "data/metadata/GSE41258_platform_validation.csv", row.names = FALSE)
-if (identical(Sys.getenv("RUN_ARRAY_QUALITY_METRICS"), "1")) {
-  arrayQualityMetrics::arrayQualityMetrics(
-    eset, outdir = "results/figures/GSE41258_array_quality_metrics",
-    force = TRUE, do.logtransform = FALSE
-  )
+if (!identical(Sys.getenv("SKIP_ARRAY_QUALITY_METRICS"), "1")) {
+  run_array_quality_metrics(eset, metadata, "GSE41258")
 }

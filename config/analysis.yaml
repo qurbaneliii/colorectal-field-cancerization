@@ -61,21 +61,36 @@ modeling:
   stable_sign_consistency: 0.80
   bootstrap_iterations: 1000
   permutation_iterations: 1000
-  compact_panels: [5, 10, 15, 20, 30]
+  compact_panels: [3, 5, 10, 15, 20]
   compact_panel_practical_tolerance: 0.02
+  compact_panel_min_balanced_accuracy: 0.80
+  compact_panel_max_brier_degradation: 0.02
+  demographic_matching_age_caliper: 10
 
 biology:
   fdr_threshold: 0.05
   log2fc_threshold: 0.5
+  high_confidence_fdr_threshold: 0.01
+  high_confidence_log2fc_threshold: 1.0
   trajectory_tolerance: 0.15
   top_variable_genes: 50
+  direction_consistency_threshold: 0.70
+  high_confidence_direction_consistency: 0.80
+  subgroup_minimum_n: 10
+  composition_principal_components: 2
+  composition_method: MCPcounter_1.2.0
+  stress_gene_set: config/immediate_early_stress_genes.tsv
 
 external_validation:
-  locked_threshold: 0.5
+  default_threshold: 0.5
+  threshold_rule: maximize_balanced_accuracy
+  threshold_grid_start: 0.01
+  threshold_grid_stop: 0.99
+  threshold_grid_step: 0.01
   bootstrap_iterations: 1000
   primary_representation: within_sample_percentile_rank
   sensitivity_representations: [training_zscore]
-  patient_primary_strategy: deterministic_hash_one_array_per_patient
+  patient_primary_strategy: canonical_one_array_per_patient_tissue
   all_array_sensitivity: true
 
 quality_control:

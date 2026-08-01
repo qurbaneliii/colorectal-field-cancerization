@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import numpy as np
 import pandas as pd
 from scipy.special import logit
@@ -75,13 +77,14 @@ def classification_metrics(
         )
         if include_calibration:
             clipped = np.clip(probability[:, 1], 1e-6, 1 - 1e-6)
-            design = np.column_stack([np.ones(len(clipped)), logit(clipped)])
             try:
-                from statsmodels.api import Logit
+                from sklearn.linear_model import LogisticRegression
 
-                calibration = Logit(binary, design).fit(disp=False)
-                result["calibration_intercept"] = float(calibration.params[0])
-                result["calibration_slope"] = float(calibration.params[1])
+                calibration = LogisticRegression(
+                    C=1e6, l1_ratio=0.0, solver="lbfgs", max_iter=5000
+                ).fit(logit(clipped).reshape(-1, 1), binary)
+                result["calibration_intercept"] = float(calibration.intercept_[0])
+                result["calibration_slope"] = float(calibration.coef_[0, 0])
             except Exception:
                 result["calibration_intercept"] = np.nan
                 result["calibration_slope"] = np.nan
@@ -117,15 +120,17 @@ def grouped_bootstrap_metrics(
     for _ in range(iterations):
         sampled = rng.choice(groups, size=len(groups), replace=True)
         sampled_indices = np.concatenate([group_indices[group] for group in sampled])
-        measured = classification_metrics(
-            y_true[sampled_indices],
-            y_pred[sampled_indices],
-            probabilities[sampled_indices],
-            classes,
-            include_calibration=bool(
-                {"calibration_intercept", "calibration_slope"}.intersection(metrics)
-            ),
-        )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            measured = classification_metrics(
+                y_true[sampled_indices],
+                y_pred[sampled_indices],
+                probabilities[sampled_indices],
+                classes,
+                include_calibration=bool(
+                    {"calibration_intercept", "calibration_slope"}.intersection(metrics)
+                ),
+            )
         for metric in metrics:
             value = measured.get(metric, np.nan)
             if np.isfinite(value):

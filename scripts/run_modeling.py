@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
 from src.data.provenance import expression_path, result_root
 from src.data.validation import validate_fold_assignments
 from src.interpretation.coefficients import coefficient_plot
-from src.modeling.evaluation import grouped_bootstrap_ci
+from src.modeling.evaluation import classification_metrics, grouped_bootstrap_metrics
 from src.modeling.nested_cv import run_nested_cv
 from src.modeling.stability import feature_stability
 
@@ -124,7 +124,12 @@ def main() -> None:
     validate_fold_assignments(assignments)
 
     total_outer = len(modeling["seeds"]) * int(modeling["outer_splits"])
-    stability = feature_stability(coefficients, total_outer)
+    stability = feature_stability(
+        coefficients,
+        total_outer,
+        strict_frequency=float(modeling["stable_selection_frequency"]),
+        strict_sign_consistency=float(modeling["stable_sign_consistency"]),
+    )
     stability["analysis_provenance"] = provenance
     stability.to_csv(tables_root / "feature_stability.csv", index=False)
     coefficient_plot(
@@ -136,7 +141,7 @@ def main() -> None:
     summary_rows: list[dict[str, object]] = []
     ci_rows: list[dict[str, object]] = []
     for (task, model), group in metrics.groupby(["task", "model"]):
-        for metric in [
+        candidate_metrics = [
             "f1_macro",
             "balanced_accuracy",
             "log_loss",
@@ -145,16 +150,53 @@ def main() -> None:
             "brier_score",
             "roc_auc_ovr_macro",
             "brier_score_multiclass",
-        ]:
-            if metric not in group or group[metric].isna().all():
-                continue
+        ]
+        available_metrics = [
+            metric
+            for metric in candidate_metrics
+            if metric in group and not group[metric].isna().all()
+        ]
+        averaged = average_repeated_predictions(
+            predictions[predictions["task"].eq(task) & predictions["model"].eq(model)]
+        )
+        probability_columns = [
+            column for column in averaged if column.startswith("probability_")
+        ]
+        classes = np.asarray(
+            [column.removeprefix("probability_") for column in probability_columns]
+        )
+        aggregated = classification_metrics(
+            averaged["y_true"].to_numpy(),
+            averaged["y_pred"].to_numpy(),
+            averaged[probability_columns].to_numpy(),
+            classes,
+        )
+        bootstrap = grouped_bootstrap_metrics(
+            averaged,
+            available_metrics,
+            int(modeling["bootstrap_iterations"]),
+            int(config["project"]["random_seed"]),
+        )
+        bootstrap_by_metric = {row["metric"]: row for row in bootstrap}
+        for row in bootstrap:
+            ci_rows.append(
+                {"task": task, "model": model, **row, "analysis_provenance": provenance}
+            )
+        for metric in available_metrics:
             values = group[metric].dropna()
             repeat_means = group.groupby("repeat")[metric].mean().dropna()
+            interval = bootstrap_by_metric[metric]
             summary_rows.append(
                 {
                     "task": task,
                     "model": model,
                     "metric": metric,
+                    "outer_fold_mean": values.mean(),
+                    "outer_fold_sd": values.std(ddof=1),
+                    "repeat_mean_sd": repeat_means.std(ddof=1),
+                    "aggregated_oof_metric": aggregated.get(metric, np.nan),
+                    "aggregated_oof_bootstrap_ci_lower": interval["ci_lower"],
+                    "aggregated_oof_bootstrap_ci_upper": interval["ci_upper"],
                     "mean": values.mean(),
                     "median": values.median(),
                     "standard_deviation": values.std(ddof=1),
@@ -164,16 +206,6 @@ def main() -> None:
                     "analysis_provenance": provenance,
                 }
             )
-        averaged = average_repeated_predictions(
-            predictions[predictions["task"].eq(task) & predictions["model"].eq(model)]
-        )
-        ci = grouped_bootstrap_ci(
-            averaged,
-            "f1_macro",
-            int(modeling["bootstrap_iterations"]),
-            int(config["project"]["random_seed"]),
-        )
-        ci_rows.append({"task": task, "model": model, **ci, "analysis_provenance": provenance})
     summary = pd.DataFrame(summary_rows)
     summary.to_csv(tables_root / "table_3_model_comparison.csv", index=False)
     pd.DataFrame(ci_rows).to_csv(
@@ -203,8 +235,7 @@ def main() -> None:
         )
         stable = stability[
             stability["task"].eq(task)
-            & stability["selection_frequency"].ge(float(modeling["stable_selection_frequency"]))
-            & stability["sign_consistency"].ge(float(modeling["stable_sign_consistency"]))
+            & stability["strictly_stable_gene"]
         ].copy()
         stable["selected_for_full_stable_signature"] = True
         full_signatures.append(stable)

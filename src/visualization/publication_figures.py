@@ -23,9 +23,26 @@ PALETTE = {
 
 def save_figure(fig: plt.Figure, stem: Path) -> None:
     stem.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(stem.with_suffix(".png"), dpi=300, bbox_inches="tight", facecolor="white")
-    fig.savefig(stem.with_suffix(".svg"), bbox_inches="tight", facecolor="white")
-    fig.savefig(stem.with_suffix(".pdf"), bbox_inches="tight", facecolor="white")
+    for suffix, options in (
+        (".png", {"dpi": 300}),
+        (".svg", {}),
+        (".pdf", {}),
+    ):
+        destination = stem.with_suffix(suffix)
+        try:
+            fig.savefig(
+                destination,
+                bbox_inches="tight",
+                facecolor="white",
+                **options,
+            )
+        except OSError as error:
+            if not destination.exists() or destination.stat().st_size == 0:
+                raise
+            print(
+                f"WARNING: could not replace open figure {destination}: {error}; "
+                "retained the existing non-empty rendering"
+            )
     plt.close(fig)
 
 

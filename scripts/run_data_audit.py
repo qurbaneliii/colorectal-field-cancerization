@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -51,6 +52,19 @@ def command_version(command: list[str]) -> str:
         return f"unavailable: {exc}"
     text = (result.stdout or result.stderr).strip().replace("\n", " | ")
     return text or f"exit {result.returncode}"
+
+
+def discover_rscript() -> str | None:
+    configured = os.environ.get("RSCRIPT")
+    candidates = [
+        configured,
+        shutil.which("Rscript"),
+        r"D:\R\R-4.5.1\bin\Rscript.exe",
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file():
+            return str(Path(candidate).resolve())
+    return None
 
 
 def main() -> None:
@@ -212,12 +226,15 @@ harmonize the external cohort with GSE44076.
         confounding_report, encoding="utf-8"
     )
 
+    rscript = discover_rscript()
+    r_status = command_version([rscript, "--version"]) if rscript else "unavailable"
     env = {
         "processed_at_utc": processed_at,
         "python": sys.version,
         "platform": platform.platform(),
         "scikit_learn": sklearn.__version__,
-        "Rscript": command_version(["Rscript", "--version"]),
+        "Rscript": r_status,
+        "Rscript_path": rscript,
         "git_commit": subprocess.run(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=False
         ).stdout.strip(),
@@ -241,6 +258,12 @@ harmonize the external cohort with GSE44076.
             f"paired patients: expected {expected['paired_patients']}, observed {observed_pairs}"
         )
 
+    r_blocker = (
+        "- R was discovered and the raw-CEL, Bioconductor QC, limma, composition, "
+        "and enrichment stages have executable repository routes."
+        if rscript
+        else "- Rscript was not discovered on PATH, via RSCRIPT, or at the documented Windows path."
+    )
     repository_audit = f"""# Repository audit
 
 ## Audited state
@@ -264,17 +287,16 @@ five deposited GEO inputs without modifying `data/raw/`.
 
 ## Missing or blocked requirements
 
-- R is not installed in the execution environment, so raw-CEL RMA,
-  Bioconductor QC, limma differential expression, and enrichment cannot be
-  executed here. Reproducible R scripts and a Docker environment are provided.
-- The deposited normalized GEO series matrices remain usable for the explicitly
-  labeled processed-matrix Python route.
+{r_blocker}
+- Docker verification is a separate host-level gate and is not inferred from
+  the presence of a Dockerfile.
 
 ## Reusable components and modifications
 
-No prior components existed. The repository now contains deterministic metadata
-parsers, provenance capture, independent platform annotation, group-aware
-modeling, external validation, tests, and manuscript/report generators.
+The existing hybrid R/Python pipeline is reused and extended with deterministic
+metadata parsing, provenance capture, independent platform annotation,
+group-aware modeling, external validation, tests, and manuscript/report
+generation.
 """
     (ROOT / paths["reports"] / "repository_audit.md").write_text(
         repository_audit, encoding="utf-8"
