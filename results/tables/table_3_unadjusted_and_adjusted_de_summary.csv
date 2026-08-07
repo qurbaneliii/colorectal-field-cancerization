@@ -1,0 +1,9 @@
+model,comparison,tested_genes,fdr_lt_0_05_abs_log2fc_ge_0_5,up,down,design_rank,design_columns,full_rank,analysis_provenance
+P_patient_fixed_effect,tumor_vs_adjacent,18490,4502,2477,2025,99,99,True,raw_cel_rma_limma_patient_fixed_effect
+U0_unadjusted,adjacent_vs_healthy,18490,1662,1003,659,2,2,True,raw_cel_rma_limma_u0_unadjusted
+U0_unadjusted,tumor_vs_healthy,18490,5003,2764,2239,2,2,True,raw_cel_rma_limma_u0_unadjusted
+U1_age_sex_adjusted,adjacent_vs_healthy,18490,1580,978,602,4,4,True,raw_cel_rma_limma_u1_age_sex_adjusted
+U1_age_sex_adjusted,tumor_vs_healthy,18490,4998,2773,2225,4,4,True,raw_cel_rma_limma_u1_age_sex_adjusted
+U1_age_sex_adjusted_qc_sensitivity,adjacent_vs_healthy,18490,1584,989,595,4,4,True,raw_cel_rma_limma_u1_age_sex_adjusted_qc_sensitivity
+U2_age_sex_location_adjusted,adjacent_vs_healthy,18490,1521,954,567,5,5,True,raw_cel_rma_limma_u2_age_sex_location_adjusted
+U2_age_sex_location_adjusted,tumor_vs_healthy,18490,4955,2742,2213,5,5,True,raw_cel_rma_limma_u2_age_sex_location_adjusted

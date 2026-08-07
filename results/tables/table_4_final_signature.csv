@@ -1,6 +1,4 @@
-task,rank,gene_symbol,selected_fold_count,median_training_rank,median_absolute_coefficient,selection_frequency,analysis_provenance
-task_c_tumor_vs_adjacent,1,FOXQ1,14,2.0,0.21049468964338303,0.9333333333333333,raw_cel_rma
-task_c_tumor_vs_adjacent,2,CEMIP,12,2.0,0.20195119082927704,0.8,raw_cel_rma
-task_c_tumor_vs_adjacent,3,ETV4,12,3.0,0.20292111486196518,0.8,raw_cel_rma
-task_c_tumor_vs_adjacent,4,GTF2IRD1,10,4.0,0.19127000123262405,0.6666666666666666,raw_cel_rma
-task_c_tumor_vs_adjacent,5,PACC1,8,3.5,0.1964258775115013,0.5333333333333333,raw_cel_rma
+gene_symbol,rank,final_full_data_absolute_coefficient,compact_selected_fold_count,compact_selection_frequency,selection_frequency,sign_consistency,median_coefficient,coefficient_standard_deviation,repeat_coverage,strictly_stable_gene,stability_class,compact_consensus_gene,panel_label,final_panel_size,analysis_provenance,present_on_gpl96
+FOXQ1,1,0.22098971903324127,12,0.8,1.0,1.0,0.2054244130849838,0.0726223676794756,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,False
+CEMIP,2,0.21878916025161743,11,0.7333333333333333,1.0,1.0,0.1989036202430725,0.0663951005606554,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,True
+ETV4,3,0.21349816024303436,10,0.6666666666666666,1.0,1.0,0.1979831010103225,0.0446460080597294,1.0,True,strictly_stable_gene,True,strictly_stable_gene,3,raw_cel_rma,True

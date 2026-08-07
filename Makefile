@@ -1,7 +1,7 @@
 PYTHON ?= python
 RSCRIPT ?= Rscript
 
-.PHONY: help restore-r verify-env audit extract preprocess convert processed-matrix qc differential-expression sensitivity train compact-panel permutation validate enrichment figures manuscript test smoke full-data-test sensitivity-all all
+.PHONY: help restore-r verify-env audit extract preprocess convert processed-matrix qc differential-expression sensitivity composition stress train compact-panel confounding permutation threshold validate enrichment figures tables manuscript quality test smoke full-data-test sensitivity-all all
 
 help:
 	@echo "make all              Full raw-CEL publication pipeline"
@@ -39,6 +39,13 @@ differential-expression:
 
 sensitivity:
 	$(PYTHON) scripts/run_raw_vs_processed_sensitivity.py
+	$(PYTHON) scripts/run_covariate_sensitivity.py
+
+composition:
+	$(RSCRIPT) R/06_tissue_composition_sensitivity.R
+
+stress:
+	$(PYTHON) scripts/run_stress_gene_sensitivity.py
 
 train:
 	$(PYTHON) scripts/run_modeling.py --provenance raw_cel_rma
@@ -46,8 +53,14 @@ train:
 compact-panel:
 	$(PYTHON) scripts/run_compact_panel_analysis.py --provenance raw_cel_rma
 
+confounding:
+	$(PYTHON) scripts/run_task_b_confounding_sensitivity.py
+
 permutation:
 	$(PYTHON) scripts/run_permutation_tests.py --provenance raw_cel_rma
+
+threshold:
+	$(PYTHON) scripts/select_task_c_threshold.py
 
 validate:
 	$(PYTHON) scripts/run_external_validation.py --provenance raw_cel_rma
@@ -56,10 +69,18 @@ enrichment:
 	$(RSCRIPT) R/05_functional_enrichment.R
 
 figures:
-	$(PYTHON) scripts/build_manuscript_outputs.py --figures
+	$(PYTHON) scripts/build_publication_figures.py
+
+tables:
+	$(PYTHON) scripts/build_publication_tables.py
 
 manuscript:
 	$(PYTHON) scripts/build_manuscript_outputs.py
+
+quality:
+	$(PYTHON) -m pip check
+	$(PYTHON) -m compileall -q src scripts tests
+	$(PYTHON) -m ruff check src scripts tests
 
 test:
 	$(PYTHON) -m pytest -q -m "not full_data"
@@ -78,4 +99,4 @@ sensitivity-all: audit processed-matrix
 	$(PYTHON) scripts/build_manuscript_outputs.py
 	$(PYTHON) -m pytest -q
 
-all: audit extract preprocess convert differential-expression sensitivity enrichment train compact-panel permutation validate manuscript full-data-test
+all: audit extract preprocess convert differential-expression sensitivity composition stress enrichment train compact-panel confounding permutation threshold validate figures tables manuscript quality full-data-test

@@ -21,6 +21,7 @@ probe_expr <- Biobase::exprs(eset)
 if (nrow(probe_expr) != 49386L) stop("Unexpected HG-U219 core probe-set count: ", nrow(probe_expr))
 if (!all(is.finite(probe_expr)) || median(probe_expr) > 20) stop("Invalid GSE44076 RMA scale/values")
 colnames(probe_expr) <- extract_gsm(sampleNames(eset))
+Biobase::sampleNames(eset) <- colnames(probe_expr)
 metadata <- metadata[match(colnames(probe_expr), toupper(metadata$geo_accession)), , drop = FALSE]
 if (anyNA(metadata$geo_accession)) stop("GSE44076 post-RMA metadata alignment failed")
 
@@ -39,9 +40,6 @@ update_sample_exclusion_log(metadata, qc, "GSE44076")
 platform$normalized_probe_sets <- nrow(probe_expr)
 platform$normalized_genes <- nrow(gene_expr)
 write.csv(platform, "data/metadata/GSE44076_platform_validation.csv", row.names = FALSE)
-if (identical(Sys.getenv("RUN_ARRAY_QUALITY_METRICS"), "1")) {
-  arrayQualityMetrics::arrayQualityMetrics(
-    eset, outdir = "results/figures/GSE44076_array_quality_metrics",
-    force = TRUE, do.logtransform = FALSE
-  )
+if (!identical(Sys.getenv("SKIP_ARRAY_QUALITY_METRICS"), "1")) {
+  run_array_quality_metrics(eset, metadata, "GSE44076")
 }

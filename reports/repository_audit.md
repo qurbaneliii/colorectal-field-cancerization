@@ -22,19 +22,18 @@ five deposited GEO inputs without modifying `data/raw/`.
 ## Runtime
 
 - Python: 3.12.10
-- Rscript: unavailable: [WinError 2] The system cannot find the file specified
-- Git: 62cce06e252cfc01582ab8bc1664d8c1cc037834
+- Rscript: Rscript (R) version 4.5.1 (2025-06-13)
+- Git: 9b43cc12c879c751f40576d33ae5719e42702eb4
 
 ## Missing or blocked requirements
 
-- R is not installed in the execution environment, so raw-CEL RMA,
-  Bioconductor QC, limma differential expression, and enrichment cannot be
-  executed here. Reproducible R scripts and a Docker environment are provided.
-- The deposited normalized GEO series matrices remain usable for the explicitly
-  labeled processed-matrix Python route.
+- R was discovered and the raw-CEL, Bioconductor QC, limma, composition, and enrichment stages have executable repository routes.
+- Docker verification is a separate host-level gate and is not inferred from
+  the presence of a Dockerfile.
 
 ## Reusable components and modifications
 
-No prior components existed. The repository now contains deterministic metadata
-parsers, provenance capture, independent platform annotation, group-aware
-modeling, external validation, tests, and manuscript/report generators.
+The existing hybrid R/Python pipeline is reused and extended with deterministic
+metadata parsing, provenance capture, independent platform annotation,
+group-aware modeling, external validation, tests, and manuscript/report
+generation.

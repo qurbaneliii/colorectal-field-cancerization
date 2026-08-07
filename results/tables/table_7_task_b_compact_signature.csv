@@ -1,0 +1,6 @@
+gene_symbol,rank,final_full_data_absolute_coefficient,compact_selected_fold_count,compact_selection_frequency,selection_frequency,sign_consistency,median_coefficient,coefficient_standard_deviation,repeat_coverage,strictly_stable_gene,stability_class,compact_consensus_gene,panel_label,final_panel_size,analysis_provenance
+CLC,1,0.2564904689788818,15,1.0,1.0,1.0,0.2306460291147232,0.0447012816342938,1.0,True,strictly_stable_gene,True,strictly_stable_gene,5,raw_cel_rma
+DYNC1H1,2,0.2369821369647979,7,0.4666666666666667,1.0,1.0,-0.1754450500011444,0.0538341518881189,1.0,True,strictly_stable_gene,False,strictly_stable_gene,5,raw_cel_rma
+FOS,3,0.2205526083707809,12,0.8,1.0,1.0,-0.1986618638038635,0.026307711118198,1.0,True,strictly_stable_gene,True,strictly_stable_gene,5,raw_cel_rma
+VIP,4,0.2177398055791854,14,0.9333333333333332,1.0,1.0,-0.1899280101060867,0.0436222005854349,1.0,True,strictly_stable_gene,True,strictly_stable_gene,5,raw_cel_rma
+SNORA12,5,0.2117653489112854,4,0.2666666666666666,0.5333333333333333,1.0,0.1459277346730231,0.0703693932979205,1.0,False,compact_consensus_gene,False,exploratory_panel_gene,5,raw_cel_rma

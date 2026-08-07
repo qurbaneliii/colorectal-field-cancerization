@@ -1,0 +1,3 @@
+# Funding
+
+[FUNDING INFORMATION]

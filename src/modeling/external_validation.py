@@ -14,6 +14,8 @@ def locked_binary_predictions(
     y_true: np.ndarray,
     representation: str,
     threshold: float = 0.5,
+    external_negative_label: str = "normal_colon",
+    external_positive_label: str = "primary_tumor",
 ) -> tuple[pd.DataFrame, dict[str, float]]:
     classes = np.asarray(model.named_steps["model"].classes_)
     probability = model.predict_proba(x)
@@ -21,7 +23,10 @@ def locked_binary_predictions(
         raise ValueError(f"Locked model has unexpected classes: {classes}")
     tumor_index = int(np.flatnonzero(classes == "tumor")[0])
     tumor_probability = probability[:, tumor_index]
-    predicted = np.where(tumor_probability >= threshold, "tumor", "adjacent_normal")
+    predicted = np.where(
+        tumor_probability >= threshold, external_positive_label, external_negative_label
+    )
+    external_classes = np.asarray([external_negative_label, external_positive_label])
     frame = pd.DataFrame(
         {
             "sample_id": sample_ids,
@@ -32,9 +37,9 @@ def locked_binary_predictions(
             "locked_threshold": threshold,
         }
     )
-    for class_index, label in enumerate(classes):
-        frame[f"probability_{label}"] = probability[:, class_index]
+    frame[f"probability_{external_negative_label}"] = probability[:, 0]
+    frame[f"probability_{external_positive_label}"] = probability[:, 1]
     metrics = classification_metrics(
-        y_true, predicted, probability, classes, include_calibration=True
+        y_true, predicted, probability, external_classes, include_calibration=True
     )
     return frame, metrics
