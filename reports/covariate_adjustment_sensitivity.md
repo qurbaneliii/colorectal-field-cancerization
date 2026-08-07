@@ -27,5 +27,5 @@ and a field-compatible trajectory. Machine-learning coefficients do not define
 this biological tier.
 
 - Tier 1 high-confidence genes: 101
-- Tier 2 provisional genes: 1377
-- Tier 3 exploratory genes: 0
+- Tier 2 provisional genes: 1370
+- Tier 3 exploratory genes: 7

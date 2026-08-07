@@ -1,6 +1,36 @@
 from __future__ import annotations
 
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+
+class TrainingCompositionPCs:
+    """Learn a limited composition-score representation from training rows only."""
+
+    def __init__(self, n_components: int = 2):
+        self.n_components = n_components
+
+    def fit(self, composition_scores: np.ndarray):
+        scores = np.asarray(composition_scores, dtype=float)
+        if scores.ndim != 2:
+            raise ValueError("Composition scores must be a two-dimensional matrix")
+        if not 1 <= int(self.n_components) <= min(scores.shape):
+            raise ValueError("Invalid number of composition principal components")
+        self.scaler_ = StandardScaler().fit(scores)
+        standardized = self.scaler_.transform(scores)
+        self.pca_ = PCA(n_components=int(self.n_components)).fit(standardized)
+        self.n_features_in_ = scores.shape[1]
+        return self
+
+    def transform(self, composition_scores: np.ndarray) -> np.ndarray:
+        scores = np.asarray(composition_scores, dtype=float)
+        if scores.ndim != 2 or scores.shape[1] != self.n_features_in_:
+            raise ValueError("Composition-score columns do not match the training matrix")
+        return self.pca_.transform(self.scaler_.transform(scores))
+
+    def fit_transform(self, composition_scores: np.ndarray) -> np.ndarray:
+        return self.fit(composition_scores).transform(composition_scores)
 
 
 class TrainingCovariateResidualizer:

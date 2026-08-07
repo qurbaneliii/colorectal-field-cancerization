@@ -37,7 +37,7 @@ patient-cluster bootstrap uncertainty.
 
 Age/sex adjustment identified 1,580
 genes at Benjamini-Hochberg FDR <0.05 and absolute log2 fold change >=0.5;
-101 formed the high-confidence field signature and 1,377
+101 formed the high-confidence field signature and 1,370
 were provisional. Of the high-confidence genes, 74/101
 retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was
@@ -264,7 +264,7 @@ genes. These contrasts describe cross-sectional group differences and paired
 tumor differences; they do not establish temporal progression.
 
 Evidence integration yielded 101 Tier 1 high-confidence and
-1,377 Tier 2 provisional field-associated genes. The complete
+1,370 Tier 2 provisional field-associated genes. The complete
 gene-level table preserves adjusted estimates, subgroup direction, preprocessing
 agreement, QC sensitivity, trajectory, composition status, and evidence score.
 
@@ -321,8 +321,8 @@ in the age/sex-matched subset (1.000).
 The demographics-only model reached macro-F1
 0.626. By contrast,
 composition-plus-demographic residualization reduced macro-F1 to
-0.718
-(ROC-AUC 0.786),
+0.850
+(ROC-AUC 0.939),
 which is a central limitation and is consistent with a substantial stromal or
 immune contribution to the classifier signal.
 

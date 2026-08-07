@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.data.provenance import expression_path, result_root
+from src.data.provenance import expression_path, result_root, source_files_sha256
 from src.modeling.evaluation import (
     classification_metrics,
     grouped_bootstrap_metrics,
@@ -36,6 +36,16 @@ TASKS = {
     "task_b_field_effect": ["healthy", "adjacent_normal"],
     "task_c_tumor_vs_adjacent": ["adjacent_normal", "tumor"],
 }
+
+MODEL_SOURCE_FILES = [
+    "config/analysis.yaml",
+    "scripts/run_compact_panel_analysis.py",
+    "src/modeling/evaluation.py",
+    "src/modeling/nested_cv.py",
+    "src/modeling/pipelines.py",
+    "src/modeling/splitters.py",
+    "src/modeling/stability.py",
+]
 
 
 def fit_panel_model(
@@ -260,6 +270,8 @@ def write_model_artifact(
         "random_seed": int(config["project"]["random_seed"]),
         "analysis_provenance": provenance,
         "config_sha256": hashlib.sha256(config_text.encode()).hexdigest(),
+        "analysis_source_files": MODEL_SOURCE_FILES,
+        "analysis_source_sha256": source_files_sha256(ROOT, MODEL_SOURCE_FILES),
         "software_versions": {
             "python": sys.version.split()[0],
             "scikit_learn": sklearn.__version__,
@@ -289,7 +301,15 @@ def write_model_artifact(
     reloaded = joblib.load(path)
     np.testing.assert_allclose(model.predict_proba(x[:8]), reloaded["model"].predict_proba(x[:8]))
     card_path.write_text(json.dumps(card, indent=2), encoding="utf-8")
+    if is_task_b:
+        (models_root / "task_b_model_card.json").write_text(
+            json.dumps(card, indent=2), encoding="utf-8"
+        )
     if not is_task_b:
+        joblib.dump(artifact, models_root / "task_c_primary_model.joblib")
+        (models_root / "task_c_model_card.json").write_text(
+            json.dumps(card, indent=2), encoding="utf-8"
+        )
         joblib.dump(artifact, models_root / "task_c_final_elastic_net.joblib")
         (models_root / "task_c_final_model_card.json").write_text(
             json.dumps(card, indent=2), encoding="utf-8"
@@ -562,6 +582,7 @@ def main() -> None:
     task_c_signature = signature_tables["task_c_tumor_vs_adjacent"]
     task_b_signature.to_csv(tables_root / "task_b_final_signature.csv", index=False)
     task_c_signature.to_csv(tables_root / "final_compact_signature.csv", index=False)
+    task_c_signature.to_csv(tables_root / "task_c_final_signature.csv", index=False)
     task_c_signature.to_csv(tables_root / "table_4_final_signature.csv", index=False)
 
     task_c_internal = summary[summary["task"].eq("task_c_tumor_vs_adjacent")].copy()

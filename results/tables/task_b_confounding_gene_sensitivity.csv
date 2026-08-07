@@ -14,11 +14,11 @@ borderline_sample_excluded_fixed_panel,DYNC1H1,15,1.0,-0.4146111568786683,True
 borderline_sample_excluded_fixed_panel,FOS,15,1.0,-0.4772444852456123,True
 borderline_sample_excluded_fixed_panel,SNORA12,15,1.0,0.41802705209734503,True
 borderline_sample_excluded_fixed_panel,VIP,15,1.0,-0.5159027175470215,True
-composition_and_demographic_residualized,CLC,15,1.0,0.252111152919612,True
-composition_and_demographic_residualized,DYNC1H1,15,1.0,-0.1429110788241185,True
-composition_and_demographic_residualized,FOS,15,1.0,-0.2636677380126893,True
-composition_and_demographic_residualized,SNORA12,15,1.0,0.19485852885794872,True
-composition_and_demographic_residualized,VIP,15,1.0,-0.21977005373360645,True
+composition_and_demographic_residualized,CLC,15,1.0,0.35742242381320877,True
+composition_and_demographic_residualized,DYNC1H1,15,1.0,-0.32348192627495215,True
+composition_and_demographic_residualized,FOS,15,1.0,-0.37048188760528317,True
+composition_and_demographic_residualized,SNORA12,15,1.0,0.300835312705977,True
+composition_and_demographic_residualized,VIP,15,1.0,-0.41211862494332263,True
 primary_fixed_panel,CLC,15,1.0,0.4606459402577414,True
 primary_fixed_panel,DYNC1H1,15,1.0,-0.4150888583690072,True
 primary_fixed_panel,FOS,15,1.0,-0.47510455954744046,True

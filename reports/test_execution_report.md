@@ -8,11 +8,11 @@
 - Static compilation: `.venv-publication\\Scripts\\python.exe -m compileall -q
   src scripts tests` passed.
 - Lint: `.venv-publication\\Scripts\\ruff.exe check src scripts tests` passed.
-- Baseline unit/no-data suite: 6 passed, 17 deselected.
-- Final unit/no-data suite after contract expansion: 11 passed, 26 deselected.
+- Baseline full suite before this revision: 37 passed, 0 failed.
+- Final unit/no-data suite after contract expansion: 12 passed, 28 deselected.
 - Synthetic grouped-CV smoke test: PASS; 96 predictions, 8 metric rows,
   192 assignment rows, and 40 coefficient rows.
-- Full suite after all generated artifacts: **37 passed, 0 failed** in 9.92 s.
+- Full suite after all generated artifacts: **40 passed, 0 failed**.
 - R: 4.5.1 / Bioconductor 3.21; `R/verify_environment.R` passed.
 - `renv::status()` passed: `No issues found -- the project is in a
   consistent state.`
@@ -22,7 +22,10 @@
 - CEL archive audit: PASS (246 GSE44076; 390 GSE41258)
 - GSE44076 raw RMA/QC: PASS (49,386 probe sets)
 - GSE41258 raw RMA/QC: PASS (22,283 probe sets)
-- limma and enrichment: PASS
+- U0/U1/U2 and paired limma artifacts: PASS; current code/results consistency
+  validated without repeating unchanged raw RMA or limma fits.
+- Enrichment: PASS; the ranked-only route was re-executed after adding explicit
+  core leading-edge membership (2,517 ranked terms with nonempty gene IDs).
 - grouped repeated nested CV: PASS (135 fold-metric rows; 5,310 held-out predictions)
 - compact panels and model reload: PASS
 - 1,000-iteration permutation tests: PASS for all three tasks. The parent shell
@@ -33,11 +36,11 @@
 - external validation and 1,000-iteration grouped bootstrap: PASS, with
   undefined predictive-value bootstrap summaries explicitly NA when no valid
   draw was estimable.
-- publication figure build: PASS (11 generated figure stems, 33 PNG/PDF/SVG
+- publication figure build: PASS (12 generated figure stems, 36 PNG/PDF/SVG
   renderings in the final builder pass; the full results directory also retains
   required upstream QC and modeling figures).
 - publication table build: PASS (10 principal journal tables).
-- manuscript/artifact build: PASS (18 manuscript sections; 541 nonempty files
+- manuscript/artifact build: PASS (18 manuscript sections; 568 nonempty files
   indexed in the final artifact manifest).
 
 ## Final verification commands
@@ -54,12 +57,14 @@
 
 ## GitHub Actions
 
-- Normal CI: **PASS**. Workflow run #5 completed successfully for pull request
-  #2 and commit `23d17d6300f8d2f674323842e07fc82fb3803579`:
-  <https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/30692964289>
-- The successful job executed dependency installation, `pip check`,
+- Baseline branch CI: **PASS**. Workflow run #9 completed successfully for
+  baseline commit `70998d6ffb537ddf720adb46ff217c373edce9fb`:
+  <https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/30693185908>
+- That successful job executed dependency installation, `pip check`,
   `compileall`, Ruff, the no-data test selection, synthetic smoke, and
   configuration/documentation parsing.
+- CI for the current unpushed revision is **BLOCKED** because GitHub CLI is not
+  authenticated in this host session. No current-revision remote PASS is claimed.
 - The manual `full-data.yml` workflow was **NOT RUN** remotely. It requires a
   self-hosted runner labeled `colorectal-field-data`; required runner and data
   availability were not verified. The equivalent full-data suite was executed

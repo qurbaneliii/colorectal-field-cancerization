@@ -11,7 +11,7 @@ import yaml
 
 from scripts.run_compact_panel_analysis import choose_panel
 from scripts.select_task_c_threshold import threshold_grid
-from src.modeling.residualization import TrainingCovariateResidualizer
+from src.modeling.residualization import TrainingCompositionPCs, TrainingCovariateResidualizer
 from src.modeling.stability import feature_stability
 
 
@@ -30,6 +30,19 @@ def test_training_only_residualizer_does_not_refit_on_test_rows():
     residualizer.transform(test_expression, test_covariates)
     np.testing.assert_array_equal(residualizer.coefficients_, coefficients)
     np.testing.assert_array_equal(residualizer.covariate_mean_, mean)
+
+
+def test_composition_pcs_are_fit_on_training_rows_only():
+    train = np.array(
+        [[0.0, 1.0, 2.0], [1.0, 2.0, 4.0], [2.0, 4.0, 7.0], [3.0, 8.0, 11.0]]
+    )
+    transformer = TrainingCompositionPCs(n_components=2).fit(train)
+    training_mean = transformer.scaler_.mean_.copy()
+    components = transformer.pca_.components_.copy()
+    transformed = transformer.transform(np.array([[1000.0, -500.0, 250.0]]))
+    assert transformed.shape == (1, 2)
+    np.testing.assert_array_equal(transformer.scaler_.mean_, training_mean)
+    np.testing.assert_array_equal(transformer.pca_.components_, components)
 
 
 def test_panel_rule_uses_only_inner_validation_summary():
@@ -115,6 +128,11 @@ def test_task_c_model_cards_separate_exact_and_transport_artifacts(root: Path):
     assert transport["external_labels_used"] is False
     assert set(transport["feature_genes"]) < set(primary["feature_genes"])
     assert set(transport["excluded_genes"]) == {"FOXQ1"}
+    canonical = json.loads((root / "models/task_c_model_card.json").read_text())
+    assert canonical == json.loads(
+        (root / "models/task_c_primary_full_signature_model_card.json").read_text()
+    )
+    assert (root / "models/task_c_primary_model.joblib").stat().st_size > 0
 
 
 @pytest.mark.full_data
@@ -216,6 +234,7 @@ def test_required_publication_figure_renderings_are_nonempty(root: Path):
         "external_confusion_matrix",
         "external_patient_structure_sensitivity",
         "signature_intersection",
+        "biological_predictive_gene_intersection",
     ]
     for stem in stems:
         for suffix in (".png", ".pdf", ".svg"):
@@ -258,6 +277,58 @@ def test_runtime_artifacts_match_configured_counts_and_thresholds(root: Path):
     assert unestimable[
         ["mean", "median", "standard_deviation", "ci_lower", "ci_upper"]
     ].isna().all(axis=None)
+
+
+@pytest.mark.full_data
+def test_canonical_audit_artifacts_are_complete(root: Path):
+    per_gene = pd.read_csv(
+        root / "results/tables/covariate_adjusted_field_effect_concordance.csv"
+    )
+    assert len(per_gene) == 2 * 18490
+    assert {
+        "unadjusted_log2fc",
+        "adjusted_log2fc",
+        "effect_difference",
+        "unadjusted_fdr",
+        "adjusted_fdr",
+        "effect_direction_agreement",
+        "significance_retained",
+    }.issubset(per_gene.columns)
+    assert set(per_gene["adjusted_model"]) == {
+        "U1_age_sex_adjusted",
+        "U2_age_sex_location_adjusted",
+    }
+
+    composition = pd.read_csv(root / "results/tables/tissue_composition_sensitivity.csv")
+    stress = pd.read_csv(root / "results/tables/preanalytical_stress_gene_audit.csv")
+    threshold = pd.read_csv(root / "results/tables/task_c_threshold_selection.csv")
+    task_c = pd.read_csv(root / "results/tables/task_c_final_signature.csv")
+    assert len(composition) == 18490
+    assert not stress.empty
+    assert threshold["selected"].sum() == 1
+    assert set(task_c["gene_symbol"]) == {"FOXQ1", "CEMIP", "ETV4"}
+
+
+@pytest.mark.full_data
+def test_biological_predictive_intersection_and_final_report(root: Path):
+    intersection = pd.read_csv(
+        root / "results/tables/biological_predictive_gene_intersection.csv"
+    )
+    assert not intersection.empty
+    assert intersection["leading_edge_enrichment_gene"].any()
+    assert intersection["task_b_predictive_gene"].sum() == 5
+    assert intersection["task_c_predictive_gene"].sum() == 3
+    report = (root / "reports/final_analysis_report.md").read_text(encoding="utf-8")
+    required = [
+        "Executive summary",
+        "Adjusted field-effect analysis",
+        "Task B confounding analysis",
+        "Threshold locking",
+        "External cohort structure",
+        "Raw-vs-deposited sensitivity",
+        "Final scientific conclusions",
+    ]
+    assert all(f"## {heading}" in report for heading in required)
 
 
 @pytest.mark.full_data

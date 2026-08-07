@@ -10,8 +10,8 @@ All terms are associations and may reflect tissue composition; they are not evid
                    analysis_set input_symbols mapped_entrez minimum_required
        high_confidence_field_up            68            68               10
      high_confidence_field_down            33            33               10
-           provisional_field_up           849           849               10
-         provisional_field_down           528           528               10
+           provisional_field_up           846           846               10
+         provisional_field_down           524           524               10
        composition_robust_field            74            74               10
     composition_sensitive_field            27            27               10
  high_confidence_without_stress            98            98               10
@@ -32,6 +32,7 @@ All terms are associations and may reflect tissue composition; they are not evid
      TRUE
      TRUE
 ```
+
 ## Top FDR-significant terms
 
 ```
@@ -148,11 +149,11 @@ All terms are associations and may reflect tissue composition; they are not evid
                                                                                                       rRNA metabolic process
                                                                                           ribosomal small subunit biogenesis
  adjusted_p_value
-     6.506316e-09
-     6.506316e-09
-     6.506316e-09
-     6.506316e-09
-     6.506316e-09
+     6.307143e-09
+     6.307143e-09
+     6.307143e-09
+     6.307143e-09
+     6.307143e-09
      9.365179e-05
      9.365179e-05
      9.365179e-05
@@ -173,16 +174,16 @@ All terms are associations and may reflect tissue composition; they are not evid
      3.242942e-08
      1.366882e-07
      1.078166e-04
-     1.080960e-07
-     1.080960e-07
-     1.234661e-07
-     1.234661e-07
-     1.033121e-05
-     2.355125e-15
-     4.056199e-15
-     4.056199e-15
-     5.266063e-13
-     1.845795e-12
+     9.306468e-08
+     9.306468e-08
+     1.048307e-07
+     1.048307e-07
+     8.239588e-06
+     2.150465e-15
+     3.428516e-15
+     3.428516e-15
+     4.460379e-13
+     1.556780e-12
      3.706851e-07
      6.773725e-07
      7.011292e-07
@@ -198,9 +199,9 @@ All terms are associations and may reflect tissue composition; they are not evid
      3.472435e-02
      3.472435e-02
      3.472435e-02
-     6.867778e-09
-     6.867778e-09
-     6.867778e-09
-     6.867778e-09
-     6.867778e-09
+     6.944944e-09
+     6.944944e-09
+     6.944944e-09
+     6.944944e-09
+     6.944944e-09
 ```

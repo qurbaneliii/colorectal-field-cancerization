@@ -43,6 +43,7 @@ def main() -> None:
     audit["in_top_100_high_confidence"] = audit["gene_symbol"].isin(top["gene_symbol"])
     audit["removal_policy"] = "flag_only_not_automatically_removed"
     audit.to_csv(ROOT / "results/tables/immediate_early_stress_gene_audit.csv", index=False)
+    audit.to_csv(ROOT / "results/tables/preanalytical_stress_gene_audit.csv", index=False)
 
     stress = set(curated["gene_symbol"])
     without_stress = high[~high["gene_symbol"].isin(stress)].copy()

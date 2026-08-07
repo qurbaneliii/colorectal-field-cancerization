@@ -1,8 +1,8 @@
 "analysis_set","input_symbols","mapped_entrez","minimum_required","executed"
 "high_confidence_field_up",68,68,10,TRUE
 "high_confidence_field_down",33,33,10,TRUE
-"provisional_field_up",849,849,10,TRUE
-"provisional_field_down",528,528,10,TRUE
+"provisional_field_up",846,846,10,TRUE
+"provisional_field_down",524,524,10,TRUE
 "composition_robust_field",74,74,10,TRUE
 "composition_sensitive_field",27,27,10,TRUE
 "high_confidence_without_stress",98,98,10,TRUE

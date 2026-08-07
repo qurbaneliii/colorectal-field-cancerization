@@ -182,15 +182,58 @@ def main() -> None:
     )
 
     concordance_rows = []
+    per_gene_concordance_frames = []
     sensitive_frames = []
     for adjusted, adjusted_name in [(u1, "U1_age_sex_adjusted"), (u2, "U2_age_sex_location_adjusted")]:
         row, merged = concordance_row(u0, adjusted, "U0_unadjusted", adjusted_name, fdr, effect)
         concordance_rows.append(row)
+        merged["reference_model"] = "U0_unadjusted"
+        merged["adjusted_model"] = adjusted_name
+        merged["effect_difference"] = (
+            merged["log2_fold_change_adjusted"]
+            - merged["log2_fold_change_reference"]
+        )
+        merged["effect_direction_agreement"] = merged["sign_agreement"]
+        merged["significance_retained"] = (
+            merged["reference_significant"] & merged["adjusted_significant"]
+        )
+        per_gene_concordance_frames.append(
+            merged[
+                [
+                    "gene_symbol",
+                    "reference_model",
+                    "adjusted_model",
+                    "log2_fold_change_reference",
+                    "log2_fold_change_adjusted",
+                    "effect_difference",
+                    "adjusted_p_value_reference",
+                    "adjusted_p_value_adjusted",
+                    "effect_direction_agreement",
+                    "reference_significant",
+                    "adjusted_significant",
+                    "significance_retained",
+                    "lost_significance",
+                    "gained_significance",
+                    "changed_direction",
+                ]
+            ].rename(
+                columns={
+                    "log2_fold_change_reference": "unadjusted_log2fc",
+                    "log2_fold_change_adjusted": "adjusted_log2fc",
+                    "adjusted_p_value_reference": "unadjusted_fdr",
+                    "adjusted_p_value_adjusted": "adjusted_fdr",
+                }
+            )
+        )
         changed = merged[merged["lost_significance"] | merged["changed_direction"]].copy()
         changed["adjusted_model"] = adjusted_name
         sensitive_frames.append(changed)
     concordance = pd.DataFrame(concordance_rows)
     concordance.to_csv(ROOT / "results/tables/covariate_adjusted_de_concordance.csv", index=False)
+    pd.concat(per_gene_concordance_frames, ignore_index=True).to_csv(
+        ROOT / "results/tables/covariate_adjusted_field_effect_concordance.csv",
+        index=False,
+    )
     pd.concat(sensitive_frames, ignore_index=True).to_csv(
         ROOT / "results/tables/covariate_sensitive_field_genes.csv", index=False
     )

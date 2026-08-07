@@ -4,7 +4,7 @@
 
 The primary biological contrast is adjacent-normal mucosa from cancer patients
 versus colon mucosa from cancer-free donors. It produced 101 Tier 1 and
-1,377 provisional candidate field-associated genes after separate
+1,370 provisional candidate field-associated genes after separate
 assessment of adjustment, sample consistency, preprocessing, QC, subgroup, and
 trajectory evidence. These associations do not establish causation.
 

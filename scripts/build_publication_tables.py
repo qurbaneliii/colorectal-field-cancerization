@@ -17,6 +17,119 @@ def read(name: str, root: Path = TABLES) -> pd.DataFrame:
     return pd.read_csv(root / name)
 
 
+def biological_predictive_intersection() -> pd.DataFrame:
+    high = set(read("final_high_confidence_field_signature.csv")["gene_symbol"].astype(str))
+    task_b = set(read("task_b_final_signature.csv")["gene_symbol"].astype(str))
+    task_c = set(read("task_c_final_signature.csv")["gene_symbol"].astype(str))
+    stability = read("feature_stability.csv")
+    task_a = set(
+        stability.loc[
+            stability["task"].eq("task_a_three_class")
+            & stability["strictly_stable_gene"].astype(bool),
+            "gene_symbol",
+        ].astype(str)
+    )
+    enrichment = read("supplementary_enrichment_results.csv")
+    ranked = enrichment[
+        enrichment["analysis_type"].astype(str).str.contains("ranked", case=False, na=False)
+    ]
+    leading_edge_ids: set[str] = set()
+    for value in ranked["gene_ids"].dropna().astype(str):
+        leading_edge_ids.update(
+            gene for gene in value.replace(";", "/").split("/") if gene
+        )
+    probe_mapping = pd.read_csv(
+        ROOT / "data/metadata/GSE44076_probe_gene_mapping_raw_cel_rma.csv",
+        dtype={"entrez_id": str},
+    )
+    probe_mapping = probe_mapping[
+        probe_mapping["mapping_status"].eq("mapped_unique")
+        & probe_mapping["entrez_id"].notna()
+        & probe_mapping["gene_symbol"].notna()
+    ]
+    entrez_symbols = probe_mapping.groupby("entrez_id")["gene_symbol"].agg(
+        lambda values: sorted(set(values.astype(str)))
+    )
+    unambiguous = {
+        str(entrez): symbols[0]
+        for entrez, symbols in entrez_symbols.items()
+        if len(symbols) == 1
+    }
+    leading_edge = {
+        unambiguous[entrez] for entrez in leading_edge_ids if entrez in unambiguous
+    }
+    unmapped_leading_edge_ids = leading_edge_ids.difference(unambiguous)
+
+    genes = sorted(high | task_a | task_b | task_c | leading_edge)
+    frame = pd.DataFrame({"gene_symbol": genes})
+    memberships = {
+        "high_confidence_field_gene": high,
+        "task_a_predictive_gene": task_a,
+        "task_b_predictive_gene": task_b,
+        "task_c_predictive_gene": task_c,
+        "leading_edge_enrichment_gene": leading_edge,
+    }
+    for column, members in memberships.items():
+        frame[column] = frame["gene_symbol"].isin(members)
+    membership_columns = list(memberships)
+    frame["membership_count"] = frame[membership_columns].sum(axis=1)
+    frame["conceptual_roles"] = frame.apply(
+        lambda row: ";".join(
+            column.removesuffix("_gene")
+            for column in membership_columns
+            if bool(row[column])
+        ),
+        axis=1,
+    )
+    frame = frame.sort_values(
+        ["membership_count", "gene_symbol"], ascending=[False, True]
+    ).reset_index(drop=True)
+    frame.to_csv(TABLES / "biological_predictive_gene_intersection.csv", index=False)
+
+    overlaps = []
+    for left_index, (left_name, left) in enumerate(memberships.items()):
+        for right_name, right in list(memberships.items())[left_index + 1 :]:
+            overlaps.append(
+                {
+                    "gene_set_1": left_name,
+                    "gene_set_2": right_name,
+                    "overlap_genes": len(left & right),
+                    "genes": ", ".join(sorted(left & right)) or "none",
+                }
+            )
+    overlap_table = pd.DataFrame(overlaps)
+    report = f"""# Biological and predictive signature comparison
+
+The comparison keeps biological association, field prediction, three-state
+prediction, tumor-transition prediction, and ranked-enrichment leading edges as
+distinct estimands. Membership in a predictive panel does not elevate a gene to
+high-confidence biological status, and differential-expression evidence does
+not imply predictive necessity.
+
+- High-confidence field genes: {len(high)}
+- Strictly stable Task A genes: {len(task_a)}
+- Final Task B genes: {len(task_b)}
+- Final Task C genes: {len(task_c)}
+- Ranked-enrichment leading-edge genes: {len(leading_edge)}
+- Unmapped or ambiguous leading-edge Entrez IDs: {len(unmapped_leading_edge_ids)}
+- Genes appearing in at least two sets: {int(frame['membership_count'].ge(2).sum())}
+
+## Pairwise intersections
+
+{overlap_table.to_markdown(index=False)}
+
+The machine-readable union and memberships are in
+`results/tables/biological_predictive_gene_intersection.csv`. The Task B panel
+addresses field prediction, whereas the Task C panel addresses tumor transition
+and cross-platform tumor discrimination. Neither should be substituted for the
+high-confidence field-gene tier in biological interpretation.
+"""
+    (ROOT / "reports/biological_predictive_signature_comparison.md").write_text(
+        report, encoding="utf-8"
+    )
+    return frame
+
+
 def cohort_table() -> pd.DataFrame:
     frames = []
     for accession, filename in (
@@ -305,6 +418,7 @@ def main() -> None:
     read("final_compact_signature.csv").to_csv(
         TABLES / "table_8_task_c_compact_signature.csv", index=False
     )
+    biological_predictive_intersection()
     pd.read_csv(METRICS / "external_patient_tissue_metrics.csv").to_csv(
         TABLES / "table_9_external_validation.csv", index=False
     )

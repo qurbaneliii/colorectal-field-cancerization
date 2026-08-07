@@ -20,11 +20,21 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.data.cross_platform import within_sample_percentile_rank
-from src.data.provenance import expression_path, result_root
+from src.data.provenance import expression_path, result_root, source_files_sha256
 from src.modeling.evaluation import grouped_bootstrap_metrics
 from src.modeling.external_validation import locked_binary_predictions
 from src.modeling.pipelines import build_pipeline
 from src.visualization.publication_figures import save_figure
+
+
+TRANSPORT_SOURCE_FILES = [
+    "config/analysis.yaml",
+    "scripts/run_external_validation.py",
+    "src/data/cross_platform.py",
+    "src/modeling/evaluation.py",
+    "src/modeling/external_validation.py",
+    "src/modeling/pipelines.py",
+]
 
 
 def deterministic_subset(
@@ -340,6 +350,8 @@ def main() -> None:
         "threshold": locked_threshold,
         "threshold_origin": artifact["transport_threshold_origin"],
         "analysis_provenance": provenance,
+        "analysis_source_files": TRANSPORT_SOURCE_FILES,
+        "analysis_source_sha256": source_files_sha256(ROOT, TRANSPORT_SOURCE_FILES),
         "clinical_readiness": "not clinically ready",
     }
     joblib.dump(

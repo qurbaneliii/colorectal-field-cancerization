@@ -9,6 +9,7 @@ data/processed/**
 # Generated analysis artifacts
 models/**
 !models/.gitkeep
+!models/*.json
 results/figures/**
 !results/figures/.gitkeep
 !results/figures/*.png
