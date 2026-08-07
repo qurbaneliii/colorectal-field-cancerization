@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.visualization.publication_figures import PALETTE, save_figure
+from scripts.build_publication_tables import biological_predictive_intersection
 
 TABLES = ROOT / "results/tables"
 METRICS = ROOT / "results/metrics"
@@ -355,6 +356,38 @@ def signature_intersection() -> None:
     save_figure(fig, FIGURES / "signature_intersection")
 
 
+def biological_predictive_intersection_figure() -> None:
+    frame = biological_predictive_intersection()
+    membership_columns = [
+        "high_confidence_field_gene",
+        "task_a_predictive_gene",
+        "task_b_predictive_gene",
+        "task_c_predictive_gene",
+        "leading_edge_enrichment_gene",
+    ]
+    selected = frame[
+        frame["membership_count"].ge(2)
+        | frame["task_b_predictive_gene"]
+        | frame["task_c_predictive_gene"]
+    ].head(40)
+    matrix = selected.set_index("gene_symbol")[membership_columns].astype(int)
+    labels = ["Field biology", "Task A", "Task B", "Task C", "Leading edge"]
+    fig_height = max(5.0, 0.28 * len(matrix) + 2.0)
+    fig, ax = plt.subplots(figsize=(8.5, fig_height))
+    sns.heatmap(
+        matrix,
+        cmap=sns.color_palette(["#F1F4F8", "#264653"], as_cmap=True),
+        cbar=False,
+        linewidths=0.5,
+        linecolor="white",
+        ax=ax,
+    )
+    ax.set_xticklabels(labels, rotation=25, ha="right")
+    ax.set(xlabel="Evidence or prediction role", ylabel="Gene")
+    ax.set_title("Biological and predictive gene-set membership")
+    save_figure(fig, FIGURES / "biological_predictive_gene_intersection")
+
+
 def main() -> None:
     os.chdir(ROOT)
     study_design()
@@ -366,6 +399,7 @@ def main() -> None:
     enrichment_figure()
     external_sensitivity()
     signature_intersection()
+    biological_predictive_intersection_figure()
     generated = [
         "study_objectives_and_dataset_roles",
         "sample_count_flowchart",
@@ -378,6 +412,7 @@ def main() -> None:
         "high_confidence_field_enrichment",
         "external_patient_structure_sensitivity",
         "signature_intersection",
+        "biological_predictive_gene_intersection",
     ]
     for stem in generated:
         for suffix in (".png", ".pdf", ".svg"):

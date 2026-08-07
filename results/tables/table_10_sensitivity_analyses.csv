@@ -2,7 +2,7 @@ domain,analysis,key_metric,value,secondary_metric,interpretation
 Task B confounding,age_sex_location_residualized,macro_f1,0.9772342716505154,ROC-AUC=0.9935,locked panel; grouped repeated OOF
 Task B confounding,age_sex_matched_fixed_panel,macro_f1,1.0,ROC-AUC=1.0000,locked panel; grouped repeated OOF
 Task B confounding,borderline_sample_excluded_fixed_panel,macro_f1,1.0,ROC-AUC=1.0000,locked panel; grouped repeated OOF
-Task B confounding,composition_and_demographic_residualized,macro_f1,0.7181489240144734,ROC-AUC=0.7859,locked panel; grouped repeated OOF
+Task B confounding,composition_and_demographic_residualized,macro_f1,0.8497025968373713,ROC-AUC=0.9390,locked panel; grouped repeated OOF
 Task B confounding,demographic_only,macro_f1,0.6260359814028704,ROC-AUC=0.6820,locked panel; grouped repeated OOF
 Task B confounding,primary_fixed_panel,macro_f1,1.0,ROC-AUC=1.0000,locked panel; grouped repeated OOF
 Tissue composition,high-confidence genes retaining U3 support,gene_count,74.0,of 101,MCP-counter PC-adjusted limma sensitivity
@@ -11,7 +11,6 @@ Borderline-sample QC,borderline_samples,sensitivity_value,1.0,primary=0.0; GSM10
 Borderline-sample QC,significant_DE_genes,sensitivity_value,1584.0,primary=1580.0; FDR<0.05 and |log2FC|>=0.5,primary included; sensitivity excluded
 Borderline-sample QC,top_100_gene_overlap,sensitivity_value,97.0,primary=100.0; ranked by adjusted p-value,primary included; sensitivity excluded
 Borderline-sample QC,log2FC_pearson,sensitivity_value,0.9998813705918352,primary=1.0; all shared tested genes,primary included; sensitivity excluded
-Borderline-sample QC,top_20_pathway_term_overlap,sensitivity_value,1.0,primary=5.0; primary ranked U1 versus QC-excluded over-representation; extracellular matrix organization,primary included; sensitivity excluded
 Borderline-sample QC,task_b_aggregated_oof_macro_f1,sensitivity_value,1.0,primary=1.0; five-gene panel; repeated grouped OOF,primary included; sensitivity excluded
 Borderline-sample QC,task_b_aggregated_oof_balanced_accuracy,sensitivity_value,1.0,primary=1.0; five-gene panel; repeated grouped OOF,primary included; sensitivity excluded
 Borderline-sample QC,task_b_reselected_panel_overlap,sensitivity_value,4.0,primary=5.0; shared=CLC;DYNC1H1;FOS;VIP; sensitivity=APOLD1;CLC;DYNC1H1;FOS;VIP,primary included; sensitivity excluded

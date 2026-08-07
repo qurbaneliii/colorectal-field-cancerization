@@ -183,6 +183,8 @@ composition_de <- data.frame(
 write.csv(composition_de,
           "results/differential_expression/raw_cel_adjacent_vs_healthy_age_sex_composition_adjusted.csv",
           row.names = FALSE)
+write.csv(composition_de, "results/tables/tissue_composition_sensitivity.csv",
+          row.names = FALSE)
 
 tier_path <- "results/tables/field_gene_evidence_tiers.csv"
 tiers <- read.csv(tier_path, stringsAsFactors = FALSE)

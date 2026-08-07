@@ -108,8 +108,20 @@ standardize <- function(frame, name, definition, database, ontology,
                         redundancy_pruned, analysis_type = "over_representation") {
   if (!nrow(frame)) return(NULL)
   required <- c("ID", "Description", "GeneRatio", "BgRatio", "pvalue", "p.adjust",
-                "qvalue", "geneID", "Count", "enrichmentScore", "NES", "setSize")
+                "qvalue", "geneID", "core_enrichment", "Count", "enrichmentScore",
+                "NES", "setSize")
   for (column in setdiff(required, names(frame))) frame[[column]] <- NA
+  reported_genes <- if (analysis_type == "ranked_GSEA") {
+    frame$core_enrichment
+  } else {
+    frame$geneID
+  }
+  reported_gene_count <- if (analysis_type == "ranked_GSEA") {
+    vapply(strsplit(as.character(reported_genes), "/", fixed = TRUE),
+           function(values) sum(!is.na(values) & nzchar(values)), integer(1))
+  } else {
+    frame$Count
+  }
   data.frame(
     analysis_set = name,
     comparison = definition$comparison,
@@ -125,8 +137,8 @@ standardize <- function(frame, name, definition, database, ontology,
     p_value = frame$pvalue,
     adjusted_p_value = frame$p.adjust,
     q_value = frame$qvalue,
-    gene_ids = frame$geneID,
-    gene_count = frame$Count,
+    gene_ids = reported_genes,
+    gene_count = reported_gene_count,
     enrichment_score = frame$enrichmentScore,
     normalized_enrichment_score = frame$NES,
     set_size = frame$setSize,

@@ -23,7 +23,7 @@ from src.modeling.evaluation import (
     prediction_probabilities,
 )
 from src.modeling.pipelines import build_pipeline
-from src.modeling.residualization import TrainingCovariateResidualizer
+from src.modeling.residualization import TrainingCompositionPCs, TrainingCovariateResidualizer
 from src.modeling.splitters import stratified_group_splits
 from scripts.run_compact_panel_analysis import (
     choose_panel,
@@ -83,6 +83,8 @@ def evaluate(
     parameters: dict[str, object],
     modeling: dict,
     covariates: np.ndarray | None = None,
+    composition_scores: np.ndarray | None = None,
+    composition_components: int = 2,
     demographic_only: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     labels = metadata["tissue_class"].to_numpy()
@@ -119,10 +121,28 @@ def evaluate(
                     raise AssertionError("Expression is required for molecular scenarios")
                 train_x = expression[train]
                 test_x = expression[test]
-                if covariates is not None:
+                train_covariates = covariates[train] if covariates is not None else None
+                test_covariates = covariates[test] if covariates is not None else None
+                if composition_scores is not None:
+                    composition_transformer = TrainingCompositionPCs(composition_components)
+                    train_composition = composition_transformer.fit_transform(
+                        composition_scores[train]
+                    )
+                    test_composition = composition_transformer.transform(composition_scores[test])
+                    train_covariates = (
+                        train_composition
+                        if train_covariates is None
+                        else np.column_stack([train_covariates, train_composition])
+                    )
+                    test_covariates = (
+                        test_composition
+                        if test_covariates is None
+                        else np.column_stack([test_covariates, test_composition])
+                    )
+                if train_covariates is not None:
                     residualizer = TrainingCovariateResidualizer()
-                    train_x = residualizer.fit_transform(train_x, covariates[train])
-                    test_x = residualizer.transform(test_x, covariates[test])
+                    train_x = residualizer.fit_transform(train_x, train_covariates)
+                    test_x = residualizer.transform(test_x, test_covariates)
                 model = elastic_panel(parameters, int(seed), modeling)
             model.fit(train_x, labels[train])
             predicted = model.predict(test_x)
@@ -224,7 +244,7 @@ def main() -> None:
         }
     ]
     composition = composition_frame.loc[metadata["geo_accession"], score_columns].to_numpy()
-    combined_covariates = np.column_stack([demographic, composition])
+    composition_components = int(config["biology"]["composition_principal_components"])
     matched_indices = match_age_sex(
         metadata, float(config["modeling"]["demographic_matching_age_caliper"])
     )
@@ -237,14 +257,22 @@ def main() -> None:
     qc_keep = ~metadata["geo_accession"].astype(str).isin(borderline_samples)
 
     scenarios = [
-        ("primary_fixed_panel", panel, metadata, None, False),
-        ("demographic_only", None, metadata, None, True),
-        ("age_sex_location_residualized", panel, metadata, demographic, False),
-        ("composition_and_demographic_residualized", panel, metadata, combined_covariates, False),
+        ("primary_fixed_panel", panel, metadata, None, None, False),
+        ("demographic_only", None, metadata, None, None, True),
+        ("age_sex_location_residualized", panel, metadata, demographic, None, False),
+        (
+            "composition_and_demographic_residualized",
+            panel,
+            metadata,
+            demographic,
+            composition,
+            False,
+        ),
         (
             "age_sex_matched_fixed_panel",
             panel[matched_indices],
             metadata.loc[matched_indices].reset_index(drop=True),
+            None,
             None,
             False,
         ),
@@ -253,13 +281,14 @@ def main() -> None:
             panel[qc_keep],
             metadata.loc[qc_keep].reset_index(drop=True),
             None,
+            None,
             False,
         ),
     ]
     all_metrics: list[pd.DataFrame] = []
     all_predictions: list[pd.DataFrame] = []
     all_selections: list[pd.DataFrame] = []
-    for name, values, frame, covariates, demographic_only in scenarios:
+    for name, values, frame, covariates, composition_scores, demographic_only in scenarios:
         metric, prediction, selection = evaluate(
             name,
             values,
@@ -267,6 +296,8 @@ def main() -> None:
             parameters,
             config["modeling"],
             covariates=covariates,
+            composition_scores=composition_scores,
+            composition_components=composition_components,
             demographic_only=demographic_only,
         )
         all_metrics.append(metric)
@@ -372,9 +403,12 @@ def main() -> None:
 
 Task B is the primary healthy-versus-adjacent endpoint. All molecular
 sensitivity analyses use the five-gene panel locked by grouped inner CV. The
-covariate residualizers are fitted on each outer-training fold and applied to
-the held-out fold, preventing outcome or test-row leakage. The demographic-only
-model uses age, sex, and left/right location. The matching analysis uses
+    covariate residualizers are fitted on each outer-training fold and applied to
+    the held-out fold, preventing outcome or test-row leakage. The composition
+    sensitivity standardizes the ten MCP-counter scores within each training fold,
+    learns only {composition_components} principal components there, and applies
+    that fixed transformation to the held-out fold before residualization. The
+    demographic-only model uses age, sex, and left/right location. The matching analysis uses
 one-to-one, without-replacement same-sex matching within a
 {config['modeling']['demographic_matching_age_caliper']}-year age caliper.
 

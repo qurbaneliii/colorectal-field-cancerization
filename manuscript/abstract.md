@@ -25,7 +25,7 @@ patient-cluster bootstrap uncertainty.
 
 Age/sex adjustment identified 1,580
 genes at Benjamini-Hochberg FDR <0.05 and absolute log2 fold change >=0.5;
-101 formed the high-confidence field signature and 1,377
+101 formed the high-confidence field signature and 1,370
 were provisional. Of the high-confidence genes, 74/101
 retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was

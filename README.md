@@ -27,6 +27,9 @@ group means are not interpreted as longitudinal progression.
   composition-adjusted support and 3 overlap the curated immediate-early/stress set.
 - Primary Task B compact panel: **CLC, DYNC1H1, FOS, VIP, SNORA12**. It is internally
   validated only; no independent healthy-versus-adjacent cohort is available.
+- Task B confounding challenge: macro-F1 was 0.977 after fold-local age/sex/location
+  residualization and 0.850 after demographics plus two composition PCs learned
+  inside each outer-training fold (demographic-only baseline 0.626).
 - Secondary Task C compact panel: **FOXQ1, CEMIP, ETV4**. All three meet the strict
   stability rule; only **CEMIP** and **ETV4** are present on GPL96.
 - External Task C primary analysis: 233 canonical patient-tissue arrays from 190
@@ -39,6 +42,9 @@ group means are not interpreted as longitudinal progression.
 See [the final readiness report](reports/publication_readiness_final.md),
 [the manuscript](manuscript/manuscript.md), and
 [the artifact manifest](reports/result_artifact_manifest.csv).
+The audit trail starts with
+[objective alignment](reports/objective_alignment_baseline_audit.md) and the
+[research traceability matrix](reports/research_objective_traceability.md).
 
 ## Reproduce
 

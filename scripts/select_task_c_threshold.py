@@ -153,6 +153,7 @@ def main() -> None:
     predictions.to_csv(metrics_root / "task_c_rank_transport_repeated_oof.csv", index=False)
     averaged.to_csv(metrics_root / "task_c_rank_transport_aggregated_oof.csv", index=False)
     curve.to_csv(tables / "task_c_primary_threshold_selection.csv", index=False)
+    curve.to_csv(tables / "task_c_threshold_selection.csv", index=False)
 
     fig, ax = plt.subplots(figsize=(7.5, 5.5))
     ax.plot(curve["threshold"], curve["balanced_accuracy"], label="Balanced accuracy")
@@ -180,7 +181,11 @@ def main() -> None:
     artifact = joblib.load(artifact_path)
     artifact.update(card)
     joblib.dump(artifact, artifact_path)
+    joblib.dump(artifact, models / "task_c_primary_model.joblib")
     joblib.dump(artifact, models / "task_c_final_elastic_net.joblib")
+    (models / "task_c_model_card.json").write_text(
+        json.dumps(card, indent=2), encoding="utf-8"
+    )
     (models / "task_c_final_model_card.json").write_text(
         json.dumps(card, indent=2), encoding="utf-8"
     )

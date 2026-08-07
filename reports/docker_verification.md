@@ -2,7 +2,9 @@
 
 Status: **BLOCKED**
 
-The Docker 29.5.3 client and Docker Desktop are installed. On 2026-08-01 all
+The Docker 29.5.3 client and Docker Desktop are installed. A fresh `docker info`
+check on 2026-08-08 returned exit code 1 because the Linux-engine named pipe
+`//./pipe/dockerDesktopLinuxEngine` does not exist. On 2026-08-01 all
 three required commands were attempted and returned exit code 1:
 
 - `docker info`

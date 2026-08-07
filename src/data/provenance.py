@@ -1,9 +1,25 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 
 VALID_PROVENANCE = {"raw_cel_rma", "geo_deposited_series_matrix"}
+
+
+def source_files_sha256(root: Path, relative_paths: list[str]) -> str:
+    """Hash named analysis sources so generated artifacts identify exact code content."""
+
+    digest = hashlib.sha256()
+    for relative in sorted(relative_paths):
+        path = root / relative
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        digest.update(relative.replace("\\", "/").encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def expression_path(processed_root: Path, accession: str, level: str, provenance: str) -> Path:

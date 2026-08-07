@@ -23,7 +23,7 @@ five deposited GEO inputs without modifying `data/raw/`.
 
 - Python: 3.12.10
 - Rscript: Rscript (R) version 4.5.1 (2025-06-13)
-- Git: 9b43cc12c879c751f40576d33ae5719e42702eb4
+- Git: 70998d6ffb537ddf720adb46ff217c373edce9fb
 
 ## Missing or blocked requirements
 
