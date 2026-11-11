@@ -50,7 +50,6 @@ jobs:
       OMP_NUM_THREADS: 1
       MKL_NUM_THREADS: 1
       RENV_CONFIG_INSTALL_NCPUS: 2
-      RENV_PATHS_CACHE: ${{ runner.temp }}/renv-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -96,10 +95,11 @@ jobs:
         id: r-cache
         uses: actions/cache/restore@v4
         with:
-          path: ${{ env.RENV_PATHS_CACHE }}
+          path: ${{ runner.temp }}/renv-cache
           key: renv-ubuntu24-r451-v1-${{ hashFiles('renv.lock') }}
       - name: Restore locked scientific dependencies
         env:
+          RENV_PATHS_CACHE: ${{ runner.temp }}/renv-cache
           RENV_PATHS_CELLAR: ${{ runner.temp }}/r-cellar
         run: |
           set -o pipefail
@@ -128,7 +128,7 @@ jobs:
         if: steps.r-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: ${{ env.RENV_PATHS_CACHE }}
+          path: ${{ runner.temp }}/renv-cache
           key: ${{ steps.r-cache.outputs.cache-primary-key }}
       - name: Execute and record the raw-CEL pipeline
         run: |

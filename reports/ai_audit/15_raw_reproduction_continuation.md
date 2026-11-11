@@ -145,7 +145,13 @@ as healthy. Balanced accuracy was 0.500, macro-F1 0.313 and ROC-AUC 0.983
 (deposited training ROC-AUC 0.992). The direction and operating-point failure
 persisted. The score remains sensitive to the shared acquisition alias.
 
-## Task C raw-CEL refit conditional on the archived panel
+## Task C raw-CEL reproduction
+
+The original nested and compact-panel stages recovered the archived
+FOXQ1/CEMIP/ETV4 panel and hyperparameters. Its fresh threshold and external
+validation stages completed and emitted the same predictions as the
+separate frozen-panel refit described below. The saved external result
+contract and all six targeted model/prediction tests passed.
 
 A separate run held the archived FOXQ1/CEMIP/ETV4 panel and hyperparameters
 fixed, refit on 196 fresh GSE44076 RMA arrays, and selected the transport
@@ -162,6 +168,25 @@ prespecified 0.50 sensitivity had macro-F1 0.8898 and specificity 0.7115.
 These retrospective operating points quantify threshold and calibration
 transport on this cohort. Neither external outcome set entered fitting,
 signature selection, or threshold selection.
+
+## Task C sensitivity to deposited expression
+
+The deposited-expression refit held the panel, hyperparameters, mapping,
+12,039-gene intersection, development labels and 233 external evaluation
+arrays fixed. The GEO-deposited matrices supplied expression. GSE44076
+alone selected its threshold of 0.42. The contrast also persists at the
+same 0.41 cutoff.
+
+| Expression route and operating point | ROC-AUC | Macro-F1 | Sensitivity | Specificity | Brier | Calibration intercept / slope |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Fresh raw RMA, locked 0.41 | 0.983 | 0.828 | 1.000 | 0.558 | 0.053 | −2.066 / 2.620 |
+| GEO deposited, locked 0.42 | 0.986 | 0.951 | 0.972 | 0.942 | 0.032 | 1.372 / 1.420 |
+| GEO deposited, raw reference cutoff 0.41 | 0.986 | 0.951 | 0.972 | 0.942 | 0.032 | 1.372 / 1.420 |
+
+Discrimination was similar across expression routes. The specificity and
+calibration differences show sensitivity to the expression inputs even
+after within-sample ranking. Raw RMA remains the primary analysis. The
+deposited result uses the same retrospective external cohort.
 
 ## Reproduction boundaries
 
