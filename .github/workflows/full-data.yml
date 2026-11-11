@@ -121,9 +121,15 @@ jobs:
           # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
           # Install the pinned MCPcounter tarball directly to avoid renv's duplicate staging path.
           Rscript -e 'renv::restore(exclude=c("arrow", "MCPcounter"), transactional=FALSE, prompt=FALSE)'
-          # This runner returns pthread_create error 22 in the locked threaded preprocessCore build.
-          Rscript -e 'options(configure.args=c(preprocessCore="--disable-threading")); renv::restore(packages="preprocessCore", rebuild=TRUE, prompt=FALSE)'
           r_library=$(Rscript -e 'cat(renv::paths$library(), "\n", sep="")' | tail -n 1)
+          # Replace the threaded cache link with the same locked source built for serial execution.
+          read -r bioc preprocess_version < <(python -c 'import json; lock = json.load(open("renv.lock")); print(lock["Bioconductor"]["Version"], lock["Packages"]["preprocessCore"]["Version"])')
+          preprocess_source="$RENV_PATHS_CELLAR/preprocessCore_$preprocess_version.tar.gz"
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://bioconductor.org/packages/$bioc/bioc/src/contrib/preprocessCore_$preprocess_version.tar.gz" \
+            --output "$preprocess_source"
+          if [[ -L "$r_library/preprocessCore" ]]; then unlink "$r_library/preprocessCore"; fi
+          R CMD INSTALL --configure-args=--disable-threading --library="$r_library" "$preprocess_source"
           R CMD INSTALL --library="$r_library" "$RENV_PATHS_CELLAR/MCPcounter_1.2.0.tar.gz"
           make verify-env
           Rscript -e 'set.seed(1); x <- matrix(exp(rnorm(600)), nrow=200); y <- preprocessCore::normalize.quantiles(preprocessCore::rma.background.correct(x)); stopifnot(identical(dim(x), dim(y)), all(is.finite(y)))'

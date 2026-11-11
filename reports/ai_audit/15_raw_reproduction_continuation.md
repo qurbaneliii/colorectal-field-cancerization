@@ -4,6 +4,23 @@ This audit continues the analysis at `0ede337ffc360bc96dea6724f974bd5ef7f184d4`
 on PR #4. The historical manifest remains an immutable record of the earlier
 analysis. The fresh run uses a separate worktree and records actual inputs.
 
+## Completion status
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Current GEO acquisition, metadata and CEL integrity | PASS | Both current archives and all 636 CELs verified. GSE41258 resumed from a retained partial file. |
+| Historical TAR SHA-256 equality | FAIL | Both current digests differ from the historical manifest. |
+| Cause of the historical differences | BLOCKED | Requires the historical TARs or historical per-member fingerprints. |
+| Pipeline on the original historical bytes | NOT RUN | The original pinned TARs are unavailable. |
+| Windows R 4.5.1 / Bioconductor 3.21 | PASS | 219 exact package-version matches. The pipeline used gzip CSV with Python Parquet conversion. |
+| Current GEO raw RMA, core QC and GPL96 NUSE | PASS | Both cohorts and all 636 arrays. |
+| limma, covariate, composition and stress sensitivities | PASS | Fresh fits and archived comparisons. |
+| Nested grouped CV, biomarker panels, permutations and bootstraps | PASS | Fresh model fits, three 1,000-permutation tests and 1,000-draw cluster intervals. |
+| Task C threshold and external validation | PASS | Fresh nested selection, GSE44076 lock and GSE41258 evaluation reproduced the archived primary result. |
+| Acquisition-matched Task B validation | BLOCKED | JGAD000785 requires approved access and cohort eligibility review. |
+
+[Machine-readable stage status](../../results/ai_audit/current_geo_stage_status.csv)
+
 ## Archive identity
 
 | Accession | Historical SHA-256 | Current GEO SHA-256 | Verified members |
@@ -90,6 +107,9 @@ Python dependency verification. Its raw stage stopped at
 The hosted recipe now rebuilds the same locked `preprocessCore` version
 with the package's serial configure option and checks RMA background
 correction and quantile normalization before the scientific stages.
+The first serial attempt still linked the threaded cache entry. The
+current recipe installs the locked Bioconductor source with the configure
+option explicitly on `R CMD INSTALL`.
 [Hosted restore and RMA attempt](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43017039168),
 [Bioconductor threading diagnosis](https://github.com/Bioconductor/bioconductor_docker/issues/22)
 

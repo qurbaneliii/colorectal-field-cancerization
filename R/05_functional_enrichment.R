@@ -229,6 +229,7 @@ ranked_definitions <- list(
     source_model = "P_patient_fixed_effect"
   )
 )
+set.seed(as.integer(yaml::read_yaml("config/analysis.yaml")$project$random_seed))
 for (comparison in names(ranked_definitions)) {
   definition <- ranked_definitions[[comparison]]
   frame <- de[de$comparison == definition$source_comparison &
