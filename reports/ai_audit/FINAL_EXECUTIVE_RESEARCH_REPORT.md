@@ -22,13 +22,16 @@ binds the threshold lock to its input bytes and corrects probability column
 mapping. Current manuscript numerical claims were preserved and their
 methods and scope clarified.
 
-**Reproduction status.** The Python suite and synthetic smoke passed. The
-deposited baseline, independent metadata reconstruction and real-data
-sensitivities ran. Exact raw-CEL reproduction remains blocked by archive
-identity or availability and the Windows R build toolchain. The downloaded
-primary archive passed member and gzip checks but has a different digest
-from the historical input. Full-data test outcomes and exact input provenance
-are in the reproduction report.
+**Reproduction status.** Both current GEO archives passed complete integrity
+and metadata checks. Both differ from the historical TAR hashes. The original
+TARs or historical CEL digests are required to attribute those differences.
+Fresh RMA reproduced all eight archived limma outputs to numerical precision.
+The grouped nested CV reproduced all 135 fold macro-F1 values and
+hyperparameter selections. A fresh Task C refit conditional on the archived
+panel reproduced the 0.41 lock and the primary external operating point,
+calibration and bootstrap interval endpoints. The continuation records input
+hashes, stage-level execution and remaining gates.
+[Raw-CEL reproduction continuation](15_raw_reproduction_continuation.md)
 
 ## Audit package
 

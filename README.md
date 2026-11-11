@@ -51,7 +51,7 @@ remaining reproducibility blockers.
 
 ## Reproduce
 
-The supported interpreter versions are Python 3.12 and R 4.5.x. On Windows, invoke the
+The supported interpreter versions are Python 3.12 and R 4.5.1. On Windows, invoke the
 installed R executable explicitly if `Rscript` is not on `PATH`.
 
 ```powershell

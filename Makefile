@@ -95,6 +95,7 @@ sensitivity-all: audit processed-matrix
 	$(PYTHON) scripts/run_modeling.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_compact_panel_analysis.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_permutation_tests.py --provenance geo_deposited_series_matrix
+	$(PYTHON) scripts/select_task_c_threshold.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_external_validation.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/build_manuscript_outputs.py
 	$(PYTHON) -m pytest -q

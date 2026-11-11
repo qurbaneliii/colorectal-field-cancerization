@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import sys
@@ -58,11 +59,16 @@ def threshold_grid(probability: np.ndarray, labels: np.ndarray, config: dict) ->
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--provenance", choices=["raw_cel_rma", "geo_deposited_series_matrix"]
+    )
+    args = parser.parse_args()
     os.chdir(ROOT)
     config_text = (ROOT / "config/analysis.yaml").read_text(encoding="utf-8")
     config = yaml.safe_load(config_text)
     paths = yaml.safe_load((ROOT / "config/paths.yaml").read_text(encoding="utf-8"))
-    provenance = config["modeling"]["expression_provenance"]
+    provenance = args.provenance or config["modeling"]["expression_provenance"]
     tables = result_root(ROOT / paths["tables"], provenance)
     metrics_root = result_root(ROOT / paths["metrics"], provenance)
     figures = result_root(ROOT / paths["figures"], provenance)
@@ -159,6 +165,8 @@ def main() -> None:
         probability,
         classes,
     )
+    for directory in (tables, metrics_root, figures, reports):
+        directory.mkdir(parents=True, exist_ok=True)
     predictions.to_csv(metrics_root / "task_c_rank_transport_repeated_oof.csv", index=False)
     averaged.to_csv(metrics_root / "task_c_rank_transport_aggregated_oof.csv", index=False)
     threshold_path = tables / "task_c_primary_threshold_selection.csv"

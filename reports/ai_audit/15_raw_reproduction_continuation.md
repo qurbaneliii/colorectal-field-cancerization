@@ -82,7 +82,7 @@ was 3.9 × 10⁻¹³. Every significant-gene count and corresponding direction
 agreed. The adjusted field contrast retained 1,580 hits and the paired
 tumor-versus-distant-mucosa contrast retained 4,502. This reproduces the
 archived statistical outputs to numerical precision on the current archive.
-It does not resolve historical TAR or CEL byte identity.
+Historical TAR and CEL byte identity remains unresolved.
 
 Covariate sensitivity reproduced 1,662, 1,580 and 1,521 significant genes
 across U0, U1 and U2 and the 101/1,370/7 evidence-tier counts. The fresh
@@ -90,6 +90,20 @@ composition model retained effect size, direction and FDR for 74 of 101
 high-confidence genes. Ten of ten flagged stromal/ECM genes attenuated by
 at least 25%. The stress-gene sensitivity flagged three high-confidence
 genes, leaving 98. These are within-cohort sensitivities.
+
+## Fresh grouped nested CV
+
+The original three-task, three-model run completed in 1,617.4 s. It emitted
+135 fold metrics and 5,310 held-out predictions. All 135 fold-level macro-F1
+values and selected hyperparameter sets matched the archive. Mean outer-fold
+elastic-net macro-F1 was 0.9413, 0.9926 and 0.9847 for Tasks A, B and C.
+Patient/donor bootstrap intervals were generated from fresh aggregated
+out-of-fold predictions using 1,000 draws per task and model.
+Fresh compact-panel analysis reproduced the archived summary and selected
+CLC/DYNC1H1/FOS/VIP/SNORA12 for Task B and FOXQ1/CEMIP/ETV4 for Task C.
+The original Task B confounding stage also ran. Its archived numeric rows
+reproduced to within 6.7 × 10⁻¹⁴, including macro-F1 0.9772 after the
+prespecified age, sex and location residualization of the selected panel.
 
 ## Task B raw versus deposited expression
 
@@ -99,8 +113,33 @@ metadata, annotation coverage, seeds, panel rule and scoring code as the
 deposited-expression analysis. All six macro-F1 values agreed exactly. The
 adjusted sensitivity retained macro-F1 0.8431 (conditional donor-bootstrap
 interval 0.7769–0.9008). ROC-AUC was 0.9318 on fresh raw RMA and 0.9320 on
-deposited expression in that sensitivity. The agreement concerns the same
-cohort and does not resolve the acquisition alias.
+deposited expression in that sensitivity. Both analyses use the same cohort
+and inherit the acquisition alias.
+
+The prespecified four-gene GSE4107 transfer sensitivity used the current
+GSE44076 raw-CEL gene matrix for training and the same deposited GSE4107
+evaluation matrix. At the frozen 0.50 threshold, it classified all 22 donors
+as healthy. Balanced accuracy was 0.500, macro-F1 0.313 and ROC-AUC 0.983
+(deposited training ROC-AUC 0.992). The direction and operating-point failure
+persisted. The score remains sensitive to the shared acquisition alias.
+
+## Task C raw-CEL refit conditional on the archived panel
+
+A separate run held the archived FOXQ1/CEMIP/ETV4 panel and hyperparameters
+fixed, refit on 196 fresh GSE44076 RMA arrays, and selected the transport
+threshold on repeated GSE44076 grouped OOF predictions. The label-independent
+platform intersection retained 12,039 genes, including CEMIP and ETV4 from
+the panel. The threshold relocked at 0.41 before GSE41258 outcomes were read.
+This refit assesses reproducibility conditional on the archived selection.
+
+On the canonical GSE41258 set (233 arrays, 190 patients), fresh rank-transport
+ROC-AUC was 0.9829, macro-F1 0.8282, sensitivity 1.0000, specificity 0.5577,
+Brier 0.0533 and calibration intercept/slope −2.0661/2.6198. All 13 primary
+patient-cluster bootstrap interval endpoints reproduced exactly. The
+prespecified 0.50 sensitivity had macro-F1 0.8898 and specificity 0.7115.
+These retrospective operating points quantify threshold and calibration
+transport on this cohort. Neither external outcome set entered fitting,
+signature selection, or threshold selection.
 
 ## Reproduction boundaries
 

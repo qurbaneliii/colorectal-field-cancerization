@@ -46,4 +46,10 @@ intervals are in `results/metrics/external_validation_bootstrap_ci.csv`.
 The independent 1,000-draw patient-cluster replay reproduced all 13 primary
 intervals to within 1.5 × 10⁻¹⁴ in endpoint differences. See
 `results/ai_audit/external_rank_cluster_bootstrap_replay.csv`.
+
+A separate fresh raw-CEL refit with the archived panel and hyperparameters
+reselected 0.41 using GSE44076 only. The new GSE41258 predictions reproduced
+the primary metrics and all 13 patient-cluster interval endpoints.
+[Raw-CEL continuation](15_raw_reproduction_continuation.md)
+
 Calibration diagnostics follow [Van Calster et al.](https://doi.org/10.1186/s12916-019-1466-7).

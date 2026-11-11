@@ -1,0 +1,15 @@
+task,estimand,metric,mean,median,standard_deviation,ci_lower,ci_upper,bootstrap_iterations,analysis_provenance
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,roc_auc,1.0,1.0,3.700743415417188e-17,0.9999999999999999,1.0,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,pr_auc,1.0,1.0,8.668343884395395e-17,0.9999999999999999,1.0000000000000002,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,f1_macro,1.0,1.0,0.0,1.0,1.0,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,f1_weighted,1.0,1.0,0.0,1.0,1.0,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,balanced_accuracy,1.0,1.0,0.0,1.0,1.0,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,brier_score,0.026788532427514625,0.026674047865739743,0.002155644851891281,0.022892535950382875,0.03128728518954298,1000,raw_cel_rma
+task_b_field_effect,patient_bootstrap_of_aggregated_repeated_oof,log_loss,0.1645433150075013,0.1643769910974719,0.006804603352912233,0.15258612904510147,0.1782053369801619,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,roc_auc,0.9903590170762182,0.9907330279050395,0.009824511606673067,0.9633486047480216,1.0,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,pr_auc,0.9949796693049882,0.9951435119502346,0.005110561032333595,0.9806890498134738,1.0,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,f1_macro,0.9947594371193852,0.9948978263699075,0.005331673656833746,0.9795833333333333,1.0,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,f1_weighted,0.9947594371193852,0.9948978263699075,0.005331673656833771,0.9795833333333334,1.0,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,balanced_accuracy,0.9947602040816327,0.9948979591836735,0.0053300147978962075,0.9795918367346939,1.0,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,brier_score,0.021390526365209106,0.02079404796031068,0.0049277273935121905,0.014097790709164705,0.0329201761960206,1000,raw_cel_rma
+task_c_tumor_vs_adjacent,patient_bootstrap_of_aggregated_repeated_oof,log_loss,0.1346257068698882,0.13294097588933335,0.015243500077194022,0.11216763892905587,0.17057296383769088,1000,raw_cel_rma

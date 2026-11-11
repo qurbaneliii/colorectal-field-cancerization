@@ -50,6 +50,12 @@ def early_onset_metadata(path: Path) -> pd.DataFrame:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--primary-matrix", required=True, type=Path)
+    parser.add_argument(
+        "--primary-provenance",
+        choices=["geo_deposited_series_matrix", "raw_cel_rma"],
+        default="geo_deposited_series_matrix",
+        help="Use a GEO probe series matrix or a fresh raw-CEL gene Parquet matrix.",
+    )
     parser.add_argument("--external-matrix", required=True, type=Path)
     parser.add_argument("--external-annotation", required=True, type=Path)
     parser.add_argument("--external-geo-text", required=True, type=Path)
@@ -67,10 +73,13 @@ def main() -> None:
             args.external_annotation.resolve().as_uri(),
             "ID", "Gene symbol", "Gene ID", Path(temp) / "mapping.csv",
         )
-    primary = aggregate_probe_expression(
-        read_geo_series_matrix(args.primary_matrix),
-        pd.read_csv(primary_map).query("mapping_status == 'mapped_unique'"),
-    )
+    if args.primary_provenance == "raw_cel_rma":
+        primary = pd.read_parquet(args.primary_matrix).set_index("gene_symbol")
+    else:
+        primary = aggregate_probe_expression(
+            read_geo_series_matrix(args.primary_matrix),
+            pd.read_csv(primary_map).query("mapping_status == 'mapped_unique'"),
+        )
     primary_metadata_path = ROOT / "data/metadata/gse44076_samples.csv"
     metadata = pd.read_csv(primary_metadata_path)
     training = metadata[
@@ -93,7 +102,8 @@ def main() -> None:
         "role": "external_cohort_association_sensitivity",
         "training_accession": "GSE44076",
         "evaluation_accession": "GSE4107",
-        "expression_provenance": "geo_deposited_series_matrix",
+        "expression_provenance": args.primary_provenance,
+        "evaluation_expression_provenance": "geo_deposited_series_matrix",
         "representation": "within_sample_percentile_rank",
         "genes": genes,
         "missing_genes": [gene for gene in card["feature_genes"] if gene not in genes],

@@ -1,0 +1,43 @@
+{
+  "scope": "Conditional on archived signature and hyperparameters; fresh GSE44076 raw-CEL RMA refit",
+  "training_archive_sha256": "059abdaa76f731c9d1af116875bb60663fb875c296bbf01e353de48eeed0a030",
+  "evaluation_archive_sha256": "740aaf0c5ec4c0ba72107b1d4ef50b5a309cb5cab88aa29ea73fc48594f778ee",
+  "evaluation_expression_sha256": "25f9ed328e2404b8c937468eb7d1bd655b4bfd0e722d4f61d8c84158758983ef",
+  "archived_development_card_sha256": "49e643d274dda8b29fc527b5a43a795b96c1c25c0c11c98b0bc8030c40bb1228",
+  "fresh_development_card_sha256": "ac8b0c72d205e4028501160ea0da32f9cc7e18bf8228ee287c183cd2bee0db4c",
+  "fresh_transport_card_sha256": "b7e8ee787f3d4f9a9def0d5ede040d946a6d0ac44f4f7ef496d35908174945ee",
+  "training_accession": "GSE44076",
+  "evaluation_accession": "GSE41258",
+  "training_arrays": 196,
+  "signature": [
+    "FOXQ1",
+    "CEMIP",
+    "ETV4"
+  ],
+  "transport_signature": [
+    "CEMIP",
+    "ETV4"
+  ],
+  "transport_common_gene_count": 12039,
+  "hyperparameters": {
+    "model__C": 0.05,
+    "model__l1_ratio": 0.2,
+    "univariate__k": 20,
+    "variance_quantile__quantile": 0.5
+  },
+  "threshold": 0.41,
+  "threshold_selection_inputs": {
+    "data/processed/GSE44076_gene_expression_raw_cel_rma.parquet": "db3d53c7a2e10a3f7bb1e6809b5b9a46effa7e26de2154ec2b3add5ecb009e11",
+    "data/metadata/gse44076_samples.csv": "ef866c70f52adcf094fa56f211fd5d80519aee05d72715b1e779233ad6231dd9",
+    "config/analysis.yaml": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+    "results/tables/task_c_primary_threshold_selection.csv": "12f0e3dfe0dbd118fdb871277c82fdb6e0f34eb34a666904b142fb11e5eafb09"
+  },
+  "threshold_origin": "GSE44076 grouped OOF rank-transport scores conditional on a full-development signature and hyperparameters. maximize_balanced_accuracy.",
+  "external_labels_used_for_training_selection_or_threshold": false,
+  "software_versions": {
+    "python": "3.12.14",
+    "scikit_learn": "1.8.0",
+    "pandas": "3.0.3",
+    "numpy": "2.4.4"
+  }
+}

@@ -1144,12 +1144,14 @@ compared explicitly rather than conflated.
 
 ## Limitations
 
-The study is retrospective and single-cohort for Task B; healthy and adjacent
-samples differ demographically; bulk expression is composition-sensitive;
-processing metadata are incomplete; no independent field-effect cohort exists;
-one Task C gene is absent on GPL96; external threshold/calibration transport is
-imperfect; and no prospective clinical-utility analysis is available. Docker
-execution is blocked by the unavailable host Linux-container engine.
+The study is retrospective and single-cohort for Task B. Healthy and adjacent
+samples differ demographically, bulk expression is composition-sensitive, and
+processing metadata are incomplete. Acquisition-matched field-effect validation
+remains outstanding. GPL96 lacks one Task C gene, and external threshold and
+calibration transport are imperfect. Prospective clinical utility remains
+unevaluated. The
+[raw-CEL audit](ai_audit/15_raw_reproduction_continuation.md) records archive
+identities, execution evidence and remaining reproducibility gates.
 
 ## Final scientific conclusions
 
@@ -1158,10 +1160,8 @@ technical and demographic checks, but its marked composition sensitivity and
 lack of independent Task B validation require a cohort-specific, noncausal
 interpretation. Task B is ready for internal research use, not clinical use.
 Task C supplies strong cross-platform ranking evidence but only moderate
-threshold/probability transport. Publication readiness remains partial because
-current-revision remote CI and container execution are blocked in this host
-session and administrative manuscript metadata remain to be supplied; clinical
-readiness is not claimed.
+threshold/probability transport. Publication readiness also depends on the
+reproducibility gates and manuscript metadata tracked in the acceptance report.
 """
     (REPORTS / "final_analysis_report.md").write_text(
         scientific_report.strip() + "\n", encoding="utf-8"
@@ -1180,13 +1180,12 @@ executed, inspected, non-empty artifact; code presence alone is insufficient.
 | D. Confounding and biology | PASS | Demographic, subgroup, MCP-counter, stress, QC, preprocessing, trajectory, and tier-specific enrichment sensitivities | Independent cell-resolved confirmation remains a scientific limitation |
 | E. Modeling and external boundaries | PASS | Grouped nested selection; Task B primary; Task C secondary; locked GSE44076 threshold; exact model versus transport-refit distinction | Independent Task B cohort remains unavailable |
 | F. Uncertainty | PASS | Separate fold and aggregated-OOF estimands, 1,000 group bootstraps, task-specific 1,000-permutation tests, calibration | Prospective uncertainty remains unavailable |
-| G. Reproducibility | PARTIAL | Locked Python/R files, 40 passing local tests, R verification, and a passing baseline-branch CI run | Current-revision CI awaits an authenticated push; Docker is host-blocked until the Windows Linux-container engine/WSL service is available |
+| G. Reproducibility | PARTIAL | Locked Python/R files and a checksummed result inventory | See the [raw-CEL audit](ai_audit/15_raw_reproduction_continuation.md) for current input and execution evidence. Historical TAR identity remains unresolved. |
 | H. Manuscript | PASS | Complete sections, verified references, no citation placeholders, expanded results/discussion, full legends, ten tables, vector/raster figures | Supply author, affiliation, and funding metadata |
 
-Overall decision: **PARTIAL publication readiness**. The scientific and reporting
-gates are complete, but current-revision remote CI and independent container
-execution remain blocked at the host. This does not invalidate the executed
-analyses; it prevents a full reproducibility PASS.
+Overall decision is **partial publication readiness**. Review the raw-CEL
+audit for the run-specific gates, including the historical archive identity,
+and supply author, affiliation and funding metadata.
 """
     (REPORTS / "publication_readiness_final.md").write_text(
         readiness.strip() + "\n", encoding="utf-8"

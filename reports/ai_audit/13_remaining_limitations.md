@@ -7,8 +7,8 @@
   Cross-site and stage overlap, mapping and cohort provenance need auditing
   before any locked evaluation.
 - The effect of frozen-reference preprocessing on held-out raw-array scores
-  is unknown. The real-data sensitivities start with deposited normalized
-  expression and therefore also inherit cohort processing.
+  is unknown. Both raw-CEL RMA and deposited normalized-expression analyses
+  inherit cohort-wide preprocessing.
 - GSE41258 is an exposed neoplasia cohort. The exact three-gene model lacks
   coverage on GPL96. The two-gene refit has good ranking and weak transport of
   the operating threshold. External calibration is measured on a particular
@@ -19,5 +19,7 @@
 - Repeated grouped folds share training patients. Bootstrap intervals of
   averaged OOF scores are conditional on the fitted models. Training and
   selection uncertainty and transport calibration require new data.
-- Full raw-CEL re-estimation, matched pipeline comparisons, experiment-wide
-  provenance across the R branches and clinical utility remain open.
+- Historical TAR byte identity requires the original inputs or historical CEL
+  fingerprints. The current GEO archives support a separately pinned raw-CEL
+  run. Clinical utility remains open.
+  [Raw-CEL continuation](15_raw_reproduction_continuation.md)
