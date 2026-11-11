@@ -37,7 +37,9 @@ dir.create(dirname(signature_path), recursive = TRUE, showWarnings = FALSE)
 if (!file.exists(signature_path)) {
   download.file(signature_url, signature_path, mode = "wb", quiet = FALSE)
 }
-observed_sha256 <- digest::digest(file = signature_path, algo = "sha256")
+signature_text <- rawToChar(readBin(signature_path, "raw", n = file.info(signature_path)$size))
+signature_bytes <- charToRaw(gsub("\r\n", "\n", signature_text, fixed = TRUE))
+observed_sha256 <- digest::digest(signature_bytes, algo = "sha256", serialize = FALSE)
 if (!identical(observed_sha256, signature_sha256)) {
   stop("Pinned MCP-counter signature SHA-256 mismatch: ", observed_sha256)
 }

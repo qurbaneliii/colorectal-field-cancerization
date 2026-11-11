@@ -1,7 +1,8 @@
 required <- c(
   "affy", "affyio", "oligo", "pd.hg.u219", "hgu219.db", "hgu133acdf",
   "hgu133a.db", "AnnotationDbi", "org.Hs.eg.db", "Biobase", "limma",
-  "arrayQualityMetrics", "affyPLM", "MCPcounter", "GEOquery", "matrixStats", "data.table", "ggplot2",
+  "arrayQualityMetrics", "affyPLM", "MCPcounter", "GEOquery", "matrixStats", "data.table", "R.utils",
+  "ggplot2", "svglite", "digest",
   "pheatmap", "clusterProfiler", "ReactomePA", "fgsea", "enrichplot", "renv"
 )
 missing <- required[!vapply(required, requireNamespace, logical(1), quietly = TRUE)]

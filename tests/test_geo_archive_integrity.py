@@ -76,3 +76,20 @@ def test_download_preserves_full_partial_on_checksum_mismatch(tmp_path):
         resumable_download("https://example.invalid/data", target, 5, "0" * 64)
     assert partial.read_bytes() == b"wrong"
     assert not target.exists()
+
+
+def test_download_refuses_a_resume_at_the_wrong_offset(tmp_path, monkeypatch):
+    target = tmp_path / "download.tar"
+    partial = tmp_path / "download.tar.part"
+    partial.write_bytes(b"abc")
+
+    class WrongRange(io.BytesIO):
+        status = 206
+        headers = Message()
+        headers["Content-Range"] = "bytes 2-5/6"
+
+    monkeypatch.setattr("urllib.request.urlopen", lambda *_, **__: WrongRange(b"cdef"))
+    with pytest.raises(ValueError, match="Unexpected resume response"):
+        resumable_download("https://example.invalid/data", target, 6, "0" * 64)
+    assert partial.read_bytes() == b"abc"
+    assert not target.exists()

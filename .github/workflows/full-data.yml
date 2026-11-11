@@ -66,9 +66,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends gfortran pandoc \
             libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev \
             libfribidi-dev libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev \
-            libgit2-dev libglpk-dev libgsl-dev libicu-dev libcairo2-dev
+            libgit2-dev libglpk-dev libgsl-dev libicu-dev libcairo2-dev libuv1-dev
       - name: Cache GEO archives
-        uses: actions/cache@v4
+        id: geo-cache
+        uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/geo-cache
           key: geo-v1-${{ inputs.inputs }}-${{ hashFiles('data/metadata/data_manifest.csv', 'results/ai_audit/current_geo_archive_pins.json') }}
@@ -84,13 +85,33 @@ jobs:
           python scripts/stage_geo_inputs.py --download --cache "$RUNNER_TEMP/geo-cache" \
             --worktree "$RUNNER_TEMP/raw-analysis" \
             --evidence "$RUNNER_TEMP/raw-evidence/inputs.json" "${pins[@]}"
+      - name: Save verified GEO cache
+        if: steps.geo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/geo-cache
+          key: ${{ steps.geo-cache.outputs.cache-primary-key }}
       - name: Restore locked scientific dependencies
+        env:
+          RENV_PATHS_CELLAR: ${{ runner.temp }}/r-cellar
         run: |
           python -m pip install -r requirements-lock.txt
           Rscript --vanilla -e 'install.packages("renv", repos="https://cloud.r-project.org")'
+          mkdir -p "$RENV_PATHS_CELLAR" "$RUNNER_TEMP/r-sources"
+          cd "$RUNNER_TEMP/r-sources"
+          # Build source tarballs from the commits recorded in renv.lock.
+          oligo=e073acb9f29886d4cc073f634c109d0bb76b2f81
+          mcp=b6eac73e91c246fcff0bb1a5c68a816cd588fc48
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://codeload.github.com/bioc/oligo/tar.gz/$oligo" | tar -xz
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://codeload.github.com/ebecht/MCPcounter/tar.gz/$mcp" | tar -xz
+          cd "$RENV_PATHS_CELLAR"
+          R CMD build --no-build-vignettes --no-manual "$RUNNER_TEMP/r-sources/oligo-$oligo"
+          R CMD build --no-build-vignettes --no-manual "$RUNNER_TEMP/r-sources/MCPcounter-$mcp/Source"
           cd "$RUNNER_TEMP/raw-analysis"
           # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
-          Rscript -e 'renv::restore(exclude="arrow", prompt=FALSE)'
+          Rscript -e 'renv::restore(exclude="arrow", transactional=FALSE, prompt=FALSE)'
           make verify-env
       - name: Execute and record the raw-CEL pipeline
         run: |
@@ -99,7 +120,7 @@ jobs:
           printf 'stage,status,exit_code\n' > "$logs/stages.csv"
           blocked=0
           for target in audit extract preprocess convert differential-expression sensitivity composition \
-              stress enrichment train compact-panel confounding permutation threshold validate \
+              stress train compact-panel enrichment confounding permutation threshold validate \
               figures tables manuscript quality full-data-test; do
             if (( blocked )); then
               printf '%s,BLOCKED,\n' "$target" >> "$logs/stages.csv"

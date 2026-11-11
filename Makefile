@@ -37,7 +37,7 @@ qc: preprocess
 differential-expression:
 	$(RSCRIPT) R/04_differential_expression.R
 
-sensitivity:
+sensitivity: processed-matrix
 	$(PYTHON) scripts/run_raw_vs_processed_sensitivity.py
 	$(PYTHON) scripts/run_covariate_sensitivity.py
 
@@ -99,4 +99,4 @@ sensitivity-all: audit processed-matrix
 	$(PYTHON) scripts/build_manuscript_outputs.py
 	$(PYTHON) -m pytest -q
 
-all: audit extract preprocess convert differential-expression sensitivity composition stress enrichment train compact-panel confounding permutation threshold validate figures tables manuscript quality full-data-test
+all: audit extract preprocess convert differential-expression sensitivity composition stress train compact-panel enrichment confounding permutation threshold validate figures tables manuscript quality full-data-test

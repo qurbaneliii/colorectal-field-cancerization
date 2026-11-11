@@ -20,9 +20,11 @@ from src.visualization.publication_figures import PALETTE, save_figure
 
 
 COMPARISONS = {
-    "adjacent_vs_healthy": "adjacent_normal_vs_healthy",
-    "tumor_vs_healthy": "tumor_vs_healthy",
-    "tumor_vs_adjacent_paired": "tumor_vs_adjacent_normal_paired",
+    "adjacent_vs_healthy": ("adjacent_vs_healthy", "U0_unadjusted", "adjacent_normal_vs_healthy"),
+    "tumor_vs_healthy": ("tumor_vs_healthy", "U0_unadjusted", "tumor_vs_healthy"),
+    "tumor_vs_adjacent_paired": (
+        "tumor_vs_adjacent", "P_patient_fixed_effect", "tumor_vs_adjacent_normal_paired"
+    ),
 }
 
 
@@ -39,8 +41,8 @@ def main() -> None:
     rows = []
     changed_frames = []
     plot_frames = []
-    for raw_name, processed_name in COMPARISONS.items():
-        raw = raw_de[raw_de["comparison"].eq(raw_name)][
+    for label, (raw_name, raw_model, processed_name) in COMPARISONS.items():
+        raw = raw_de[raw_de["comparison"].eq(raw_name) & raw_de["model"].eq(raw_model)][
             ["gene_symbol", "log2_fold_change", "adjusted_p_value"]
         ].rename(
             columns={
@@ -56,8 +58,10 @@ def main() -> None:
                 "adjusted_p_value": "deposited_fdr",
             }
         )
-        merged = raw.merge(processed, on="gene_symbol", how="inner")
-        merged["comparison"] = raw_name
+        merged = raw.merge(processed, on="gene_symbol", how="inner", validate="one_to_one")
+        if len(merged) < 2:
+            raise ValueError(f"Insufficient common genes for {raw_name}/{raw_model}")
+        merged["comparison"] = label
         merged["raw_significant"] = merged["raw_fdr"].lt(0.05) & merged["raw_log2fc"].abs().ge(0.5)
         merged["deposited_significant"] = merged["deposited_fdr"].lt(0.05) & merged[
             "deposited_log2fc"
@@ -72,7 +76,8 @@ def main() -> None:
         top_processed = set(merged.nsmallest(100, "deposited_fdr")["gene_symbol"])
         rows.append(
             {
-                "comparison": raw_name,
+                "comparison": label,
+                "raw_model": raw_model,
                 "shared_tested_genes": len(merged),
                 "pearson_log2fc_correlation": stats.pearsonr(
                     merged["raw_log2fc"], merged["deposited_log2fc"]
@@ -115,7 +120,9 @@ def main() -> None:
     trajectories = classify_trajectories(raw_expression, metadata, tolerance=0.15)
     trajectories["analysis_provenance"] = "raw_cel_rma"
     trajectories.to_csv("results/tables/final_expression_trajectory_genes.csv", index=False)
-    adjacent_de = raw_de[raw_de["comparison"].eq("adjacent_vs_healthy")].copy()
+    adjacent_de = raw_de[
+        raw_de["comparison"].eq("adjacent_vs_healthy") & raw_de["model"].eq("U0_unadjusted")
+    ].copy()
     candidates = field_candidates(
         raw_expression,
         metadata,

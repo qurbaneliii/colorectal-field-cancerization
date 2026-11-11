@@ -45,6 +45,9 @@ See [the final readiness report](reports/publication_readiness_final.md),
 The audit trail starts with
 [objective alignment](reports/objective_alignment_baseline_audit.md) and the
 [research traceability matrix](reports/research_objective_traceability.md).
+The [raw-CEL reproduction continuation](reports/ai_audit/15_raw_reproduction_continuation.md)
+records the historical and current GEO archive identities, fresh runs, and
+remaining reproducibility blockers.
 
 ## Reproduce
 
@@ -58,18 +61,20 @@ py -3.12 -m venv .venv-publication
 
 D:\R\R-4.5.1\bin\Rscript.exe R/00_install_packages.R
 D:\R\R-4.5.1\bin\Rscript.exe R/verify_environment.R
+.\.venv-publication\Scripts\python scripts/run_data_audit.py
 D:\R\R-4.5.1\bin\Rscript.exe R/01_extract_and_audit_cel.R
 D:\R\R-4.5.1\bin\Rscript.exe R/02_preprocess_gse44076.R
 D:\R\R-4.5.1\bin\Rscript.exe R/03_preprocess_gse41258.R
 .\.venv-publication\Scripts\python scripts/convert_r_outputs.py
 D:\R\R-4.5.1\bin\Rscript.exe R/04_differential_expression.R
+.\.venv-publication\Scripts\python scripts/run_processed_matrix_pipeline.py
 .\.venv-publication\Scripts\python scripts/run_raw_vs_processed_sensitivity.py
 .\.venv-publication\Scripts\python scripts/run_covariate_sensitivity.py
 D:\R\R-4.5.1\bin\Rscript.exe R/06_tissue_composition_sensitivity.R
 .\.venv-publication\Scripts\python scripts/run_stress_gene_sensitivity.py
-D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
 .\.venv-publication\Scripts\python scripts/run_modeling.py --provenance raw_cel_rma
 .\.venv-publication\Scripts\python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma
+D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
 .\.venv-publication\Scripts\python scripts/run_task_b_confounding_sensitivity.py
 .\.venv-publication\Scripts\python scripts/run_permutation_tests.py --provenance raw_cel_rma
 .\.venv-publication\Scripts\python scripts/select_task_c_threshold.py
@@ -85,6 +90,11 @@ D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
 `make all` expresses the same full route on systems with GNU Make. `make smoke` runs a
 no-data grouped-CV smoke test. `make sensitivity-all` reproduces the explicitly labeled
 GEO-deposited-series-matrix sensitivity route.
+
+Stage verified archives in an isolated checkout with
+`scripts/stage_geo_inputs.py`. It reuses a checksum-verified cache and defaults
+to the historical manifest. The current GEO pins and the explicit opt-in
+command are documented in the continuation audit.
 
 The executed QC bundle includes cohort-wide pre/post distributions, RLE, MA, PCA,
 sample correlation, hierarchical clustering, objective multimetric exclusion flags,
