@@ -121,9 +121,12 @@ jobs:
           # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
           # Install the pinned MCPcounter tarball directly to avoid renv's duplicate staging path.
           Rscript -e 'renv::restore(exclude=c("arrow", "MCPcounter"), transactional=FALSE, prompt=FALSE)'
+          # This runner returns pthread_create error 22 in the locked threaded preprocessCore build.
+          Rscript -e 'options(configure.args=c(preprocessCore="--disable-threading")); renv::restore(packages="preprocessCore", rebuild=TRUE, prompt=FALSE)'
           r_library=$(Rscript -e 'cat(renv::paths$library(), "\n", sep="")' | tail -n 1)
           R CMD INSTALL --library="$r_library" "$RENV_PATHS_CELLAR/MCPcounter_1.2.0.tar.gz"
           make verify-env
+          Rscript -e 'set.seed(1); x <- matrix(exp(rnorm(600)), nrow=200); y <- preprocessCore::normalize.quantiles(preprocessCore::rma.background.correct(x)); stopifnot(identical(dim(x), dim(y)), all(is.finite(y)))'
       - name: Save locked R package cache
         if: steps.r-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4

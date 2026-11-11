@@ -12,7 +12,7 @@ if (as.character(getRversion()) != lock$R$Version) {
   stop("Expected locked R version ", lock$R$Version, ", detected ", getRversion())
 }
 expected <- vapply(lock$Packages[required], function(record) record$Version, character(1))
-observed <- vapply(required, function(package) as.character(packageVersion(package)), character(1))
+observed <- vapply(required, function(package) packageDescription(package, fields = "Version"), character(1))
 different <- observed != expected
 if (any(different)) {
   stop("R package version mismatch: ", paste(

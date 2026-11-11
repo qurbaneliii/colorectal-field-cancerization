@@ -61,6 +61,11 @@ The R extraction ran in 41.0 s, and all 636 extracted gzip files matched the
 archive member hashes. Native GSE44076 RMA and the intensity, RLE, PCA and
 clustering diagnostics ran in 525.2 s. The native call deferred the separate
 `arrayQualityMetrics` report while its dependency closure was being restored.
+GSE41258 RMA, core array diagnostics and the original GPL96 affyPLM NUSE
+stage completed in 3,049.9 s. The 390 NUSE medians and IQRs agreed with the
+archive within 1.0 × 10⁻¹⁴. Core QC retained all 636 arrays and recovered
+GSM1077736 as the sole one-metric review case. The fresh probe-set counts
+were 49,386 and 22,283 and the mapped gene counts were 18,490 and 12,650.
 
 The initial Linux restore built 176 packages and failed at `fs` (missing
 `libuv1-dev`), `oligo` (the Bioconductor source endpoint did not serve the
@@ -79,6 +84,15 @@ package directly from its pinned source tarball into the locked project
 library. The verified GEO input cache was saved before this restore.
 [Second hosted run](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43013057519)
 
+The next hosted run reused the verified GEO cache and passed locked R and
+Python dependency verification. Its raw stage stopped at
+`pthread_create` error 22 from the threaded `preprocessCore` build.
+The hosted recipe now rebuilds the same locked `preprocessCore` version
+with the package's serial configure option and checks RMA background
+correction and quantile normalization before the scientific stages.
+[Hosted restore and RMA attempt](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43017039168),
+[Bioconductor threading diagnosis](https://github.com/Bioconductor/bioconductor_docker/issues/22)
+
 For the nondefault Windows toolchain install, `RTOOLS45_HOME` pointed to
 the Rtools45 directory. The PATH began with its `usr/bin` and
 `x86_64-w64-mingw32.static.posix/bin` directories. R 4.5.1 ran with an
@@ -87,6 +101,20 @@ the locked Bioconductor 3.21 repositories. The build retained the package
 versions recorded in `renv.lock`. R Arrow was excluded from the retry because
 the pipeline supports gzip CSV with Parquet conversion in Python.
 [Rtools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html)
+
+The August 2026 repository lacked the locked Windows `stringi` binary and
+fell back to compiling bundled ICU. An earlier Posit snapshot supplied the
+exact `stringi` 1.8.7 Windows binary. The ZIP passed CRC and package MD5
+checks, then loaded on R 4.5.1 and reported ICU 74.1. Its SHA-256 was
+`13d3463d867eed30040aab6473cca1420d1a0fc84bac3b7309ee1a031386a5c0`.
+The native retry installed that verified binary and reused the packages
+already restored. [Posit snapshot package](https://packagemanager.posit.co/cran/2025-09-08/bin/windows/contrib/4.5/stringi_1.8.7.zip)
+
+Native verification found 219 exact package-version matches. Optional
+`arrow` 25.0.0 was the only absent lock entry. The installed
+`MCPcounter` DESCRIPTION reported the exact Git SHA and subdirectory from
+the lock. Some Windows binaries were built under a different R 4.5 patch
+release. The analysis runtime was R 4.5.1.
 
 ## Fresh raw-CEL limma results
 
@@ -126,6 +154,12 @@ CLC/DYNC1H1/FOS/VIP/SNORA12 for Task B and FOXQ1/CEMIP/ETV4 for Task C.
 The original Task B confounding stage also ran. Its archived numeric rows
 reproduced to within 6.7 × 10⁻¹⁴, including macro-F1 0.9772 after the
 prespecified age, sex and location residualization of the selected panel.
+
+All three original group-preserving permutation tests completed in
+2,324.6 s, using 1,000 permutations for each prespecified null. The observed
+macro-F1, null means and Monte Carlo p-values reproduced the archive.
+Each p-value was 1/1,001. The Task B null concerns the observed group
+association, which includes the acquisition protocol.
 
 ## Task B raw versus deposited expression
 
