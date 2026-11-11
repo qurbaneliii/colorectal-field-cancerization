@@ -1,48 +1,67 @@
 {
-  "included": 233,
-  "excluded": 157,
-  "normal_colon": 52,
-  "primary_tumor": 181,
-  "signature_genes_primary": 19,
-  "signature_genes_common": 14,
-  "technical_replicates_excluded": 8,
-  "metrics": [
-    {
-      "representation": "training_zscore",
-      "f1_macro": 0.7697676863239777,
-      "f1_weighted": 0.8146275550646981,
-      "balanced_accuracy": 0.8701657458563536,
-      "log_loss": 4.775477568470554,
-      "precision_adjacent_normal": 0.5252525252525253,
-      "recall_adjacent_normal": 1.0,
-      "f1_adjacent_normal": 0.6887417218543046,
-      "precision_tumor": 1.0,
-      "recall_tumor": 0.7403314917127072,
-      "f1_tumor": 0.8507936507936508,
-      "roc_auc": 0.9927751806204844,
-      "pr_auc": 0.9970546338565748,
-      "brier_score": 0.197129072316211,
-      "sensitivity": 0.7403314917127072,
-      "specificity": 1.0
-    },
-    {
-      "representation": "within_sample_percentile_rank",
-      "f1_macro": 0.9876221844453889,
-      "f1_weighted": 0.9914163090128756,
-      "balanced_accuracy": 0.9876221844453889,
-      "log_loss": 0.091143681747883,
-      "precision_adjacent_normal": 0.9807692307692307,
-      "recall_adjacent_normal": 0.9807692307692307,
-      "f1_adjacent_normal": 0.9807692307692307,
-      "precision_tumor": 0.994475138121547,
-      "recall_tumor": 0.994475138121547,
-      "f1_tumor": 0.994475138121547,
-      "roc_auc": 0.9957501062473437,
-      "pr_auc": 0.9986331084396243,
-      "brier_score": 0.013569738589764945,
-      "sensitivity": 0.994475138121547,
-      "specificity": 0.9807692307692307
-    }
+  "schema_version": 1,
+  "training_accession": "GSE44076",
+  "evaluation_accession": "GSE41258",
+  "analysis_provenance": "raw_cel_rma",
+  "endpoint": "Task C, primary tumor versus normal colon in the neoplasia cohort",
+  "full_signature_genes": [
+    "FOXQ1",
+    "CEMIP",
+    "ETV4"
   ],
-  "claim_boundary": "Validates the tumor-versus-normal-colon component only; it is not independent validation of healthy-versus-adjacent field cancerization."
+  "transport_signature_genes": [
+    "CEMIP",
+    "ETV4"
+  ],
+  "excluded_signature_genes": [
+    "FOXQ1"
+  ],
+  "common_universe_gene_count": 12039,
+  "locked_threshold": 0.41,
+  "threshold_origin": "GSE44076 patient-grouped repeated OOF rank-transport probabilities; maximize_balanced_accuracy; external labels not accessed",
+  "threshold_selection_scope": "fixed_full_development_panel_and_hyperparameters",
+  "default_threshold_sensitivity": 0.5,
+  "primary_evaluation": {
+    "representation": "within_sample_percentile_rank",
+    "evaluation_set": "canonical_patient_tissue",
+    "threshold_policy": "primary_gse44076_locked",
+    "is_primary": true,
+    "arrays": 233,
+    "unique_patients": 190,
+    "normal_colon_arrays": 52,
+    "primary_tumor_arrays": 181,
+    "analysis_provenance": "raw_cel_rma",
+    "f1_macro": 0.8281545614878948,
+    "f1_weighted": 0.8902213772027792,
+    "balanced_accuracy": 0.7788461538461539,
+    "log_loss": 0.1949961732822611,
+    "precision_normal_colon": 1.0,
+    "recall_normal_colon": 0.5576923076923077,
+    "f1_normal_colon": 0.7160493827160493,
+    "precision_primary_tumor": 0.8872549019607843,
+    "recall_primary_tumor": 1.0,
+    "f1_primary_tumor": 0.9402597402597402,
+    "roc_auc": 0.9828941776455588,
+    "pr_auc": 0.993502236187968,
+    "brier_score": 0.0532505439454337,
+    "sensitivity": 1.0,
+    "specificity": 0.5576923076923077,
+    "negative_predictive_value": 1.0,
+    "positive_predictive_value": 0.8872549019607843,
+    "calibration_intercept": -2.066114156637155,
+    "calibration_slope": 2.619824520244153
+  },
+  "evidence": {
+    "mode": "historical_prediction_replay",
+    "snapshot_commit": "c2a36a1d2f80fd25e1565b543c909eebef64ca09",
+    "sha256": {
+      "results/metrics/external_validation_metrics.csv": "e297ef4fec0ff430770bf3291f69535387bf0ce3223efe6a3f72ebe6edf0ca88",
+      "results/tables/supplementary_external_predictions.csv": "3d7a48b66dc0b93b7f4c6f18ac99b99427f9575a6820ff374cbf7e62aa6f9ef6",
+      "results/tables/task_c_primary_threshold_selection.csv": "9a4e28c42b0d4730220ff8463eb3d5aaa47031b439e9b12af95836366ce98054",
+      "models/task_c_primary_full_signature_model_card.json": "49e643d274dda8b29fc527b5a43a795b96c1c25c0c11c98b0bc8030c40bb1228",
+      "models/task_c_cross_platform_transport_model_card.json": "9d967111b05449fdd34417d1e5d4f9fd7a1c45832b4df43c000a7900a5b74654",
+      "results/tables/external_common_signature_audit.csv": "954d108394da71411510a2b9ebcdd1652c3bf3b5d2a4b5c4dae17ed5e47111c2",
+      "results/metrics/external_validation_bootstrap_ci.csv": "a1eecde1cb9fa1646007c22e8c38319b2b07f87706cb850ced06eaa92417871f"
+    }
+  }
 }

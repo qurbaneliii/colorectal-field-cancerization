@@ -38,11 +38,14 @@ def classification_metrics(
     probability = probability / probability.sum(axis=1, keepdims=True)
     log_probability = np.clip(probability, 1e-15, 1.0)
     log_probability = log_probability / log_probability.sum(axis=1, keepdims=True)
+    sorted_columns = np.argsort(classes)
     result: dict[str, float] = {
         "f1_macro": f1_score(y_true, y_pred, average="macro"),
         "f1_weighted": f1_score(y_true, y_pred, average="weighted"),
         "balanced_accuracy": balanced_accuracy_score(y_true, y_pred),
-        "log_loss": log_loss(y_true, log_probability, labels=classes),
+        "log_loss": log_loss(
+            y_true, log_probability[:, sorted_columns], labels=classes[sorted_columns]
+        ),
     }
     precision, recall, f1, _ = precision_recall_fscore_support(
         y_true, y_pred, labels=classes, zero_division=0

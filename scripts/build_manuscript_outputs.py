@@ -4,12 +4,18 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.verify_external_results import verify
+
 TABLES = ROOT / "results/tables"
 METRICS = ROOT / "results/metrics"
 MANUSCRIPT = ROOT / "manuscript"
@@ -39,26 +45,6 @@ def write(name: str, value: str) -> None:
 
 
 def artifact_manifest(commit: str) -> pd.DataFrame:
-    command_rules = {
-        "array_quality": "Rscript R/02_preprocess_gse44076.R or R/03_preprocess_gse41258.R",
-        "nuse": "Rscript R/03_preprocess_gse41258.R",
-        "differential_expression": "Rscript R/04_differential_expression.R",
-        "enrichment": "Rscript R/05_functional_enrichment.R",
-        "composition": "Rscript R/06_tissue_composition_sensitivity.R",
-        "confounding": "python scripts/run_task_b_confounding_sensitivity.py",
-        "compact_panel": "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma",
-        "external": "python scripts/run_external_validation.py --provenance raw_cel_rma",
-        "threshold": "python scripts/select_task_c_threshold.py",
-        "permutation": "python scripts/run_permutation_tests.py --provenance raw_cel_rma",
-        "task_c_cross_platform_transport": (
-            "python scripts/run_external_validation.py --provenance raw_cel_rma"
-        ),
-        "task_b_": "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma",
-        "task_c_primary": (
-            "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma"
-        ),
-        "task_c_model_card": "python scripts/select_task_c_threshold.py",
-    }
     rows: list[dict[str, object]] = []
     created = datetime.now(timezone.utc).isoformat()
     for base in (
@@ -72,27 +58,14 @@ def artifact_manifest(commit: str) -> pd.DataFrame:
             if not path.is_file() or path == REPORTS / "result_artifact_manifest.csv":
                 continue
             relative = path.relative_to(ROOT).as_posix()
-            producing = "python scripts/build_manuscript_outputs.py"
-            for token, command in command_rules.items():
-                if token in relative.lower():
-                    producing = command
-                    break
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             rows.append(
                 {
                     "path": relative,
                     "size_bytes": path.stat().st_size,
                     "sha256": digest,
-                    "producing_command": producing,
-                    "input_provenance": (
-                        "raw_cel_rma"
-                        if relative.startswith(
-                            ("results/", "reports/", "manuscript/", "models/")
-                        )
-                        else "GEO_metadata"
-                    ),
-                    "creation_timestamp_utc": created,
-                    "git_commit_sha_at_generation": commit,
+                    "observed_at_utc": created,
+                    "inventory_head_commit": commit,
                 }
             )
     return pd.DataFrame(rows)
@@ -100,6 +73,7 @@ def artifact_manifest(commit: str) -> pd.DataFrame:
 
 def main() -> None:
     os.chdir(ROOT)
+    verify(ROOT)
     MANUSCRIPT.mkdir(exist_ok=True)
     REPORTS.mkdir(exist_ok=True)
 
@@ -116,9 +90,9 @@ def main() -> None:
     task_b_confounding = read("task_b_confounding_sensitivity.csv").set_index("scenario")
     threshold = read("task_c_primary_threshold_selection.csv")
     threshold_row = threshold.loc[threshold["selected"]].iloc[0]
-    external = read("external_patient_tissue_metrics.csv", METRICS)
+    external = read("external_validation_metrics.csv", METRICS)
     external_primary = external.loc[external["is_primary"]].iloc[0]
-    external_ci = read("external_patient_cluster_bootstrap_ci.csv", METRICS)
+    external_ci = read("external_validation_bootstrap_ci.csv", METRICS)
     external_ci = external_ci.loc[
         external_ci["representation"].eq("within_sample_percentile_rank")
         & external_ci["evaluation_set"].eq("canonical_patient_tissue")
@@ -175,7 +149,7 @@ def main() -> None:
         read("external_patient_tissue_structure.csv")["has_both_tissues"].sum()
     )
 
-    title_page = """# Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning
+    title_page = """# Transcriptomic field associations in colorectal cancer with patient-grouped validation
 
 [AUTHOR NAME]
 
@@ -221,8 +195,8 @@ retained direction and significance after composition-PC adjustment and
 {stress_flagged} overlapped the curated stress set. The primary Task B panel was
 {', '.join(task_b_genes)}. Its aggregated repeated out-of-fold ROC-AUC was
 {interval(task_b_ci, 'roc_auc')} and Brier score was
-{interval(task_b_ci, 'brier_score')}; there is no independent healthy-versus-adjacent
-cohort. The secondary Task C panel was {', '.join(task_c_genes)}. Only
+{interval(task_b_ci, 'brier_score')}. Validation under matched acquisition
+protocols remains outstanding. The secondary Task C panel was {', '.join(task_c_genes)}. Only
 {', '.join(common_task_c)} were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In {external_arrays} canonical patient-tissue
@@ -363,7 +337,9 @@ Task C (tumor versus adjacent-normal) was secondary; Task A was supporting.
 Elastic Net logistic regression [8] was prespecified as the interpretable model,
 with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
-ranking, and compact-panel selection occurred within training partitions.
+ranking, and compact-panel selection occurred within training partitions for
+the nested CV analyses. RMA normalized and summarized each entire cohort before
+splitting. Internal estimates therefore describe cohort-processed expression.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
@@ -381,19 +357,23 @@ compact-consensus and exploratory labels were reported separately. Null tests
 were task-specific: Task A held healthy labels fixed while permuting the
 tumor/adjacent component, Task B permuted group-level healthy/adjacent labels,
 and Task C exchanged tumor/adjacent labels within patients. Each used 1,000
-permutations.
+permutations. The original-label split assignments and modal hyperparameters
+were held fixed. The resulting p values are conditional development diagnostics.
 
 ## Locked Task C threshold and external evaluation
 
 The Task C panel and probability threshold were derived without GSE41258 labels.
 Within-sample percentile ranks were computed over the label-independent common
-gene universe. Repeated grouped GSE44076 OOF probabilities were averaged by
-patient and the threshold maximizing balanced accuracy was selected, with ties
+gene universe. Repeated grouped GSE44076 OOF probabilities used a signature and
+hyperparameters previously selected on all development samples. Scores were
+averaged across repeats by sample. The development threshold maximized balanced
+accuracy on these same scores, with ties
 resolved toward 0.5 and then the lower threshold. Because {task_c_genes[0]} was
 absent from GPL96, the exact three-gene serialized primary model was not directly
 transportable. A distinct two-gene refit using {', '.join(common_task_c)} and
 GSE44076 outcomes was serialized and labeled as a transport refit. External
-labels were used only for final evaluation. The primary external estimand used
+labels were used for evaluation of the locked model and threshold. The cohort
+had already been analyzed in prior repository work. The primary estimand used
 all canonical patient-tissue rows and patient-cluster bootstrap intervals (1,000
 replicates); one-array-per-patient and threshold 0.5 were sensitivities.
 
@@ -519,7 +499,8 @@ and paired-permutation p=
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 {number(threshold_row['threshold'], 2)} with internal balanced accuracy
 {number(threshold_row['balanced_accuracy'])}; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only
@@ -622,10 +603,11 @@ and composition-PC residualization may remove biologically meaningful field
 signals as well as confounding. The immediate-early/stress audit is limited by a
 curated gene list and incomplete preanalytical metadata.
 
-Task B has internal grouped nested validation only. No independent cohort with
-both genuinely healthy donor mucosa and tumor-adjacent mucosa was available, so
-there is no external field-effect validation. Very high internal discrimination
-may still reflect cohort-specific structure.
+The primary Task B estimate comes from internal grouped validation. Controls
+were recruited during colonoscopy and cancer-associated mucosa came from
+surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
+so the observed discrimination cannot establish a cancer-specific field effect.
+See the independent audit for the external cohort-association sensitivity.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized

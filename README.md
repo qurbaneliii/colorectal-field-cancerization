@@ -1,6 +1,6 @@
 # Transcriptomic field cancerization in colorectal cancer
 
-Publication-oriented, leakage-safe reanalysis of **GSE44076** with raw Affymetrix CEL
+Publication-oriented reanalysis of **GSE44076** with raw Affymetrix CEL
 files. **GSE41258** is used only for locked tumor-versus-normal-colon external
 validation; it cannot independently validate the healthy-versus-adjacent field-effect
 task.
@@ -25,8 +25,9 @@ group means are not interpreted as longitudinal progression.
 - Raw RMA assertions: 49,386 GSE44076 and 22,283 GSE41258 probe sets.
 - High-confidence field signature: **101 genes**; 74 retain
   composition-adjusted support and 3 overlap the curated immediate-early/stress set.
-- Primary Task B compact panel: **CLC, DYNC1H1, FOS, VIP, SNORA12**. It is internally
-  validated only; no independent healthy-versus-adjacent cohort is available.
+- Primary Task B compact panel: **CLC, DYNC1H1, FOS, VIP, SNORA12**. The primary
+  raw-CEL estimate is internal. Validation under matched acquisition protocols
+  remains outstanding.
 - Task B confounding challenge: macro-F1 was 0.977 after fold-local age/sex/location
   residualization and 0.850 after demographics plus two composition PCs learned
   inside each outer-training fold (demographic-only baseline 0.626).
@@ -36,8 +37,7 @@ group means are not interpreted as longitudinal progression.
   patients; patient-clustered ROC AUC 0.9829 and macro-F1 0.8282 at the
   GSE44076-locked threshold of 0.41. The two-gene transport refit is distinct from the
   exact three-gene primary model.
-- Final readiness: **PARTIAL** until the Docker image is built against a running Docker
-  engine; all scientific gates completed locally.
+- Reproduction and scientific readiness are documented in the independent audit.
 
 See [the final readiness report](reports/publication_readiness_final.md),
 [the manuscript](manuscript/manuscript.md), and
@@ -98,13 +98,21 @@ archive-member counts, GEO mappings, and platform checks are recorded under
 `data/metadata/`. Raw-CEL and deposited-matrix artifacts use separate filenames and
 result namespaces.
 
-All model splits preserve patient/donor groups. Variance filtering, univariate selection,
-scaling, tuning, calibration, panel ranking, and threshold use training data only. No
-SMOTE, deep learning, external-label tuning, or silent mock fallback is used.
+Model splits preserve patient and donor groups. Nested CV fits variance filtering,
+univariate selection, scaling, tuning, calibration and panel ranking within training
+partitions. RMA was fit on the entire cohort before those splits. The historical
+Task C threshold uses grouped development scores conditional on a panel and
+hyperparameters selected on all development samples. The external scores and
+threshold were frozen for evaluation.
 
 The locked environments are `requirements-lock.txt` and `renv.lock`. CI runs lint,
 no-data tests, and a synthetic grouped-CV smoke test; the manual full-data workflow is
 provided for a self-hosted runner with the local GEO inputs.
+
+The [independent scientific audit](reports/ai_audit/FINAL_EXECUTIVE_RESEARCH_REPORT.md)
+documents sampling-protocol confounding, validation estimands and real-data
+sensitivities. Run `python scripts/verify_external_results.py` to reconcile the
+active external reports with saved predictions.
 
 ## Data availability
 

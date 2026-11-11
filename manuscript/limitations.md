@@ -11,10 +11,11 @@ and composition-PC residualization may remove biologically meaningful field
 signals as well as confounding. The immediate-early/stress audit is limited by a
 curated gene list and incomplete preanalytical metadata.
 
-Task B has internal grouped nested validation only. No independent cohort with
-both genuinely healthy donor mucosa and tumor-adjacent mucosa was available, so
-there is no external field-effect validation. Very high internal discrimination
-may still reflect cohort-specific structure.
+The primary Task B estimate comes from internal grouped validation. Controls
+were recruited during colonoscopy and cancer-associated mucosa came from
+surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
+so the observed discrimination cannot establish a cancer-specific field effect.
+See the independent audit for the external cohort-association sensitivity.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized

@@ -4,7 +4,10 @@ import argparse
 import hashlib
 import json
 import os
+import platform
+import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import joblib
@@ -20,8 +23,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.data.cross_platform import within_sample_percentile_rank
-from src.data.provenance import expression_path, result_root, source_files_sha256
+from src.data.provenance import artifact_sha256, expression_path, result_root, source_files_sha256
 from src.modeling.evaluation import grouped_bootstrap_metrics
+from src.modeling.external_result import external_summary, write_external_report
 from src.modeling.external_validation import locked_binary_predictions
 from src.modeling.pipelines import build_pipeline
 from src.visualization.publication_figures import save_figure
@@ -32,6 +36,7 @@ TRANSPORT_SOURCE_FILES = [
     "scripts/run_external_validation.py",
     "src/data/cross_platform.py",
     "src/modeling/evaluation.py",
+    "src/modeling/external_result.py",
     "src/modeling/external_validation.py",
     "src/modeling/pipelines.py",
 ]
@@ -132,13 +137,16 @@ def main() -> None:
         raise AssertionError("Model/expression provenance mismatch")
     if "transport_threshold" not in artifact:
         raise AssertionError("Task C transport threshold has not been locked on GSE44076")
+    if "transport_threshold_input_sha256" not in artifact:
+        raise ValueError("Regenerate the Task C threshold lock to bind it to its inputs")
+    for filename, digest in artifact["transport_threshold_input_sha256"].items():
+        if artifact_sha256(ROOT / filename) != digest:
+            raise ValueError(f"Task C threshold lock input changed: {filename}")
 
-    primary = pd.read_parquet(
-        expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
-    ).set_index("gene_symbol")
-    external = pd.read_parquet(
-        expression_path(ROOT / paths["processed"], "GSE41258", "gene", provenance)
-    ).set_index("gene_symbol")
+    primary_path = expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
+    external_path = expression_path(ROOT / paths["processed"], "GSE41258", "gene", provenance)
+    primary = pd.read_parquet(primary_path).set_index("gene_symbol")
+    external = pd.read_parquet(external_path).set_index("gene_symbol")
     primary_meta = pd.read_csv(ROOT / paths["metadata"] / "gse44076_samples.csv")
     external_meta = pd.read_csv(
         ROOT / paths["metadata"] / "gse41258_samples.csv", dtype={"patient_id": str}
@@ -166,6 +174,11 @@ def main() -> None:
         gene for gene in signature if gene in primary.index and gene in external_genes
     ]
     common_universe = [gene for gene in primary.index.astype(str) if gene in external_genes]
+    if (
+        artifact["transport_signature_genes"] != common_signature
+        or artifact["transport_common_universe"] != common_universe
+    ):
+        raise ValueError("Current platform mapping differs from the Task C threshold lock")
     excluded_signature = [gene for gene in signature if gene not in common_signature]
     if len(common_signature) < 2:
         raise RuntimeError("Fewer than two locked genes occur on both platforms")
@@ -349,14 +362,16 @@ def main() -> None:
         "external_labels_used": False,
         "threshold": locked_threshold,
         "threshold_origin": artifact["transport_threshold_origin"],
+        "threshold_selection_scope": artifact["transport_threshold_selection_scope"],
         "analysis_provenance": provenance,
         "analysis_source_files": TRANSPORT_SOURCE_FILES,
         "analysis_source_sha256": source_files_sha256(ROOT, TRANSPORT_SOURCE_FILES),
         "clinical_readiness": "not clinically ready",
     }
+    transport_model_path = models_root / "task_c_cross_platform_transport_model.joblib"
     joblib.dump(
         {"model": fitted_models[primary_representation], **transport_card},
-        models_root / "task_c_cross_platform_transport_model.joblib",
+        transport_model_path,
     )
     (models_root / "task_c_cross_platform_transport_model_card.json").write_text(
         json.dumps(transport_card, indent=2), encoding="utf-8"
@@ -436,7 +451,6 @@ def main() -> None:
             external_meta["tissue_class"].isin(["normal_colon", "primary_tumor"])
         ]["technical_replicate_candidate"].sum()
     )
-    primary_metric = metrics[metrics["is_primary"]].iloc[0]
     structure_report = f"""# External patient structure report
 
 The primary GSE41258 evaluation retains one canonical array per patient and
@@ -457,40 +471,52 @@ retains every selected observation for each sampled patient.
     (reports_root / "external_patient_structure_report.md").write_text(
         structure_report, encoding="utf-8"
     )
-    validation_report = f"""# External validation report
-
-This is a secondary cross-platform tumor-normal evaluation, not independent
-validation of the healthy-versus-adjacent field-effect task. The exact
-{len(signature)}-gene Task C model could not be deployed because
-{', '.join(excluded_signature)} {'was' if len(excluded_signature) == 1 else 'were'}
-absent on GPL96. The feature specification, Elastic Net family,
-hyperparameters, within-sample rank representation, and threshold were locked
-using GSE44076. A separate transport model was refitted on GSE44076 using the
-{len(common_signature)} common signature genes and evaluated once on GSE41258.
-External labels were never used for fitting, selection, transformation, or
-threshold choice.
-
-- External labels retained verbatim: `normal_colon`, `primary_tumor`
-- Locked threshold: {locked_threshold:.2f} (GSE44076 grouped repeated OOF)
-- Default threshold sensitivity: {default_threshold:.2f}
-- Primary set: {len(canonical)} arrays from {canonical['donor_or_patient_group'].nunique()} patients
-- Primary ROC-AUC: {primary_metric['roc_auc']:.4f}
-- Primary PR-AUC: {primary_metric['pr_auc']:.4f}
-- Primary balanced accuracy: {primary_metric['balanced_accuracy']:.4f}
-- Primary macro-F1: {primary_metric['f1_macro']:.4f}
-- Primary NPV: {primary_metric['negative_predictive_value']:.4f}
-- Primary Brier score: {primary_metric['brier_score']:.4f}
-- Primary log loss: {primary_metric['log_loss']:.4f}
-
-Patient-cluster bootstrap intervals, the all-array analysis, the optional
-one-array-per-patient analysis, and the failed or degraded training-z-score
-transport are reported as distinct estimands. High ranking discrimination does
-not by itself establish threshold or probability calibration transport. This
-retrospective biomarker-discovery model is not clinically ready.
-"""
-    (reports_root / "external_validation_report.md").write_text(
-        validation_report, encoding="utf-8"
+    threshold_path = tables_root / "task_c_primary_threshold_selection.csv"
+    metrics_path = metrics_root / "external_validation_metrics.csv"
+    predictions_path = tables_root / "supplementary_external_predictions.csv"
+    summary = external_summary(
+        pd.read_csv(metrics_path),
+        pd.read_csv(predictions_path),
+        pd.read_csv(threshold_path),
+        artifact,
+        transport_card,
+        common_table,
     )
+    tracked_files = [
+        ROOT / "config/analysis.yaml",
+        ROOT / "config/paths.yaml",
+        ROOT / "requirements-lock.txt",
+        ROOT / paths["metadata"] / "gse44076_samples.csv",
+        ROOT / paths["metadata"] / "gse41258_samples.csv",
+        ROOT / paths["metadata"] / "data_manifest.csv",
+        primary_path,
+        external_path,
+        primary_model_path,
+        transport_model_path,
+        threshold_path,
+        metrics_path,
+        metrics_root / "external_validation_bootstrap_ci.csv",
+        predictions_path,
+        tables_root / "external_common_signature_audit.csv",
+        models_root / "task_c_primary_full_signature_model_card.json",
+        models_root / "task_c_cross_platform_transport_model_card.json",
+    ]
+    repository = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=False
+    )
+    summary["evidence"] = {
+        "mode": "model_execution",
+        "head_commit": repository.stdout.strip() if repository.returncode == 0 else None,
+        "analysis_source_sha256": transport_card["analysis_source_sha256"],
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "python_version": platform.python_version(),
+        "platform": platform.platform(),
+        "dependency_lock_sha256": artifact_sha256(ROOT / "requirements-lock.txt"),
+        "sha256": {
+            path.relative_to(ROOT).as_posix(): artifact_sha256(path) for path in tracked_files
+        },
+    }
+    write_external_report(reports_root, summary)
     print(
         json.dumps(
             {
@@ -501,7 +527,7 @@ retrospective biomarker-discovery model is not clinically ready.
                 "signature_genes_primary": signature,
                 "signature_genes_transport": common_signature,
                 "locked_threshold": locked_threshold,
-                "primary_metrics": primary_metric.to_dict(),
+                "primary_metrics": summary["primary_evaluation"],
             },
             indent=2,
             default=str,

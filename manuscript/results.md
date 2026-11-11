@@ -110,7 +110,8 @@ and paired-permutation p=
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 0.41 with internal balanced accuracy
 0.995; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only

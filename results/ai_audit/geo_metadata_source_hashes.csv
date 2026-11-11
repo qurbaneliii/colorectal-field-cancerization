@@ -1,0 +1,4 @@
+accession,url,bytes,sha256
+GSE44076,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE44076&targ=all&form=text&view=brief,1413725,4bc02ee94dbd32770eb3c7680819fd3f3b0d9fa5883af06c68e26ea015ebca1b
+GSE41258,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE41258&targ=all&form=text&view=brief,2280707,6f6a9a2a0d0118507d50c542465d56dc1e83161c81d2697e61b9741a340d7a02
+GSE41258_clinical,https://ftp.ncbi.nlm.nih.gov/geo/series/GSE41nnn/GSE41258/suppl/GSE41258_clinical_data.txt.gz,3135,6ed90de8810b609d175c34b43443a64b6f973c9bf8aff85b7e666e16cbdb8194

@@ -1,4 +1,4 @@
-# Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning
+# Transcriptomic field associations in colorectal cancer with patient-grouped validation
 
 [AUTHOR NAME]
 
@@ -43,8 +43,8 @@ retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was
 CLC, DYNC1H1, FOS, VIP, SNORA12. Its aggregated repeated out-of-fold ROC-AUC was
 1.000 (1.000-1.000) and Brier score was
-0.027 (0.023-0.031); there is no independent healthy-versus-adjacent
-cohort. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
+0.027 (0.023-0.031). Validation under matched acquisition protocols remains
+outstanding. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
 CEMIP, ETV4 were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In 233 canonical patient-tissue
@@ -182,7 +182,9 @@ Task C (tumor versus adjacent-normal) was secondary; Task A was supporting.
 Elastic Net logistic regression [8] was prespecified as the interpretable model,
 with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
-ranking, and compact-panel selection occurred within training partitions.
+ranking, and compact-panel selection occurred within training partitions for
+the nested CV analyses. RMA normalized and summarized each entire cohort before
+splitting. Internal estimates therefore describe cohort-processed expression.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
@@ -200,19 +202,23 @@ compact-consensus and exploratory labels were reported separately. Null tests
 were task-specific: Task A held healthy labels fixed while permuting the
 tumor/adjacent component, Task B permuted group-level healthy/adjacent labels,
 and Task C exchanged tumor/adjacent labels within patients. Each used 1,000
-permutations.
+permutations. The original-label split assignments and modal hyperparameters
+were held fixed. The resulting p values are conditional development diagnostics.
 
 ## Locked Task C threshold and external evaluation
 
 The Task C panel and probability threshold were derived without GSE41258 labels.
 Within-sample percentile ranks were computed over the label-independent common
-gene universe. Repeated grouped GSE44076 OOF probabilities were averaged by
-patient and the threshold maximizing balanced accuracy was selected, with ties
+gene universe. Repeated grouped GSE44076 OOF probabilities used a signature and
+hyperparameters previously selected on all development samples. Scores were
+averaged across repeats by sample. The development threshold maximized balanced
+accuracy on these same scores, with ties
 resolved toward 0.5 and then the lower threshold. Because FOXQ1 was
 absent from GPL96, the exact three-gene serialized primary model was not directly
 transportable. A distinct two-gene refit using CEMIP, ETV4 and
 GSE44076 outcomes was serialized and labeled as a transport refit. External
-labels were used only for final evaluation. The primary external estimand used
+labels were used for evaluation of the locked model and threshold. The cohort
+had already been analyzed in prior repository work. The primary estimand used
 all canonical patient-tissue rows and patient-cluster bootstrap intervals (1,000
 replicates); one-array-per-patient and threshold 0.5 were sensitivities.
 
@@ -337,7 +343,8 @@ and paired-permutation p=
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 0.41 with internal balanced accuracy
 0.995; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only
@@ -438,10 +445,11 @@ and composition-PC residualization may remove biologically meaningful field
 signals as well as confounding. The immediate-early/stress audit is limited by a
 curated gene list and incomplete preanalytical metadata.
 
-Task B has internal grouped nested validation only. No independent cohort with
-both genuinely healthy donor mucosa and tumor-adjacent mucosa was available, so
-there is no external field-effect validation. Very high internal discrimination
-may still reflect cohort-specific structure.
+The primary Task B estimate comes from internal grouped validation. Controls
+were recruited during colonoscopy and cancer-associated mucosa came from
+surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
+so the observed discrimination cannot establish a cancer-specific field effect.
+See the independent audit for the external cohort-association sensitivity.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized

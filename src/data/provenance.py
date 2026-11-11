@@ -7,6 +7,18 @@ from pathlib import Path
 VALID_PROVENANCE = {"raw_cel_rma", "geo_deposited_series_matrix"}
 
 
+def file_sha256(path: Path) -> str:
+    with path.open("rb") as source:
+        return hashlib.file_digest(source, "sha256").hexdigest()
+
+
+def artifact_sha256(path: Path) -> str:
+    """Hash repository text in Git's LF representation and binary inputs byte-for-byte."""
+    if path.suffix in {".csv", ".json", ".yaml", ".txt"}:
+        return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+    return file_sha256(path)
+
+
 def source_files_sha256(root: Path, relative_paths: list[str]) -> str:
     """Hash named analysis sources so generated artifacts identify exact code content."""
 

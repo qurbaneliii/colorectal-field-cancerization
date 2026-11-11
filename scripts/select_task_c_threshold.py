@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.data.cross_platform import within_sample_percentile_rank
-from src.data.provenance import expression_path, result_root
+from src.data.provenance import artifact_sha256, expression_path, result_root
 from src.modeling.evaluation import classification_metrics, prediction_probabilities
 from src.modeling.pipelines import build_pipeline
 from src.modeling.splitters import stratified_group_splits
@@ -26,19 +26,21 @@ from src.visualization.publication_figures import save_figure
 
 def threshold_grid(probability: np.ndarray, labels: np.ndarray, config: dict) -> pd.DataFrame:
     rows = []
-    thresholds = np.arange(
+    thresholds = np.round(np.arange(
         float(config["threshold_grid_start"]),
         float(config["threshold_grid_stop"]) + float(config["threshold_grid_step"]) / 2,
         float(config["threshold_grid_step"]),
-    )
+    ), 10)
     for threshold in thresholds:
         predicted = np.where(probability >= threshold, "tumor", "adjacent_normal")
         rows.append(
             {
-                "threshold": float(np.round(threshold, 10)),
+                "threshold": float(threshold),
                 "balanced_accuracy": balanced_accuracy_score(labels, predicted),
                 "macro_f1": f1_score(labels, predicted, average="macro"),
-                "distance_from_default": abs(threshold - float(config["default_threshold"])),
+                "distance_from_default": round(
+                    abs(threshold - float(config["default_threshold"])), 10
+                ),
             }
         )
     frame = pd.DataFrame(rows)
@@ -66,15 +68,15 @@ def main() -> None:
     figures = result_root(ROOT / paths["figures"], provenance)
     reports = result_root(ROOT / paths["reports"], provenance)
     models = result_root(ROOT / paths["models"], provenance)
-    primary = pd.read_parquet(
-        expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
-    ).set_index("gene_symbol")
+    primary_path = expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
+    primary = pd.read_parquet(primary_path).set_index("gene_symbol")
     external_gene_index = pd.read_parquet(
         expression_path(ROOT / paths["processed"], "GSE41258", "gene", provenance),
         columns=["gene_symbol"],
     )["gene_symbol"].astype(str)
     external_genes = set(external_gene_index)
-    metadata = pd.read_csv(ROOT / paths["metadata"] / "gse44076_samples.csv")
+    metadata_path = ROOT / paths["metadata"] / "gse44076_samples.csv"
+    metadata = pd.read_csv(metadata_path)
     metadata = metadata[
         metadata["inclusion_status"].eq("included")
         & metadata["tissue_class"].isin(["adjacent_normal", "tumor"])
@@ -82,6 +84,13 @@ def main() -> None:
     card_path = models / "task_c_primary_full_signature_model_card.json"
     artifact_path = models / "task_c_primary_full_signature_model.joblib"
     card = json.loads(card_path.read_text(encoding="utf-8"))
+    artifact = joblib.load(artifact_path)
+    if (
+        card["analysis_provenance"] != provenance
+        or card["feature_genes"] != artifact["feature_genes"]
+        or card["hyperparameters"] != artifact["hyperparameters"]
+    ):
+        raise ValueError("Task C development card, fitted artifact, and expression disagree")
     signature = list(card["feature_genes"])
     common_signature = [gene for gene in signature if gene in external_genes]
     common_universe = [gene for gene in primary.index.astype(str) if gene in external_genes]
@@ -152,7 +161,8 @@ def main() -> None:
     )
     predictions.to_csv(metrics_root / "task_c_rank_transport_repeated_oof.csv", index=False)
     averaged.to_csv(metrics_root / "task_c_rank_transport_aggregated_oof.csv", index=False)
-    curve.to_csv(tables / "task_c_primary_threshold_selection.csv", index=False)
+    threshold_path = tables / "task_c_primary_threshold_selection.csv"
+    curve.to_csv(threshold_path, index=False)
     curve.to_csv(tables / "task_c_threshold_selection.csv", index=False)
 
     fig, ax = plt.subplots(figsize=(7.5, 5.5))
@@ -169,16 +179,21 @@ def main() -> None:
     save_figure(fig, figures / "task_c_oof_threshold_curve")
 
     threshold_origin = (
-        "GSE44076 patient-grouped repeated OOF rank-transport probabilities; "
-        f"{config['external_validation']['threshold_rule']}; external labels not accessed"
+        "GSE44076 grouped OOF rank-transport scores conditional on a full-development "
+        f"signature and hyperparameters. {config['external_validation']['threshold_rule']}."
     )
     card["transport_threshold"] = locked
     card["transport_threshold_origin"] = threshold_origin
     card["transport_signature_genes"] = common_signature
     card["transport_common_universe_gene_count"] = len(common_universe)
+    card["transport_common_universe"] = common_universe
+    card["transport_threshold_input_sha256"] = {
+        path.relative_to(ROOT).as_posix(): artifact_sha256(path)
+        for path in (primary_path, metadata_path, ROOT / "config/analysis.yaml", threshold_path)
+    }
+    card["transport_threshold_selection_scope"] = "fixed_full_development_panel_and_hyperparameters"
     card["external_labels_used"] = False
     card_path.write_text(json.dumps(card, indent=2), encoding="utf-8")
-    artifact = joblib.load(artifact_path)
     artifact.update(card)
     joblib.dump(artifact, artifact_path)
     joblib.dump(artifact, models / "task_c_primary_model.joblib")
@@ -198,6 +213,10 @@ the label-independent GPL13667/GPL96 gene intersection and within-sample rank
 transformation. Probabilities were averaged across repeats per sample. The
 prespecified rule selected the balanced-accuracy maximum, resolving ties by
 proximity to 0.5 and then the lower threshold.
+
+The signature and hyperparameters were previously selected on all development
+samples. The displayed operating point uses the same development scores used
+to select the threshold. These are conditional development diagnostics.
 
 - Locked threshold: {locked:.2f}
 - Original Task C signature: {', '.join(signature)}
