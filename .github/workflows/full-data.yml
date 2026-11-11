@@ -50,6 +50,7 @@ jobs:
       OMP_NUM_THREADS: 1
       MKL_NUM_THREADS: 1
       RENV_CONFIG_INSTALL_NCPUS: 2
+      RENV_PATHS_CACHE: ${{ runner.temp }}/renv-cache
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -91,10 +92,17 @@ jobs:
         with:
           path: ${{ runner.temp }}/geo-cache
           key: ${{ steps.geo-cache.outputs.cache-primary-key }}
+      - name: Restore locked R package cache
+        id: r-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ env.RENV_PATHS_CACHE }}
+          key: renv-ubuntu24-r451-v1-${{ hashFiles('renv.lock') }}
       - name: Restore locked scientific dependencies
         env:
           RENV_PATHS_CELLAR: ${{ runner.temp }}/r-cellar
         run: |
+          set -o pipefail
           python -m pip install -r requirements-lock.txt
           Rscript --vanilla -e 'install.packages("renv", repos="https://cloud.r-project.org")'
           mkdir -p "$RENV_PATHS_CELLAR" "$RUNNER_TEMP/r-sources"
@@ -111,10 +119,20 @@ jobs:
           R CMD build --no-build-vignettes --no-manual "$RUNNER_TEMP/r-sources/MCPcounter-$mcp/Source"
           cd "$RUNNER_TEMP/raw-analysis"
           # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
-          Rscript -e 'renv::restore(exclude="arrow", transactional=FALSE, prompt=FALSE)'
+          # Install the pinned MCPcounter tarball directly to avoid renv's duplicate staging path.
+          Rscript -e 'renv::restore(exclude=c("arrow", "MCPcounter"), transactional=FALSE, prompt=FALSE)'
+          r_library=$(Rscript -e 'cat(renv::paths$library(), "\n", sep="")' | tail -n 1)
+          R CMD INSTALL --library="$r_library" "$RENV_PATHS_CELLAR/MCPcounter_1.2.0.tar.gz"
           make verify-env
+      - name: Save locked R package cache
+        if: steps.r-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ env.RENV_PATHS_CACHE }}
+          key: ${{ steps.r-cache.outputs.cache-primary-key }}
       - name: Execute and record the raw-CEL pipeline
         run: |
+          set -o pipefail
           cd "$RUNNER_TEMP/raw-analysis"
           logs="$RUNNER_TEMP/raw-evidence"
           printf 'stage,status,exit_code\n' > "$logs/stages.csv"

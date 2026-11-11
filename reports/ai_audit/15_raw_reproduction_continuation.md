@@ -72,6 +72,22 @@ run used the locked core packages and the supported gzip CSV/Parquet route.
 [oligo 1.71.7 source](https://github.com/bioc/oligo/commit/e073acb9f29886d4cc073f634c109d0bb76b2f81),
 [MCPcounter source](https://github.com/ebecht/MCPcounter/tree/b6eac73e91c246fcff0bb1a5c68a816cd588fc48)
 
+The second hosted run installed 201 locked packages, including `oligo`
+1.71.7 and both QC and enrichment dependencies. The duplicate renv staging
+path persisted for `MCPcounter`. The hosted workflow now installs that
+package directly from its pinned source tarball into the locked project
+library. The verified GEO input cache was saved before this restore.
+[Second hosted run](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43013057519)
+
+For the nondefault Windows toolchain install, `RTOOLS45_HOME` pointed to
+the Rtools45 directory. The PATH began with its `usr/bin` and
+`x86_64-w64-mingw32.static.posix/bin` directories. R 4.5.1 ran with an
+isolated user library. The retry used the 2026-08-07 Posit CRAN snapshot and
+the locked Bioconductor 3.21 repositories. The build retained the package
+versions recorded in `renv.lock`. R Arrow was excluded from the retry because
+the pipeline supports gzip CSV with Parquet conversion in Python.
+[Rtools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html)
+
 ## Fresh raw-CEL limma results
 
 The fresh raw-CEL limma run completed in 52.9 s after restoring the pinned
@@ -90,6 +106,12 @@ composition model retained effect size, direction and FDR for 74 of 101
 high-confidence genes. Ten of ten flagged stromal/ECM genes attenuated by
 at least 25%. The stress-gene sensitivity flagged three high-confidence
 genes, leaving 98. These are within-cohort sensitivities.
+
+The full raw-versus-deposited pipeline compared 15,879 shared genes using
+corresponding unadjusted and paired designs. The log-fold-change Pearson
+correlations were 0.9977–0.9979 and sign agreement was 99.4–99.6%. This
+comparison uses the pipeline's separate deposited mapping. The first audit's
+same-annotation limma refits held more inputs fixed.
 
 ## Fresh grouped nested CV
 
