@@ -1,5 +1,9 @@
 # Baseline reproduction
 
+This report records the initial audit. The
+[raw-CEL continuation](15_raw_reproduction_continuation.md) documents the
+completed GSE41258 acquisition, both archive fingerprints and the fresh run.
+
 Verified upstream baseline `c2a36a1d2f80fd25e1565b543c909eebef64ca09`.
 Baseline commands used a detached worktree at that commit. The audit branch
 kept the deposited, archived-prediction and raw-CEL evidence distinct.

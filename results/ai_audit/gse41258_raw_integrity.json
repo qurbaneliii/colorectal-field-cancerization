@@ -1,0 +1,21 @@
+{
+  "accession": "GSE41258",
+  "source_url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE41nnn/GSE41258/suppl/GSE41258_RAW.tar",
+  "archive_bytes": 1378918400,
+  "historical_archive_bytes": 1378918400,
+  "archive_sha256": "740aaf0c5ec4c0ba72107b1d4ef50b5a309cb5cab88aa29ea73fc48594f778ee",
+  "historical_archive_sha256": "965cc38ccf8cf5f803de2bf3e15da0232fd629196cd5c9e75f415a106902576d",
+  "historical_sha256_matches": false,
+  "member_count": 390,
+  "historical_member_order_matches": true,
+  "tar_zero_trailer_bytes": 9216,
+  "all_members_match_metadata_and_platform": true,
+  "transfer": {
+    "mode": "inspect_only"
+  },
+  "live_sample_checks": {
+    "count": 8,
+    "gzip_matches": 8,
+    "cel_matches": 8
+  }
+}

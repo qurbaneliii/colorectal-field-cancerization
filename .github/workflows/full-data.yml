@@ -2,9 +2,25 @@ name: Full raw-data verification
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: Execution environment
+        type: choice
+        options:
+          - self-hosted
+          - github-hosted
+        default: self-hosted
+      inputs:
+        description: Archive identity
+        type: choice
+        options:
+          - historical
+          - current-geo
+        default: historical
 
 jobs:
   full-data:
+    if: inputs.runner == 'self-hosted'
     runs-on: [self-hosted, colorectal-field-data]
     timeout-minutes: 1440
     steps:
@@ -22,3 +38,86 @@ jobs:
             results/tables/
             results/metrics/
           retention-days: 30
+
+  hosted-reproduction:
+    if: inputs.runner == 'github-hosted'
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      OPENBLAS_NUM_THREADS: 1
+      OMP_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      RENV_CONFIG_INSTALL_NCPUS: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.5.1"
+          use-public-rspm: false
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gfortran pandoc \
+            libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev \
+            libfribidi-dev libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev \
+            libgit2-dev libglpk-dev libgsl-dev libicu-dev libcairo2-dev
+      - name: Cache GEO archives
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/geo-cache
+          key: geo-v1-${{ inputs.inputs }}-${{ hashFiles('data/metadata/data_manifest.csv', 'results/ai_audit/current_geo_archive_pins.json') }}
+      - name: Prepare isolated worktree and verified input manifest
+        env:
+          ARCHIVE_IDENTITY: ${{ inputs.inputs }}
+        run: |
+          git worktree add --detach "$RUNNER_TEMP/raw-analysis" HEAD
+          pins=()
+          if [[ "$ARCHIVE_IDENTITY" == current-geo ]]; then
+            pins=(--alternate-pins results/ai_audit/current_geo_archive_pins.json)
+          fi
+          python scripts/stage_geo_inputs.py --download --cache "$RUNNER_TEMP/geo-cache" \
+            --worktree "$RUNNER_TEMP/raw-analysis" \
+            --evidence "$RUNNER_TEMP/raw-evidence/inputs.json" "${pins[@]}"
+      - name: Restore locked scientific dependencies
+        run: |
+          python -m pip install -r requirements-lock.txt
+          Rscript --vanilla -e 'install.packages("renv", repos="https://cloud.r-project.org")'
+          cd "$RUNNER_TEMP/raw-analysis"
+          # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
+          Rscript -e 'renv::restore(exclude="arrow", prompt=FALSE)'
+          make verify-env
+      - name: Execute and record the raw-CEL pipeline
+        run: |
+          cd "$RUNNER_TEMP/raw-analysis"
+          logs="$RUNNER_TEMP/raw-evidence"
+          printf 'stage,status,exit_code\n' > "$logs/stages.csv"
+          blocked=0
+          for target in audit extract preprocess convert differential-expression sensitivity composition \
+              stress enrichment train compact-panel confounding permutation threshold validate \
+              figures tables manuscript quality full-data-test; do
+            if (( blocked )); then
+              printf '%s,BLOCKED,\n' "$target" >> "$logs/stages.csv"
+              continue
+            fi
+            if make "$target" 2>&1 | tee "$logs/$target.log"; then
+              printf '%s,PASS,0\n' "$target" >> "$logs/stages.csv"
+            else
+              printf '%s,FAIL,%s\n' "$target" "$?" >> "$logs/stages.csv"
+              blocked=1
+            fi
+          done
+          exit "$blocked"
+      - name: Upload execution logs and input pins
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-raw-reproduction-evidence
+          path: ${{ runner.temp }}/raw-evidence/
+          if-no-files-found: ignore
+          retention-days: 14
