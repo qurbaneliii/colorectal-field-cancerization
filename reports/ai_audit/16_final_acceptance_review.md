@@ -60,6 +60,24 @@ the PR description and in the hosted evidence bundles.
   kept outside Git. Its snapshot verifier checks the published files.
   Fresh execution verifies the matrix and model bytes as well.
 
+## Native and hosted output comparison
+
+The pinned Linux replay of `9e68c4d` recovered the same panels, 0.41
+development cutoff, external metrics, and patient-cluster interval endpoints.
+In one Task B Elastic Net outer fold, the raw-CEL log loss and Brier score
+differed from the Windows snapshot by about `5.2e-9` and `1.7e-9`.
+The cohort discrimination conclusions were unchanged.
+
+The seeded ranked analysis returned 1,371 adjacent-versus-healthy GO terms
+on Linux and 1,370 on Windows. The additional term was `GO:0002604`
+(Linux BH-adjusted p-value 0.0472). The two runs selected the same terms
+for the main enrichment table. The checked-in enrichment and internal
+model comparison snapshots use the hosted values. The Windows run remains
+recorded in the raw-CEL audit. This comparison treats individual
+near-threshold ranked terms as sensitive to the execution environment.
+
+[Pinned Linux run and artifacts](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43195342594)
+
 ## Open research and submission requirements
 
 | Requirement | Status | Evidence needed |
