@@ -95,6 +95,7 @@ jobs:
               requirements-lock.txt renv.lock; do
             cmp "$GITHUB_WORKSPACE/$pin" "$pin"
           done
+          cd "$GITHUB_WORKSPACE"
           pins=()
           if [[ "$ARCHIVE_IDENTITY" == current-geo ]]; then
             pins=(--alternate-pins results/ai_audit/current_geo_archive_pins.json)
