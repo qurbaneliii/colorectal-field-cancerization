@@ -115,7 +115,6 @@ ABAT,False,False,False,False,True,1,leading_edge_enrichment
 ABCA10,False,False,False,False,True,1,leading_edge_enrichment
 ABCA2,False,False,False,False,True,1,leading_edge_enrichment
 ABCA3,False,False,False,False,True,1,leading_edge_enrichment
-ABCA4,False,False,False,False,True,1,leading_edge_enrichment
 ABCA5,False,False,False,False,True,1,leading_edge_enrichment
 ABCA6,False,False,False,False,True,1,leading_edge_enrichment
 ABCA8,False,False,False,False,True,1,leading_edge_enrichment
@@ -298,7 +297,6 @@ AGFG2,False,False,False,False,True,1,leading_edge_enrichment
 AGK,False,False,False,False,True,1,leading_edge_enrichment
 AGMAT,False,False,False,False,True,1,leading_edge_enrichment
 AGMO,False,False,False,False,True,1,leading_edge_enrichment
-AGO1,False,False,False,False,True,1,leading_edge_enrichment
 AGO2,False,False,False,False,True,1,leading_edge_enrichment
 AGO3,False,False,False,False,True,1,leading_edge_enrichment
 AGPAT1,False,False,False,False,True,1,leading_edge_enrichment
@@ -333,7 +331,6 @@ AK1,False,False,False,False,True,1,leading_edge_enrichment
 AK2,False,False,False,False,True,1,leading_edge_enrichment
 AK3,False,False,False,False,True,1,leading_edge_enrichment
 AK7,False,False,False,False,True,1,leading_edge_enrichment
-AK9,False,False,False,False,True,1,leading_edge_enrichment
 AKAP12,False,False,False,False,True,1,leading_edge_enrichment
 AKAP13,False,False,False,False,True,1,leading_edge_enrichment
 AKAP5,False,False,False,False,True,1,leading_edge_enrichment
@@ -350,7 +347,6 @@ AKR1C2,False,False,False,False,True,1,leading_edge_enrichment
 AKR1C3,False,False,False,False,True,1,leading_edge_enrichment
 AKR1C4,False,False,False,False,True,1,leading_edge_enrichment
 AKR7A2,False,False,False,False,True,1,leading_edge_enrichment
-AKR7A3,False,False,False,False,True,1,leading_edge_enrichment
 AKT2,False,False,False,False,True,1,leading_edge_enrichment
 AKT3,False,False,False,False,True,1,leading_edge_enrichment
 AKTIP,False,False,False,False,True,1,leading_edge_enrichment
@@ -361,10 +357,7 @@ ALDH1A1,False,False,False,False,True,1,leading_edge_enrichment
 ALDH1A2,False,False,False,False,True,1,leading_edge_enrichment
 ALDH1L1,False,False,False,False,True,1,leading_edge_enrichment
 ALDH2,False,False,False,False,True,1,leading_edge_enrichment
-ALDH3A1,False,False,False,False,True,1,leading_edge_enrichment
 ALDH3A2,False,False,False,False,True,1,leading_edge_enrichment
-ALDH3B1,False,False,False,False,True,1,leading_edge_enrichment
-ALDH3B2,False,False,False,False,True,1,leading_edge_enrichment
 ALDH4A1,False,False,False,False,True,1,leading_edge_enrichment
 ALDH5A1,False,False,False,False,True,1,leading_edge_enrichment
 ALDH6A1,False,False,False,False,True,1,leading_edge_enrichment
@@ -380,10 +373,8 @@ ALKBH3,False,False,False,False,True,1,leading_edge_enrichment
 ALKBH4,False,False,False,False,True,1,leading_edge_enrichment
 ALKBH7,False,False,False,False,True,1,leading_edge_enrichment
 ALMS1,False,False,False,False,True,1,leading_edge_enrichment
-ALOX12B,False,False,False,False,True,1,leading_edge_enrichment
 ALOX15,False,False,False,False,True,1,leading_edge_enrichment
 ALOX5,False,False,False,False,True,1,leading_edge_enrichment
-ALOX5AP,False,False,False,False,True,1,leading_edge_enrichment
 ALOXE3,False,False,False,False,True,1,leading_edge_enrichment
 ALPI,False,False,False,False,True,1,leading_edge_enrichment
 ALYREF,False,False,False,False,True,1,leading_edge_enrichment
@@ -402,7 +393,7 @@ AMT,False,False,False,False,True,1,leading_edge_enrichment
 ANAPC10,False,False,False,False,True,1,leading_edge_enrichment
 ANAPC11,False,False,False,False,True,1,leading_edge_enrichment
 ANAPC13,False,False,False,False,True,1,leading_edge_enrichment
-ANAPC4,False,False,False,False,True,1,leading_edge_enrichment
+ANAPC16,False,False,False,False,True,1,leading_edge_enrichment
 ANAPC5,False,False,False,False,True,1,leading_edge_enrichment
 ANAPC7,False,False,False,False,True,1,leading_edge_enrichment
 ANG,False,False,False,False,True,1,leading_edge_enrichment
@@ -422,7 +413,6 @@ ANKRD13C,False,False,False,False,True,1,leading_edge_enrichment
 ANKRD16,False,False,False,False,True,1,leading_edge_enrichment
 ANKRD17,False,False,False,False,True,1,leading_edge_enrichment
 ANKRD6,False,False,False,False,True,1,leading_edge_enrichment
-ANKS1B,False,False,False,False,True,1,leading_edge_enrichment
 ANKS6,False,False,False,False,True,1,leading_edge_enrichment
 ANLN,False,False,False,False,True,1,leading_edge_enrichment
 ANO1,False,False,False,False,True,1,leading_edge_enrichment
@@ -499,8 +489,9 @@ AQP7,False,False,False,False,True,1,leading_edge_enrichment
 AQR,False,False,False,False,True,1,leading_edge_enrichment
 AR,False,False,False,False,True,1,leading_edge_enrichment
 ARAP3,False,False,False,False,True,1,leading_edge_enrichment
+ARF3,False,False,False,False,True,1,leading_edge_enrichment
+ARF5,False,False,False,False,True,1,leading_edge_enrichment
 ARF6,False,False,False,False,True,1,leading_edge_enrichment
-ARFGAP3,False,False,False,False,True,1,leading_edge_enrichment
 ARFIP1,False,False,False,False,True,1,leading_edge_enrichment
 ARG1,False,False,False,False,True,1,leading_edge_enrichment
 ARG2,False,False,False,False,True,1,leading_edge_enrichment
@@ -532,6 +523,7 @@ ARID4A,False,False,False,False,True,1,leading_edge_enrichment
 ARID4B,False,False,False,False,True,1,leading_edge_enrichment
 ARID5B,False,False,False,False,True,1,leading_edge_enrichment
 ARIH2,False,False,False,False,True,1,leading_edge_enrichment
+ARK2C,False,False,False,False,True,1,leading_edge_enrichment
 ARL1,False,False,False,False,True,1,leading_edge_enrichment
 ARL13B,False,False,False,False,True,1,leading_edge_enrichment
 ARL2BP,False,False,False,False,True,1,leading_edge_enrichment
@@ -550,7 +542,6 @@ ARMCX1,False,False,False,False,True,1,leading_edge_enrichment
 ARMCX3,False,False,False,False,True,1,leading_edge_enrichment
 ARMH4,False,False,False,False,True,1,leading_edge_enrichment
 ARPC2,False,False,False,False,True,1,leading_edge_enrichment
-ARPC3,False,False,False,False,True,1,leading_edge_enrichment
 ARPC4,False,False,False,False,True,1,leading_edge_enrichment
 ARPC5,False,False,False,False,True,1,leading_edge_enrichment
 ARPIN,False,False,False,False,True,1,leading_edge_enrichment
@@ -766,7 +757,6 @@ BEST2,False,False,False,False,True,1,leading_edge_enrichment
 BET1,False,False,False,False,True,1,leading_edge_enrichment
 BET1L,False,False,False,False,True,1,leading_edge_enrichment
 BEX1,False,False,False,False,True,1,leading_edge_enrichment
-BEX3,False,False,False,False,True,1,leading_edge_enrichment
 BFAR,False,False,False,False,True,1,leading_edge_enrichment
 BGN,False,False,False,False,True,1,leading_edge_enrichment
 BHLHA15,False,False,False,False,True,1,leading_edge_enrichment
@@ -970,7 +960,6 @@ CAT,False,False,False,False,True,1,leading_edge_enrichment
 CAV1,False,False,False,False,True,1,leading_edge_enrichment
 CAV2,False,False,False,False,True,1,leading_edge_enrichment
 CAV3,False,False,False,False,True,1,leading_edge_enrichment
-CAVIN1,False,False,False,False,True,1,leading_edge_enrichment
 CAVIN2,False,False,False,False,True,1,leading_edge_enrichment
 CAVIN3,False,False,False,False,True,1,leading_edge_enrichment
 CBARP,False,False,False,False,True,1,leading_edge_enrichment
@@ -994,12 +983,12 @@ CCBE1,False,False,False,False,True,1,leading_edge_enrichment
 CCDC117,False,False,False,False,True,1,leading_edge_enrichment
 CCDC136,False,False,False,False,True,1,leading_edge_enrichment
 CCDC186,False,False,False,False,True,1,leading_edge_enrichment
+CCDC22,False,False,False,False,True,1,leading_edge_enrichment
 CCDC32,False,False,False,False,True,1,leading_edge_enrichment
 CCDC38,False,False,False,False,True,1,leading_edge_enrichment
 CCDC42,False,False,False,False,True,1,leading_edge_enrichment
 CCDC47,False,False,False,False,True,1,leading_edge_enrichment
 CCDC51,False,False,False,False,True,1,leading_edge_enrichment
-CCDC8,False,False,False,False,True,1,leading_edge_enrichment
 CCDC80,False,False,False,False,True,1,leading_edge_enrichment
 CCDC85B,False,False,False,False,True,1,leading_edge_enrichment
 CCDC88A,False,False,False,False,True,1,leading_edge_enrichment
@@ -1189,7 +1178,6 @@ CENPQ,False,False,False,False,True,1,leading_edge_enrichment
 CENPU,False,False,False,False,True,1,leading_edge_enrichment
 CENPW,False,False,False,False,True,1,leading_edge_enrichment
 CEP120,False,False,False,False,True,1,leading_edge_enrichment
-CEP126,False,False,False,False,True,1,leading_edge_enrichment
 CEP131,False,False,False,False,True,1,leading_edge_enrichment
 CEP135,False,False,False,False,True,1,leading_edge_enrichment
 CEP19,False,False,False,False,True,1,leading_edge_enrichment
@@ -1244,6 +1232,7 @@ CHD8,False,False,False,False,True,1,leading_edge_enrichment
 CHDH,False,False,False,False,True,1,leading_edge_enrichment
 CHEK1,False,False,False,False,True,1,leading_edge_enrichment
 CHEK2,False,False,False,False,True,1,leading_edge_enrichment
+CHFR,False,False,False,False,True,1,leading_edge_enrichment
 CHGA,False,False,False,False,True,1,leading_edge_enrichment
 CHI3L1,False,False,False,False,True,1,leading_edge_enrichment
 CHL1,False,False,False,False,True,1,leading_edge_enrichment
@@ -1339,7 +1328,6 @@ CLIC4,False,False,False,False,True,1,leading_edge_enrichment
 CLIC5,False,False,False,False,True,1,leading_edge_enrichment
 CLIP1,False,False,False,False,True,1,leading_edge_enrichment
 CLIP3,False,False,False,False,True,1,leading_edge_enrichment
-CLIP4,False,False,False,False,True,1,leading_edge_enrichment
 CLK2,False,False,False,False,True,1,leading_edge_enrichment
 CLMP,False,False,False,False,True,1,leading_edge_enrichment
 CLN3,False,False,False,False,True,1,leading_edge_enrichment
@@ -1373,6 +1361,7 @@ CNGA2,False,False,False,False,True,1,leading_edge_enrichment
 CNGA3,False,False,False,False,True,1,leading_edge_enrichment
 CNGA4,False,False,False,False,True,1,leading_edge_enrichment
 CNGB1,False,False,False,False,True,1,leading_edge_enrichment
+CNIH4,False,False,False,False,True,1,leading_edge_enrichment
 CNKSR2,False,False,False,False,True,1,leading_edge_enrichment
 CNKSR3,False,False,False,False,True,1,leading_edge_enrichment
 CNN1,False,False,False,False,True,1,leading_edge_enrichment
@@ -1397,6 +1386,7 @@ COA3,False,False,False,False,True,1,leading_edge_enrichment
 COA4,False,False,False,False,True,1,leading_edge_enrichment
 COA5,False,False,False,False,True,1,leading_edge_enrichment
 COA6,False,False,False,False,True,1,leading_edge_enrichment
+COG6,False,False,False,False,True,1,leading_edge_enrichment
 COIL,False,False,False,False,True,1,leading_edge_enrichment
 COL11A1,False,False,False,False,True,1,leading_edge_enrichment
 COL12A1,False,False,False,False,True,1,leading_edge_enrichment
@@ -1420,8 +1410,10 @@ COL7A1,False,False,False,False,True,1,leading_edge_enrichment
 COL8A2,False,False,False,False,True,1,leading_edge_enrichment
 COLEC12,False,False,False,False,True,1,leading_edge_enrichment
 COLGALT1,False,False,False,False,True,1,leading_edge_enrichment
+COMMD1,False,False,False,False,True,1,leading_edge_enrichment
 COMT,False,False,False,False,True,1,leading_edge_enrichment
 COPA,False,False,False,False,True,1,leading_edge_enrichment
+COPE,False,False,False,False,True,1,leading_edge_enrichment
 COPG2,False,False,False,False,True,1,leading_edge_enrichment
 COPRS,False,False,False,False,True,1,leading_edge_enrichment
 COPS3,False,False,False,False,True,1,leading_edge_enrichment
@@ -1431,6 +1423,7 @@ COPS7A,False,False,False,False,True,1,leading_edge_enrichment
 COPS7B,False,False,False,False,True,1,leading_edge_enrichment
 COPS8,False,False,False,False,True,1,leading_edge_enrichment
 COPS9,False,False,False,False,True,1,leading_edge_enrichment
+COPZ1,False,False,False,False,True,1,leading_edge_enrichment
 COQ10B,False,False,False,False,True,1,leading_edge_enrichment
 COQ2,False,False,False,False,True,1,leading_edge_enrichment
 CORIN,False,False,False,False,True,1,leading_edge_enrichment
@@ -1583,7 +1576,6 @@ CUL4A,False,False,False,False,True,1,leading_edge_enrichment
 CUL4B,False,False,False,False,True,1,leading_edge_enrichment
 CUL5,False,False,False,False,True,1,leading_edge_enrichment
 CUL7,False,False,False,False,True,1,leading_edge_enrichment
-CUL9,False,False,False,False,True,1,leading_edge_enrichment
 CUX1,False,False,False,False,True,1,leading_edge_enrichment
 CUX2,False,False,False,False,True,1,leading_edge_enrichment
 CWC27,False,False,False,False,True,1,leading_edge_enrichment
@@ -1618,7 +1610,6 @@ CYP1A2,False,False,False,False,True,1,leading_edge_enrichment
 CYP1B1,False,False,False,False,True,1,leading_edge_enrichment
 CYP26B1,False,False,False,False,True,1,leading_edge_enrichment
 CYP27A1,False,False,False,False,True,1,leading_edge_enrichment
-CYP2A13,False,False,False,False,True,1,leading_edge_enrichment
 CYP2B6,False,False,False,False,True,1,leading_edge_enrichment
 CYP2C19,False,False,False,False,True,1,leading_edge_enrichment
 CYP2C8,False,False,False,False,True,1,leading_edge_enrichment
@@ -1648,7 +1639,6 @@ DACH1,False,False,False,False,True,1,leading_edge_enrichment
 DACT3,False,False,False,False,True,1,leading_edge_enrichment
 DAG1,False,False,False,False,True,1,leading_edge_enrichment
 DAGLA,False,False,False,False,True,1,leading_edge_enrichment
-DAGLB,False,False,False,False,True,1,leading_edge_enrichment
 DALRD3,False,False,False,False,True,1,leading_edge_enrichment
 DAND5,False,False,False,False,True,1,leading_edge_enrichment
 DAO,False,False,False,False,True,1,leading_edge_enrichment
@@ -1657,6 +1647,7 @@ DAPK2,False,False,False,False,True,1,leading_edge_enrichment
 DAPL1,False,False,False,False,True,1,leading_edge_enrichment
 DARS1,False,False,False,False,True,1,leading_edge_enrichment
 DARS2,False,False,False,False,True,1,leading_edge_enrichment
+DAW1,False,False,False,False,True,1,leading_edge_enrichment
 DAXX,False,False,False,False,True,1,leading_edge_enrichment
 DAZAP1,False,False,False,False,True,1,leading_edge_enrichment
 DBF4,False,False,False,False,True,1,leading_edge_enrichment
@@ -1667,6 +1658,7 @@ DBT,False,False,False,False,True,1,leading_edge_enrichment
 DCAF1,False,False,False,False,True,1,leading_edge_enrichment
 DCAF12,False,False,False,False,True,1,leading_edge_enrichment
 DCAF13,False,False,False,False,True,1,leading_edge_enrichment
+DCAF15,False,False,False,False,True,1,leading_edge_enrichment
 DCAF5,False,False,False,False,True,1,leading_edge_enrichment
 DCBLD2,False,False,False,False,True,1,leading_edge_enrichment
 DCHS1,False,False,False,False,True,1,leading_edge_enrichment
@@ -1727,13 +1719,12 @@ DDX56,False,False,False,False,True,1,leading_edge_enrichment
 DDX6,False,False,False,False,True,1,leading_edge_enrichment
 DDX60,False,False,False,False,True,1,leading_edge_enrichment
 DDX60L,False,False,False,False,True,1,leading_edge_enrichment
+DEAF1,False,False,False,False,True,1,leading_edge_enrichment
 DECR1,False,False,False,False,True,1,leading_edge_enrichment
 DECR2,False,False,False,False,True,1,leading_edge_enrichment
 DEFA4,False,False,False,False,True,1,leading_edge_enrichment
 DEFA5,False,False,False,False,True,1,leading_edge_enrichment
 DEFB1,False,False,False,False,True,1,leading_edge_enrichment
-DEGS1,False,False,False,False,True,1,leading_edge_enrichment
-DEGS2,False,False,False,False,True,1,leading_edge_enrichment
 DEK,False,False,False,False,True,1,leading_edge_enrichment
 DELE1,False,False,False,False,True,1,leading_edge_enrichment
 DENND1B,False,False,False,False,True,1,leading_edge_enrichment
@@ -1901,6 +1892,7 @@ DTL,False,False,False,False,True,1,leading_edge_enrichment
 DTNA,False,False,False,False,True,1,leading_edge_enrichment
 DTWD1,False,False,False,False,True,1,leading_edge_enrichment
 DTX1,False,False,False,False,True,1,leading_edge_enrichment
+DTX4,False,False,False,False,True,1,leading_edge_enrichment
 DTYMK,False,False,False,False,True,1,leading_edge_enrichment
 DUS1L,False,False,False,False,True,1,leading_edge_enrichment
 DUS3L,False,False,False,False,True,1,leading_edge_enrichment
@@ -1920,7 +1912,6 @@ DVL1,False,False,False,False,True,1,leading_edge_enrichment
 DXO,False,False,False,False,True,1,leading_edge_enrichment
 DYM,False,False,False,False,True,1,leading_edge_enrichment
 DYNC1LI1,False,False,False,False,True,1,leading_edge_enrichment
-DYNC1LI2,False,False,False,False,True,1,leading_edge_enrichment
 DYNC2H1,False,False,False,False,True,1,leading_edge_enrichment
 DYNC2I1,False,False,False,False,True,1,leading_edge_enrichment
 DYNLRB1,False,False,False,False,True,1,leading_edge_enrichment
@@ -1928,7 +1919,6 @@ DYRK2,False,False,False,False,True,1,leading_edge_enrichment
 DYRK3,False,False,False,False,True,1,leading_edge_enrichment
 DZIP1,False,False,False,False,True,1,leading_edge_enrichment
 E2F1,False,False,False,False,True,1,leading_edge_enrichment
-E2F2,False,False,False,False,True,1,leading_edge_enrichment
 E2F3,False,False,False,False,True,1,leading_edge_enrichment
 E2F4,False,False,False,False,True,1,leading_edge_enrichment
 E2F7,False,False,False,False,True,1,leading_edge_enrichment
@@ -1975,7 +1965,6 @@ EFNA2,False,False,False,False,True,1,leading_edge_enrichment
 EFNA5,False,False,False,False,True,1,leading_edge_enrichment
 EFNB2,False,False,False,False,True,1,leading_edge_enrichment
 EFR3A,False,False,False,False,True,1,leading_edge_enrichment
-EFR3B,False,False,False,False,True,1,leading_edge_enrichment
 EFTUD2,False,False,False,False,True,1,leading_edge_enrichment
 EGFL7,False,False,False,False,True,1,leading_edge_enrichment
 EGFLAM,False,False,False,False,True,1,leading_edge_enrichment
@@ -2069,7 +2058,6 @@ ENPP1,False,False,False,False,True,1,leading_edge_enrichment
 ENPP2,False,False,False,False,True,1,leading_edge_enrichment
 ENPP3,False,False,False,False,True,1,leading_edge_enrichment
 ENPP6,False,False,False,False,True,1,leading_edge_enrichment
-ENPP7,False,False,False,False,True,1,leading_edge_enrichment
 ENTPD1,False,False,False,False,True,1,leading_edge_enrichment
 ENTPD3,False,False,False,False,True,1,leading_edge_enrichment
 ENTPD4,False,False,False,False,True,1,leading_edge_enrichment
@@ -2098,7 +2086,6 @@ EPHX1,False,False,False,False,True,1,leading_edge_enrichment
 EPHX2,False,False,False,False,True,1,leading_edge_enrichment
 EPHX3,False,False,False,False,True,1,leading_edge_enrichment
 EPM2AIP1,False,False,False,False,True,1,leading_edge_enrichment
-EPN1,False,False,False,False,True,1,leading_edge_enrichment
 EPOP,False,False,False,False,True,1,leading_edge_enrichment
 EPPK1,False,False,False,False,True,1,leading_edge_enrichment
 EPRS1,False,False,False,False,True,1,leading_edge_enrichment
@@ -2117,6 +2104,7 @@ ERCC4,False,False,False,False,True,1,leading_edge_enrichment
 ERCC6L,False,False,False,False,True,1,leading_edge_enrichment
 ERCC8,False,False,False,False,True,1,leading_edge_enrichment
 EREG,False,False,False,False,True,1,leading_edge_enrichment
+ERGIC1,False,False,False,False,True,1,leading_edge_enrichment
 ERI1,False,False,False,False,True,1,leading_edge_enrichment
 ERLIN2,False,False,False,False,True,1,leading_edge_enrichment
 ERN1,False,False,False,False,True,1,leading_edge_enrichment
@@ -2126,8 +2114,6 @@ ERP29,False,False,False,False,True,1,leading_edge_enrichment
 ERRFI1,False,False,False,False,True,1,leading_edge_enrichment
 ESAM,False,False,False,False,True,1,leading_edge_enrichment
 ESCO2,False,False,False,False,True,1,leading_edge_enrichment
-ESD,False,False,False,False,True,1,leading_edge_enrichment
-ESF1,False,False,False,False,True,1,leading_edge_enrichment
 ESPL1,False,False,False,False,True,1,leading_edge_enrichment
 ESPN,False,False,False,False,True,1,leading_edge_enrichment
 ETAA1,False,False,False,False,True,1,leading_edge_enrichment
@@ -2138,7 +2124,6 @@ ETFBKMT,False,False,False,False,True,1,leading_edge_enrichment
 ETFDH,False,False,False,False,True,1,leading_edge_enrichment
 ETFRF1,False,False,False,False,True,1,leading_edge_enrichment
 ETHE1,False,False,False,False,True,1,leading_edge_enrichment
-ETS1,False,False,False,False,True,1,leading_edge_enrichment
 ETS2,False,False,False,False,True,1,leading_edge_enrichment
 ETV1,False,False,False,False,True,1,leading_edge_enrichment
 ETV5,False,False,False,False,True,1,leading_edge_enrichment
@@ -2248,6 +2233,7 @@ FBLN5,False,False,False,False,True,1,leading_edge_enrichment
 FBN1,False,False,False,False,True,1,leading_edge_enrichment
 FBP1,False,False,False,False,True,1,leading_edge_enrichment
 FBXL15,False,False,False,False,True,1,leading_edge_enrichment
+FBXL17,False,False,False,False,True,1,leading_edge_enrichment
 FBXL19,False,False,False,False,True,1,leading_edge_enrichment
 FBXL2,False,False,False,False,True,1,leading_edge_enrichment
 FBXL20,False,False,False,False,True,1,leading_edge_enrichment
@@ -2566,7 +2552,6 @@ GLUD2,False,False,False,False,True,1,leading_edge_enrichment
 GLUL,False,False,False,False,True,1,leading_edge_enrichment
 GLYATL1,False,False,False,False,True,1,leading_edge_enrichment
 GLYCTK,False,False,False,False,True,1,leading_edge_enrichment
-GM2A,False,False,False,False,True,1,leading_edge_enrichment
 GMFB,False,False,False,False,True,1,leading_edge_enrichment
 GMFG,False,False,False,False,True,1,leading_edge_enrichment
 GMPR2,False,False,False,False,True,1,leading_edge_enrichment
@@ -2760,6 +2745,7 @@ H4C9,False,False,False,False,True,1,leading_edge_enrichment
 HAAO,False,False,False,False,True,1,leading_edge_enrichment
 HABP4,False,False,False,False,True,1,leading_edge_enrichment
 HACD2,False,False,False,False,True,1,leading_edge_enrichment
+HACE1,False,False,False,False,True,1,leading_edge_enrichment
 HACL1,False,False,False,False,True,1,leading_edge_enrichment
 HADH,False,False,False,False,True,1,leading_edge_enrichment
 HADHA,False,False,False,False,True,1,leading_edge_enrichment
@@ -2786,7 +2772,10 @@ HAVCR2,False,False,False,False,True,1,leading_edge_enrichment
 HAX1,False,False,False,False,True,1,leading_edge_enrichment
 HBB,False,False,False,False,True,1,leading_edge_enrichment
 HBEGF,False,False,False,False,True,1,leading_edge_enrichment
+HBG1,False,False,False,False,True,1,leading_edge_enrichment
+HBM,False,False,False,False,True,1,leading_edge_enrichment
 HBS1L,False,False,False,False,True,1,leading_edge_enrichment
+HBZ,False,False,False,False,True,1,leading_edge_enrichment
 HCCS,False,False,False,False,True,1,leading_edge_enrichment
 HCFC2,False,False,False,False,True,1,leading_edge_enrichment
 HCK,False,False,False,False,True,1,leading_edge_enrichment
@@ -2819,7 +2808,6 @@ HERC6,False,False,False,False,True,1,leading_edge_enrichment
 HERPUD1,False,False,False,False,True,1,leading_edge_enrichment
 HES4,False,False,False,False,True,1,leading_edge_enrichment
 HES5,False,False,False,False,True,1,leading_edge_enrichment
-HEXB,False,False,False,False,True,1,leading_edge_enrichment
 HEXIM2,False,False,False,False,True,1,leading_edge_enrichment
 HEY1,False,False,False,False,True,1,leading_edge_enrichment
 HEY2,False,False,False,False,True,1,leading_edge_enrichment
@@ -2895,7 +2883,6 @@ HOMER3,False,False,False,False,True,1,leading_edge_enrichment
 HOOK1,False,False,False,False,True,1,leading_edge_enrichment
 HOOK2,False,False,False,False,True,1,leading_edge_enrichment
 HOOK3,False,False,False,False,True,1,leading_edge_enrichment
-HOXA11,False,False,False,False,True,1,leading_edge_enrichment
 HOXA13,False,False,False,False,True,1,leading_edge_enrichment
 HOXA4,False,False,False,False,True,1,leading_edge_enrichment
 HOXA5,False,False,False,False,True,1,leading_edge_enrichment
@@ -2967,7 +2954,6 @@ HVCN1,False,False,False,False,True,1,leading_edge_enrichment
 HYAL2,False,False,False,False,True,1,leading_edge_enrichment
 HYAL4,False,False,False,False,True,1,leading_edge_enrichment
 HYCC2,False,False,False,False,True,1,leading_edge_enrichment
-HYI,False,False,False,False,True,1,leading_edge_enrichment
 HYKK,False,False,False,False,True,1,leading_edge_enrichment
 IAH1,False,False,False,False,True,1,leading_edge_enrichment
 IARS1,False,False,False,False,True,1,leading_edge_enrichment
@@ -2985,6 +2971,7 @@ IDI1,False,False,False,False,True,1,leading_edge_enrichment
 IDO1,False,False,False,False,True,1,leading_edge_enrichment
 IER2,False,False,False,False,True,1,leading_edge_enrichment
 IER3,False,False,False,False,True,1,leading_edge_enrichment
+IER3IP1,False,False,False,False,True,1,leading_edge_enrichment
 IFI16,False,False,False,False,True,1,leading_edge_enrichment
 IFI27,False,False,False,False,True,1,leading_edge_enrichment
 IFI27L1,False,False,False,False,True,1,leading_edge_enrichment
@@ -3184,7 +3171,6 @@ JARID2,False,False,False,False,True,1,leading_edge_enrichment
 JCAD,False,False,False,False,True,1,leading_edge_enrichment
 JCHAIN,False,False,False,False,True,1,leading_edge_enrichment
 JDP2,False,False,False,False,True,1,leading_edge_enrichment
-JHY,False,False,False,False,True,1,leading_edge_enrichment
 JMJD4,False,False,False,False,True,1,leading_edge_enrichment
 JMJD6,False,False,False,False,True,1,leading_edge_enrichment
 JMY,False,False,False,False,True,1,leading_edge_enrichment
@@ -3206,7 +3192,6 @@ KAT5,False,False,False,False,True,1,leading_edge_enrichment
 KAT6A,False,False,False,False,True,1,leading_edge_enrichment
 KAT7,False,False,False,False,True,1,leading_edge_enrichment
 KAT8,False,False,False,False,True,1,leading_edge_enrichment
-KATNAL1,False,False,False,False,True,1,leading_edge_enrichment
 KATNB1,False,False,False,False,True,1,leading_edge_enrichment
 KAZALD1,False,False,False,False,True,1,leading_edge_enrichment
 KBTBD13,False,False,False,False,True,1,leading_edge_enrichment
@@ -3391,7 +3376,6 @@ LCA5,False,False,False,False,True,1,leading_edge_enrichment
 LCMT1,False,False,False,False,True,1,leading_edge_enrichment
 LCN1,False,False,False,False,True,1,leading_edge_enrichment
 LCP1,False,False,False,False,True,1,leading_edge_enrichment
-LCT,False,False,False,False,True,1,leading_edge_enrichment
 LDB2,False,False,False,False,True,1,leading_edge_enrichment
 LDB3,False,False,False,False,True,1,leading_edge_enrichment
 LDHD,False,False,False,False,True,1,leading_edge_enrichment
@@ -3450,7 +3434,10 @@ LIPT2,False,False,False,False,True,1,leading_edge_enrichment
 LITAF,False,False,False,False,True,1,leading_edge_enrichment
 LIX1,False,False,False,False,True,1,leading_edge_enrichment
 LIX1L,False,False,False,False,True,1,leading_edge_enrichment
+LLGL2,False,False,False,False,True,1,leading_edge_enrichment
 LMAN1,False,False,False,False,True,1,leading_edge_enrichment
+LMAN1L,False,False,False,False,True,1,leading_edge_enrichment
+LMAN2,False,False,False,False,True,1,leading_edge_enrichment
 LMAN2L,False,False,False,False,True,1,leading_edge_enrichment
 LMBRD1,False,False,False,False,True,1,leading_edge_enrichment
 LMCD1,False,False,False,False,True,1,leading_edge_enrichment
@@ -3486,7 +3473,6 @@ LRIG3,False,False,False,False,True,1,leading_edge_enrichment
 LRP1,False,False,False,False,True,1,leading_edge_enrichment
 LRP10,False,False,False,False,True,1,leading_edge_enrichment
 LRP1B,False,False,False,False,True,1,leading_edge_enrichment
-LRP2,False,False,False,False,True,1,leading_edge_enrichment
 LRP5,False,False,False,False,True,1,leading_edge_enrichment
 LRP8,False,False,False,False,True,1,leading_edge_enrichment
 LRPAP1,False,False,False,False,True,1,leading_edge_enrichment
@@ -3535,7 +3521,6 @@ LUM,False,False,False,False,True,1,leading_edge_enrichment
 LUZP1,False,False,False,False,True,1,leading_edge_enrichment
 LVRN,False,False,False,False,True,1,leading_edge_enrichment
 LXN,False,False,False,False,True,1,leading_edge_enrichment
-LY6E,False,False,False,False,True,1,leading_edge_enrichment
 LYAR,False,False,False,False,True,1,leading_edge_enrichment
 LYL1,False,False,False,False,True,1,leading_edge_enrichment
 LYN,False,False,False,False,True,1,leading_edge_enrichment
@@ -3554,6 +3539,7 @@ LZTS3,False,False,False,False,True,1,leading_edge_enrichment
 M6PR,False,False,False,False,True,1,leading_edge_enrichment
 MAB21L2,False,False,False,False,True,1,leading_edge_enrichment
 MACC1,False,False,False,False,True,1,leading_edge_enrichment
+MACF1,False,False,False,False,True,1,leading_edge_enrichment
 MACIR,False,False,False,False,True,1,leading_edge_enrichment
 MACO1,False,False,False,False,True,1,leading_edge_enrichment
 MACROH2A1,False,False,False,False,True,1,leading_edge_enrichment
@@ -3623,8 +3609,10 @@ MAPKBP1,False,False,False,False,True,1,leading_edge_enrichment
 MAPRE1,False,False,False,False,True,1,leading_edge_enrichment
 MAPRE3,False,False,False,False,True,1,leading_edge_enrichment
 MAPT,False,False,False,False,True,1,leading_edge_enrichment
+MARCHF1,False,False,False,False,True,1,leading_edge_enrichment
 MARCHF2,False,False,False,False,True,1,leading_edge_enrichment
 MARCHF5,False,False,False,False,True,1,leading_edge_enrichment
+MARCHF8,False,False,False,False,True,1,leading_edge_enrichment
 MARCKS,False,False,False,False,True,1,leading_edge_enrichment
 MARCO,False,False,False,False,True,1,leading_edge_enrichment
 MARK2,False,False,False,False,True,1,leading_edge_enrichment
@@ -3643,7 +3631,6 @@ MBD3,False,False,False,False,True,1,leading_edge_enrichment
 MBD4,False,False,False,False,True,1,leading_edge_enrichment
 MBNL2,False,False,False,False,True,1,leading_edge_enrichment
 MBOAT1,False,False,False,False,True,1,leading_edge_enrichment
-MBOAT2,False,False,False,False,True,1,leading_edge_enrichment
 MBTD1,False,False,False,False,True,1,leading_edge_enrichment
 MBTPS2,False,False,False,False,True,1,leading_edge_enrichment
 MC1R,False,False,False,False,True,1,leading_edge_enrichment
@@ -3757,7 +3744,6 @@ MFSD4B,False,False,False,False,True,1,leading_edge_enrichment
 MGA,False,False,False,False,True,1,leading_edge_enrichment
 MGARP,False,False,False,False,True,1,leading_edge_enrichment
 MGAT2,False,False,False,False,True,1,leading_edge_enrichment
-MGAT4A,False,False,False,False,True,1,leading_edge_enrichment
 MGAT4C,False,False,False,False,True,1,leading_edge_enrichment
 MGLL,False,False,False,False,True,1,leading_edge_enrichment
 MGME1,False,False,False,False,True,1,leading_edge_enrichment
@@ -3790,7 +3776,6 @@ MINAR1,False,False,False,False,True,1,leading_edge_enrichment
 MINK1,False,False,False,False,True,1,leading_edge_enrichment
 MINPP1,False,False,False,False,True,1,leading_edge_enrichment
 MIOS,False,False,False,False,True,1,leading_edge_enrichment
-MIOX,False,False,False,False,True,1,leading_edge_enrichment
 MIPEP,False,False,False,False,True,1,leading_edge_enrichment
 MIS18A,False,False,False,False,True,1,leading_edge_enrichment
 MISP,False,False,False,False,True,1,leading_edge_enrichment
@@ -3798,6 +3783,8 @@ MITD1,False,False,False,False,True,1,leading_edge_enrichment
 MITF,False,False,False,False,True,1,leading_edge_enrichment
 MKI67,False,False,False,False,True,1,leading_edge_enrichment
 MKKS,False,False,False,False,True,1,leading_edge_enrichment
+MKRN1,False,False,False,False,True,1,leading_edge_enrichment
+MKRN2,False,False,False,False,True,1,leading_edge_enrichment
 MKX,False,False,False,False,True,1,leading_edge_enrichment
 MLF1,False,False,False,False,True,1,leading_edge_enrichment
 MLH3,False,False,False,False,True,1,leading_edge_enrichment
@@ -3831,7 +3818,6 @@ MNT,False,False,False,False,True,1,leading_edge_enrichment
 MOAP1,False,False,False,False,True,1,leading_edge_enrichment
 MOCS3,False,False,False,False,True,1,leading_edge_enrichment
 MOGAT2,False,False,False,False,True,1,leading_edge_enrichment
-MOGAT3,False,False,False,False,True,1,leading_edge_enrichment
 MOGS,False,False,False,False,True,1,leading_edge_enrichment
 MON1A,False,False,False,False,True,1,leading_edge_enrichment
 MON1B,False,False,False,False,True,1,leading_edge_enrichment
@@ -3864,7 +3850,6 @@ MREG,False,False,False,False,True,1,leading_edge_enrichment
 MRGBP,False,False,False,False,True,1,leading_edge_enrichment
 MRI1,False,False,False,False,True,1,leading_edge_enrichment
 MRM2,False,False,False,False,True,1,leading_edge_enrichment
-MRM3,False,False,False,False,True,1,leading_edge_enrichment
 MRPL10,False,False,False,False,True,1,leading_edge_enrichment
 MRPL13,False,False,False,False,True,1,leading_edge_enrichment
 MRPL14,False,False,False,False,True,1,leading_edge_enrichment
@@ -3986,7 +3971,6 @@ MTMR3,False,False,False,False,True,1,leading_edge_enrichment
 MTMR7,False,False,False,False,True,1,leading_edge_enrichment
 MTMR9,False,False,False,False,True,1,leading_edge_enrichment
 MTO1,False,False,False,False,True,1,leading_edge_enrichment
-MTOR,False,False,False,False,True,1,leading_edge_enrichment
 MTPAP,False,False,False,False,True,1,leading_edge_enrichment
 MTRES1,False,False,False,False,True,1,leading_edge_enrichment
 MTRF1,False,False,False,False,True,1,leading_edge_enrichment
@@ -4092,6 +4076,7 @@ NAP1L4,False,False,False,False,True,1,leading_edge_enrichment
 NAPA,False,False,False,False,True,1,leading_edge_enrichment
 NAPB,False,False,False,False,True,1,leading_edge_enrichment
 NAPEPLD,False,False,False,False,True,1,leading_edge_enrichment
+NAPG,False,False,False,False,True,1,leading_edge_enrichment
 NAPRT,False,False,False,False,True,1,leading_edge_enrichment
 NARS1,False,False,False,False,True,1,leading_edge_enrichment
 NARS2,False,False,False,False,True,1,leading_edge_enrichment
@@ -4201,7 +4186,6 @@ NEIL3,False,False,False,False,True,1,leading_edge_enrichment
 NEK2,False,False,False,False,True,1,leading_edge_enrichment
 NEK6,False,False,False,False,True,1,leading_edge_enrichment
 NEK7,False,False,False,False,True,1,leading_edge_enrichment
-NEK9,False,False,False,False,True,1,leading_edge_enrichment
 NELFCD,False,False,False,False,True,1,leading_edge_enrichment
 NELL1,False,False,False,False,True,1,leading_edge_enrichment
 NEMP1,False,False,False,False,True,1,leading_edge_enrichment
@@ -4353,6 +4337,7 @@ NR4A3,False,False,False,False,True,1,leading_edge_enrichment
 NR5A2,False,False,False,False,True,1,leading_edge_enrichment
 NRAP,False,False,False,False,True,1,leading_edge_enrichment
 NRARP,False,False,False,False,True,1,leading_edge_enrichment
+NRBP1,False,False,False,False,True,1,leading_edge_enrichment
 NRDC,False,False,False,False,True,1,leading_edge_enrichment
 NRG1,False,False,False,False,True,1,leading_edge_enrichment
 NRN1,False,False,False,False,True,1,leading_edge_enrichment
@@ -4743,7 +4728,6 @@ OTUD4,False,False,False,False,True,1,leading_edge_enrichment
 OTUD6B,False,False,False,False,True,1,leading_edge_enrichment
 OTUD7B,False,False,False,False,True,1,leading_edge_enrichment
 OVGP1,False,False,False,False,True,1,leading_edge_enrichment
-OVOL2,False,False,False,False,True,1,leading_edge_enrichment
 OXA1L,False,False,False,False,True,1,leading_edge_enrichment
 OXSM,False,False,False,False,True,1,leading_edge_enrichment
 OXSR1,False,False,False,False,True,1,leading_edge_enrichment
@@ -4752,14 +4736,12 @@ P2RX1,False,False,False,False,True,1,leading_edge_enrichment
 P2RX2,False,False,False,False,True,1,leading_edge_enrichment
 P2RX3,False,False,False,False,True,1,leading_edge_enrichment
 P2RX4,False,False,False,False,True,1,leading_edge_enrichment
-P2RX5,False,False,False,False,True,1,leading_edge_enrichment
 P2RX7,False,False,False,False,True,1,leading_edge_enrichment
 P2RY1,False,False,False,False,True,1,leading_edge_enrichment
 P2RY12,False,False,False,False,True,1,leading_edge_enrichment
 P2RY13,False,False,False,False,True,1,leading_edge_enrichment
 P2RY14,False,False,False,False,True,1,leading_edge_enrichment
 P2RY2,False,False,False,False,True,1,leading_edge_enrichment
-P2RY6,False,False,False,False,True,1,leading_edge_enrichment
 P2RY8,False,False,False,False,True,1,leading_edge_enrichment
 P3H1,False,False,False,False,True,1,leading_edge_enrichment
 P3H4,False,False,False,False,True,1,leading_edge_enrichment
@@ -4914,7 +4896,6 @@ PDS5B,False,False,False,False,True,1,leading_edge_enrichment
 PDSS1,False,False,False,False,True,1,leading_edge_enrichment
 PDSS2,False,False,False,False,True,1,leading_edge_enrichment
 PDX1,False,False,False,False,True,1,leading_edge_enrichment
-PDXK,False,False,False,False,True,1,leading_edge_enrichment
 PDZD11,False,False,False,False,True,1,leading_edge_enrichment
 PDZD7,False,False,False,False,True,1,leading_edge_enrichment
 PEA15,False,False,False,False,True,1,leading_edge_enrichment
@@ -4926,7 +4907,6 @@ PEG10,False,False,False,False,True,1,leading_edge_enrichment
 PELI1,False,False,False,False,True,1,leading_edge_enrichment
 PELI2,False,False,False,False,True,1,leading_edge_enrichment
 PELO,False,False,False,False,True,1,leading_edge_enrichment
-PELP1,False,False,False,False,True,1,leading_edge_enrichment
 PEMT,False,False,False,False,True,1,leading_edge_enrichment
 PENK,False,False,False,False,True,1,leading_edge_enrichment
 PEPD,False,False,False,False,True,1,leading_edge_enrichment
@@ -4989,7 +4969,6 @@ PHF6,False,False,False,False,True,1,leading_edge_enrichment
 PHF8,False,False,False,False,True,1,leading_edge_enrichment
 PHGDH,False,False,False,False,True,1,leading_edge_enrichment
 PHIP,False,False,False,False,True,1,leading_edge_enrichment
-PHKA1,False,False,False,False,True,1,leading_edge_enrichment
 PHKB,False,False,False,False,True,1,leading_edge_enrichment
 PHLDA2,False,False,False,False,True,1,leading_edge_enrichment
 PHLDA3,False,False,False,False,True,1,leading_edge_enrichment
@@ -4999,7 +4978,6 @@ PHOX2A,False,False,False,False,True,1,leading_edge_enrichment
 PHOX2B,False,False,False,False,True,1,leading_edge_enrichment
 PHYH,False,False,False,False,True,1,leading_edge_enrichment
 PI16,False,False,False,False,True,1,leading_edge_enrichment
-PI3,False,False,False,False,True,1,leading_edge_enrichment
 PI4KA,False,False,False,False,True,1,leading_edge_enrichment
 PI4KAP2,False,False,False,False,True,1,leading_edge_enrichment
 PIANP,False,False,False,False,True,1,leading_edge_enrichment
@@ -5031,7 +5009,6 @@ PIGX,False,False,False,False,True,1,leading_edge_enrichment
 PIGZ,False,False,False,False,True,1,leading_edge_enrichment
 PIH1D1,False,False,False,False,True,1,leading_edge_enrichment
 PIK3C2A,False,False,False,False,True,1,leading_edge_enrichment
-PIK3C2G,False,False,False,False,True,1,leading_edge_enrichment
 PIK3C3,False,False,False,False,True,1,leading_edge_enrichment
 PIK3CB,False,False,False,False,True,1,leading_edge_enrichment
 PIK3CD,False,False,False,False,True,1,leading_edge_enrichment
@@ -5080,12 +5057,10 @@ PLA2G12B,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G15,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G1B,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G2A,False,False,False,False,True,1,leading_edge_enrichment
-PLA2G2D,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G2E,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G2F,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G3,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G4A,False,False,False,False,True,1,leading_edge_enrichment
-PLA2G4C,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G4F,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G5,False,False,False,False,True,1,leading_edge_enrichment
 PLA2G6,False,False,False,False,True,1,leading_edge_enrichment
@@ -5098,7 +5073,6 @@ PLAAT5,False,False,False,False,True,1,leading_edge_enrichment
 PLAC8,False,False,False,False,True,1,leading_edge_enrichment
 PLAGL2,False,False,False,False,True,1,leading_edge_enrichment
 PLAT,False,False,False,False,True,1,leading_edge_enrichment
-PLB1,False,False,False,False,True,1,leading_edge_enrichment
 PLCB1,False,False,False,False,True,1,leading_edge_enrichment
 PLCB2,False,False,False,False,True,1,leading_edge_enrichment
 PLCD1,False,False,False,False,True,1,leading_edge_enrichment
@@ -5246,7 +5220,6 @@ PPCDC,False,False,False,False,True,1,leading_edge_enrichment
 PPCS,False,False,False,False,True,1,leading_edge_enrichment
 PPFIA1,False,False,False,False,True,1,leading_edge_enrichment
 PPFIA2,False,False,False,False,True,1,leading_edge_enrichment
-PPFIBP1,False,False,False,False,True,1,leading_edge_enrichment
 PPHLN1,False,False,False,False,True,1,leading_edge_enrichment
 PPIA,False,False,False,False,True,1,leading_edge_enrichment
 PPIB,False,False,False,False,True,1,leading_edge_enrichment
@@ -5255,6 +5228,7 @@ PPIE,False,False,False,False,True,1,leading_edge_enrichment
 PPIF,False,False,False,False,True,1,leading_edge_enrichment
 PPIH,False,False,False,False,True,1,leading_edge_enrichment
 PPIL1,False,False,False,False,True,1,leading_edge_enrichment
+PPIL2,False,False,False,False,True,1,leading_edge_enrichment
 PPIL3,False,False,False,False,True,1,leading_edge_enrichment
 PPIP5K1,False,False,False,False,True,1,leading_edge_enrichment
 PPIP5K2,False,False,False,False,True,1,leading_edge_enrichment
@@ -5278,7 +5252,6 @@ PPP1R35,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R3B,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R3C,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R3D,False,False,False,False,True,1,leading_edge_enrichment
-PPP1R3E,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R8,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R9A,False,False,False,False,True,1,leading_edge_enrichment
 PPP1R9B,False,False,False,False,True,1,leading_edge_enrichment
@@ -5330,7 +5303,6 @@ PRKCD,False,False,False,False,True,1,leading_edge_enrichment
 PRKCE,False,False,False,False,True,1,leading_edge_enrichment
 PRKCZ,False,False,False,False,True,1,leading_edge_enrichment
 PRKD1,False,False,False,False,True,1,leading_edge_enrichment
-PRKD2,False,False,False,False,True,1,leading_edge_enrichment
 PRKDC,False,False,False,False,True,1,leading_edge_enrichment
 PRKG1,False,False,False,False,True,1,leading_edge_enrichment
 PRKG2,False,False,False,False,True,1,leading_edge_enrichment
@@ -5343,7 +5315,6 @@ PRMT6,False,False,False,False,True,1,leading_edge_enrichment
 PRNP,False,False,False,False,True,1,leading_edge_enrichment
 PROCA1,False,False,False,False,True,1,leading_edge_enrichment
 PROCR,False,False,False,False,True,1,leading_edge_enrichment
-PRODH,False,False,False,False,True,1,leading_edge_enrichment
 PRODH2,False,False,False,False,True,1,leading_edge_enrichment
 PROM2,False,False,False,False,True,1,leading_edge_enrichment
 PROS1,False,False,False,False,True,1,leading_edge_enrichment
@@ -5439,7 +5410,6 @@ PTGDS,False,False,False,False,True,1,leading_edge_enrichment
 PTGER2,False,False,False,False,True,1,leading_edge_enrichment
 PTGER3,False,False,False,False,True,1,leading_edge_enrichment
 PTGER4,False,False,False,False,True,1,leading_edge_enrichment
-PTGES2,False,False,False,False,True,1,leading_edge_enrichment
 PTGES3,False,False,False,False,True,1,leading_edge_enrichment
 PTGFR,False,False,False,False,True,1,leading_edge_enrichment
 PTGFRN,False,False,False,False,True,1,leading_edge_enrichment
@@ -5676,7 +5646,6 @@ RELB,False,False,False,False,True,1,leading_edge_enrichment
 RELCH,False,False,False,False,True,1,leading_edge_enrichment
 RELL1,False,False,False,False,True,1,leading_edge_enrichment
 RELN,False,False,False,False,True,1,leading_edge_enrichment
-REP15,False,False,False,False,True,1,leading_edge_enrichment
 RER1,False,False,False,False,True,1,leading_edge_enrichment
 RERG,False,False,False,False,True,1,leading_edge_enrichment
 RESF1,False,False,False,False,True,1,leading_edge_enrichment
@@ -5713,6 +5682,7 @@ RGS5,False,False,False,False,True,1,leading_edge_enrichment
 RGS7,False,False,False,False,True,1,leading_edge_enrichment
 RGS9,False,False,False,False,True,1,leading_edge_enrichment
 RGS9BP,False,False,False,False,True,1,leading_edge_enrichment
+RHAG,False,False,False,False,True,1,leading_edge_enrichment
 RHBDD1,False,False,False,False,True,1,leading_edge_enrichment
 RHEB,False,False,False,False,True,1,leading_edge_enrichment
 RHEX,False,False,False,False,True,1,leading_edge_enrichment
@@ -5758,6 +5728,7 @@ RMDN1,False,False,False,False,True,1,leading_edge_enrichment
 RMI1,False,False,False,False,True,1,leading_edge_enrichment
 RMI2,False,False,False,False,True,1,leading_edge_enrichment
 RMND1,False,False,False,False,True,1,leading_edge_enrichment
+RMND5A,False,False,False,False,True,1,leading_edge_enrichment
 RNASE1,False,False,False,False,True,1,leading_edge_enrichment
 RNASEH1,False,False,False,False,True,1,leading_edge_enrichment
 RNASEH2A,False,False,False,False,True,1,leading_edge_enrichment
@@ -5780,6 +5751,7 @@ RNF141,False,False,False,False,True,1,leading_edge_enrichment
 RNF144A,False,False,False,False,True,1,leading_edge_enrichment
 RNF149,False,False,False,False,True,1,leading_edge_enrichment
 RNF167,False,False,False,False,True,1,leading_edge_enrichment
+RNF170,False,False,False,False,True,1,leading_edge_enrichment
 RNF181,False,False,False,False,True,1,leading_edge_enrichment
 RNF183,False,False,False,False,True,1,leading_edge_enrichment
 RNF185,False,False,False,False,True,1,leading_edge_enrichment
@@ -5793,9 +5765,12 @@ RNF213,False,False,False,False,True,1,leading_edge_enrichment
 RNF216,False,False,False,False,True,1,leading_edge_enrichment
 RNF220,False,False,False,False,True,1,leading_edge_enrichment
 RNF25,False,False,False,False,True,1,leading_edge_enrichment
+RNF34,False,False,False,False,True,1,leading_edge_enrichment
 RNF4,False,False,False,False,True,1,leading_edge_enrichment
 RNF43,False,False,False,False,True,1,leading_edge_enrichment
 RNF5,False,False,False,False,True,1,leading_edge_enrichment
+RNF6,False,False,False,False,True,1,leading_edge_enrichment
+RNF7,False,False,False,False,True,1,leading_edge_enrichment
 RNF8,False,False,False,False,True,1,leading_edge_enrichment
 RNFT1,False,False,False,False,True,1,leading_edge_enrichment
 RNMT,False,False,False,False,True,1,leading_edge_enrichment
@@ -5809,6 +5784,7 @@ ROMO1,False,False,False,False,True,1,leading_edge_enrichment
 ROR1,False,False,False,False,True,1,leading_edge_enrichment
 ROR2,False,False,False,False,True,1,leading_edge_enrichment
 RORA,False,False,False,False,True,1,leading_edge_enrichment
+RP2,False,False,False,False,True,1,leading_edge_enrichment
 RPA2,False,False,False,False,True,1,leading_edge_enrichment
 RPA3,False,False,False,False,True,1,leading_edge_enrichment
 RPAIN,False,False,False,False,True,1,leading_edge_enrichment
@@ -5817,7 +5793,6 @@ RPAP3,False,False,False,False,True,1,leading_edge_enrichment
 RPE,False,False,False,False,True,1,leading_edge_enrichment
 RPF2,False,False,False,False,True,1,leading_edge_enrichment
 RPGRIP1L,False,False,False,False,True,1,leading_edge_enrichment
-RPIA,False,False,False,False,True,1,leading_edge_enrichment
 RPL10A,False,False,False,False,True,1,leading_edge_enrichment
 RPL11,False,False,False,False,True,1,leading_edge_enrichment
 RPL12,False,False,False,False,True,1,leading_edge_enrichment
@@ -5847,12 +5822,10 @@ RPL7L1,False,False,False,False,True,1,leading_edge_enrichment
 RPL8,False,False,False,False,True,1,leading_edge_enrichment
 RPLP0,False,False,False,False,True,1,leading_edge_enrichment
 RPLP1,False,False,False,False,True,1,leading_edge_enrichment
-RPP30,False,False,False,False,True,1,leading_edge_enrichment
 RPP38,False,False,False,False,True,1,leading_edge_enrichment
 RPP40,False,False,False,False,True,1,leading_edge_enrichment
 RPRD1A,False,False,False,False,True,1,leading_edge_enrichment
 RPRD2,False,False,False,False,True,1,leading_edge_enrichment
-RPRM,False,False,False,False,True,1,leading_edge_enrichment
 RPS10,False,False,False,False,True,1,leading_edge_enrichment
 RPS14,False,False,False,False,True,1,leading_edge_enrichment
 RPS15,False,False,False,False,True,1,leading_edge_enrichment
@@ -5893,7 +5866,6 @@ RRN3,False,False,False,False,True,1,leading_edge_enrichment
 RRP1,False,False,False,False,True,1,leading_edge_enrichment
 RRP15,False,False,False,False,True,1,leading_edge_enrichment
 RRP1B,False,False,False,False,True,1,leading_edge_enrichment
-RRP36,False,False,False,False,True,1,leading_edge_enrichment
 RRP7A,False,False,False,False,True,1,leading_edge_enrichment
 RRP8,False,False,False,False,True,1,leading_edge_enrichment
 RRP9,False,False,False,False,True,1,leading_edge_enrichment
@@ -5926,6 +5898,7 @@ RUBCNL,False,False,False,False,True,1,leading_edge_enrichment
 RUFY2,False,False,False,False,True,1,leading_edge_enrichment
 RUFY3,False,False,False,False,True,1,leading_edge_enrichment
 RUNX1T1,False,False,False,False,True,1,leading_edge_enrichment
+RUSC1,False,False,False,False,True,1,leading_edge_enrichment
 RUVBL1,False,False,False,False,True,1,leading_edge_enrichment
 RUVBL2,False,False,False,False,True,1,leading_edge_enrichment
 RXRA,False,False,False,False,True,1,leading_edge_enrichment
@@ -5977,9 +5950,10 @@ SAV1,False,False,False,False,True,1,leading_edge_enrichment
 SBDS,False,False,False,False,True,1,leading_edge_enrichment
 SCAF4,False,False,False,False,True,1,leading_edge_enrichment
 SCAF8,False,False,False,False,True,1,leading_edge_enrichment
+SCAMP1,False,False,False,False,True,1,leading_edge_enrichment
+SCAMP2,False,False,False,False,True,1,leading_edge_enrichment
 SCAP,False,False,False,False,True,1,leading_edge_enrichment
 SCARA3,False,False,False,False,True,1,leading_edge_enrichment
-SCARA5,False,False,False,False,True,1,leading_edge_enrichment
 SCARB2,False,False,False,False,True,1,leading_edge_enrichment
 SCARF1,False,False,False,False,True,1,leading_edge_enrichment
 SCFD1,False,False,False,False,True,1,leading_edge_enrichment
@@ -6190,7 +6164,6 @@ SKIL,False,False,False,False,True,1,leading_edge_enrichment
 SKP1,False,False,False,False,True,1,leading_edge_enrichment
 SKP2,False,False,False,False,True,1,leading_edge_enrichment
 SLA2,False,False,False,False,True,1,leading_edge_enrichment
-SLAIN1,False,False,False,False,True,1,leading_edge_enrichment
 SLAMF1,False,False,False,False,True,1,leading_edge_enrichment
 SLAMF7,False,False,False,False,True,1,leading_edge_enrichment
 SLBP,False,False,False,False,True,1,leading_edge_enrichment
@@ -6280,12 +6253,10 @@ SLC30A4,False,False,False,False,True,1,leading_edge_enrichment
 SLC30A5,False,False,False,False,True,1,leading_edge_enrichment
 SLC30A9,False,False,False,False,True,1,leading_edge_enrichment
 SLC31A2,False,False,False,False,True,1,leading_edge_enrichment
-SLC34A1,False,False,False,False,True,1,leading_edge_enrichment
 SLC35A1,False,False,False,False,True,1,leading_edge_enrichment
 SLC35A2,False,False,False,False,True,1,leading_edge_enrichment
 SLC35A3,False,False,False,False,True,1,leading_edge_enrichment
 SLC35A4,False,False,False,False,True,1,leading_edge_enrichment
-SLC35A5,False,False,False,False,True,1,leading_edge_enrichment
 SLC35B1,False,False,False,False,True,1,leading_edge_enrichment
 SLC35B4,False,False,False,False,True,1,leading_edge_enrichment
 SLC35C2,False,False,False,False,True,1,leading_edge_enrichment
@@ -6307,7 +6278,6 @@ SLC39A13,False,False,False,False,True,1,leading_edge_enrichment
 SLC39A5,False,False,False,False,True,1,leading_edge_enrichment
 SLC3A2,False,False,False,False,True,1,leading_edge_enrichment
 SLC40A1,False,False,False,False,True,1,leading_edge_enrichment
-SLC41A2,False,False,False,False,True,1,leading_edge_enrichment
 SLC43A1,False,False,False,False,True,1,leading_edge_enrichment
 SLC44A1,False,False,False,False,True,1,leading_edge_enrichment
 SLC44A2,False,False,False,False,True,1,leading_edge_enrichment
@@ -6480,7 +6450,6 @@ SON,False,False,False,False,True,1,leading_edge_enrichment
 SORBS1,False,False,False,False,True,1,leading_edge_enrichment
 SORBS2,False,False,False,False,True,1,leading_edge_enrichment
 SORBS3,False,False,False,False,True,1,leading_edge_enrichment
-SORD,False,False,False,False,True,1,leading_edge_enrichment
 SORT1,False,False,False,False,True,1,leading_edge_enrichment
 SOS1,False,False,False,False,True,1,leading_edge_enrichment
 SOS2,False,False,False,False,True,1,leading_edge_enrichment
@@ -6522,6 +6491,7 @@ SPINK4,True,False,False,False,False,1,high_confidence_field
 SPINK5,False,False,False,False,True,1,leading_edge_enrichment
 SPINT1,False,False,False,False,True,1,leading_edge_enrichment
 SPIRE1,False,False,False,False,True,1,leading_edge_enrichment
+SPIRE2,False,False,False,False,True,1,leading_edge_enrichment
 SPN,False,False,False,False,True,1,leading_edge_enrichment
 SPO11,False,False,False,False,True,1,leading_edge_enrichment
 SPOCD1,False,False,False,False,True,1,leading_edge_enrichment
@@ -6536,11 +6506,11 @@ SPRTN,False,False,False,False,True,1,leading_edge_enrichment
 SPRY1,False,False,False,False,True,1,leading_edge_enrichment
 SPRY2,False,False,False,False,True,1,leading_edge_enrichment
 SPRY3,False,False,False,False,True,1,leading_edge_enrichment
+SPSB3,False,False,False,False,True,1,leading_edge_enrichment
 SPTAN1,False,False,False,False,True,1,leading_edge_enrichment
 SPTBN1,False,False,False,False,True,1,leading_edge_enrichment
 SPTLC1,False,False,False,False,True,1,leading_edge_enrichment
 SPTLC2,False,False,False,False,True,1,leading_edge_enrichment
-SPTLC3,False,False,False,False,True,1,leading_edge_enrichment
 SPTSSA,False,False,False,False,True,1,leading_edge_enrichment
 SPTSSB,False,False,False,False,True,1,leading_edge_enrichment
 SQLE,False,False,False,False,True,1,leading_edge_enrichment
@@ -6593,6 +6563,8 @@ ST3GAL1,False,False,False,False,True,1,leading_edge_enrichment
 ST3GAL2,False,False,False,False,True,1,leading_edge_enrichment
 ST3GAL4,False,False,False,False,True,1,leading_edge_enrichment
 ST3GAL5,False,False,False,False,True,1,leading_edge_enrichment
+ST6GAL1,False,False,False,False,True,1,leading_edge_enrichment
+ST6GAL2,False,False,False,False,True,1,leading_edge_enrichment
 ST6GALNAC1,False,False,False,False,True,1,leading_edge_enrichment
 ST6GALNAC2,False,False,False,False,True,1,leading_edge_enrichment
 ST6GALNAC3,False,False,False,False,True,1,leading_edge_enrichment
@@ -6624,6 +6596,7 @@ STBD1,False,False,False,False,True,1,leading_edge_enrichment
 STC1,False,False,False,False,True,1,leading_edge_enrichment
 STEAP2,False,False,False,False,True,1,leading_edge_enrichment
 STEAP4,False,False,False,False,True,1,leading_edge_enrichment
+STEEP1,False,False,False,False,True,1,leading_edge_enrichment
 STIL,False,False,False,False,True,1,leading_edge_enrichment
 STIM1,False,False,False,False,True,1,leading_edge_enrichment
 STING1,False,False,False,False,True,1,leading_edge_enrichment
@@ -6653,6 +6626,7 @@ STX10,False,False,False,False,True,1,leading_edge_enrichment
 STX11,False,False,False,False,True,1,leading_edge_enrichment
 STX12,False,False,False,False,True,1,leading_edge_enrichment
 STX17,False,False,False,False,True,1,leading_edge_enrichment
+STX18,False,False,False,False,True,1,leading_edge_enrichment
 STX19,False,False,False,False,True,1,leading_edge_enrichment
 STX2,False,False,False,False,True,1,leading_edge_enrichment
 STX3,False,False,False,False,True,1,leading_edge_enrichment
@@ -6819,7 +6793,6 @@ TBP,False,False,False,False,True,1,leading_edge_enrichment
 TBPL1,False,False,False,False,True,1,leading_edge_enrichment
 TBRG1,False,False,False,False,True,1,leading_edge_enrichment
 TBX1,False,False,False,False,True,1,leading_edge_enrichment
-TBX18,False,False,False,False,True,1,leading_edge_enrichment
 TBX2,False,False,False,False,True,1,leading_edge_enrichment
 TBX3,False,False,False,False,True,1,leading_edge_enrichment
 TBXA2R,False,False,False,False,True,1,leading_edge_enrichment
@@ -6863,6 +6836,7 @@ TET1,False,False,False,False,True,1,leading_edge_enrichment
 TET2,False,False,False,False,True,1,leading_edge_enrichment
 TEX15,False,False,False,False,True,1,leading_edge_enrichment
 TEX19,False,False,False,False,True,1,leading_edge_enrichment
+TEX261,False,False,False,False,True,1,leading_edge_enrichment
 TF,False,False,False,False,True,1,leading_edge_enrichment
 TFAM,False,False,False,False,True,1,leading_edge_enrichment
 TFAP2C,False,False,False,False,True,1,leading_edge_enrichment
@@ -6870,6 +6844,7 @@ TFAP4,False,False,False,False,True,1,leading_edge_enrichment
 TFB1M,False,False,False,False,True,1,leading_edge_enrichment
 TFB2M,False,False,False,False,True,1,leading_edge_enrichment
 TFDP1,False,False,False,False,True,1,leading_edge_enrichment
+TFG,False,False,False,False,True,1,leading_edge_enrichment
 TFPI,False,False,False,False,True,1,leading_edge_enrichment
 TFPT,False,False,False,False,True,1,leading_edge_enrichment
 TGDS,False,False,False,False,True,1,leading_edge_enrichment
@@ -6902,9 +6877,11 @@ THOC2,False,False,False,False,True,1,leading_edge_enrichment
 THOC5,False,False,False,False,True,1,leading_edge_enrichment
 THOC6,False,False,False,False,True,1,leading_edge_enrichment
 THOC7,False,False,False,False,True,1,leading_edge_enrichment
+THOP1,False,False,False,False,True,1,leading_edge_enrichment
 THRA,False,False,False,False,True,1,leading_edge_enrichment
 THRAP3,False,False,False,False,True,1,leading_edge_enrichment
 THRB,False,False,False,False,True,1,leading_edge_enrichment
+THRSP,False,False,False,False,True,1,leading_edge_enrichment
 THSD4,False,False,False,False,True,1,leading_edge_enrichment
 THTPA,False,False,False,False,True,1,leading_edge_enrichment
 THUMPD2,False,False,False,False,True,1,leading_edge_enrichment
@@ -6958,7 +6935,6 @@ TLR6,False,False,False,False,True,1,leading_edge_enrichment
 TLR7,False,False,False,False,True,1,leading_edge_enrichment
 TLR9,False,False,False,False,True,1,leading_edge_enrichment
 TM4SF1,False,False,False,False,True,1,leading_edge_enrichment
-TM4SF4,False,False,False,False,True,1,leading_edge_enrichment
 TM6SF2,False,False,False,False,True,1,leading_edge_enrichment
 TM9SF4,False,False,False,False,True,1,leading_edge_enrichment
 TMA16,False,False,False,False,True,1,leading_edge_enrichment
@@ -6968,8 +6944,11 @@ TMC1,False,False,False,False,True,1,leading_edge_enrichment
 TMC2,False,False,False,False,True,1,leading_edge_enrichment
 TMCC1,False,False,False,False,True,1,leading_edge_enrichment
 TMCO1,False,False,False,False,True,1,leading_edge_enrichment
+TMED1,False,False,False,False,True,1,leading_edge_enrichment
 TMED10,False,False,False,False,True,1,leading_edge_enrichment
 TMED2,False,False,False,False,True,1,leading_edge_enrichment
+TMED3,False,False,False,False,True,1,leading_edge_enrichment
+TMED5,False,False,False,False,True,1,leading_edge_enrichment
 TMED9,False,False,False,False,True,1,leading_edge_enrichment
 TMEFF2,False,False,False,False,True,1,leading_edge_enrichment
 TMEM100,False,False,False,False,True,1,leading_edge_enrichment
@@ -6981,6 +6960,7 @@ TMEM119,False,False,False,False,True,1,leading_edge_enrichment
 TMEM120A,False,False,False,False,True,1,leading_edge_enrichment
 TMEM126A,False,False,False,False,True,1,leading_edge_enrichment
 TMEM126B,False,False,False,False,True,1,leading_edge_enrichment
+TMEM129,False,False,False,False,True,1,leading_edge_enrichment
 TMEM131L,False,False,False,False,True,1,leading_edge_enrichment
 TMEM135,False,False,False,False,True,1,leading_edge_enrichment
 TMEM144,False,False,False,False,True,1,leading_edge_enrichment
@@ -7025,7 +7005,6 @@ TMEM98,False,False,False,False,True,1,leading_edge_enrichment
 TMEM9B,False,False,False,False,True,1,leading_edge_enrichment
 TMF1,False,False,False,False,True,1,leading_edge_enrichment
 TMIGD1,False,False,False,False,True,1,leading_edge_enrichment
-TMIGD2,False,False,False,False,True,1,leading_edge_enrichment
 TMLHE,False,False,False,False,True,1,leading_edge_enrichment
 TMOD1,False,False,False,False,True,1,leading_edge_enrichment
 TMOD2,False,False,False,False,True,1,leading_edge_enrichment
@@ -7048,7 +7027,6 @@ TNFRSF4,False,False,False,False,True,1,leading_edge_enrichment
 TNFSF10,False,False,False,False,True,1,leading_edge_enrichment
 TNFSF11,False,False,False,False,True,1,leading_edge_enrichment
 TNFSF13B,False,False,False,False,True,1,leading_edge_enrichment
-TNFSF14,False,False,False,False,True,1,leading_edge_enrichment
 TNFSF4,False,False,False,False,True,1,leading_edge_enrichment
 TNIK,False,False,False,False,True,1,leading_edge_enrichment
 TNIP1,False,False,False,False,True,1,leading_edge_enrichment
@@ -7117,6 +7095,7 @@ TRAF3IP2,False,False,False,False,True,1,leading_edge_enrichment
 TRAF3IP3,False,False,False,False,True,1,leading_edge_enrichment
 TRAF5,False,False,False,False,True,1,leading_edge_enrichment
 TRAF6,False,False,False,False,True,1,leading_edge_enrichment
+TRAF7,False,False,False,False,True,1,leading_edge_enrichment
 TRAFD1,False,False,False,False,True,1,leading_edge_enrichment
 TRAIP,False,False,False,False,True,1,leading_edge_enrichment
 TRAK1,False,False,False,False,True,1,leading_edge_enrichment
@@ -7229,13 +7208,11 @@ TSPOAP1,False,False,False,False,True,1,leading_edge_enrichment
 TSPYL2,False,False,False,False,True,1,leading_edge_enrichment
 TSPYL5,False,False,False,False,True,1,leading_edge_enrichment
 TSR1,False,False,False,False,True,1,leading_edge_enrichment
-TSR3,False,False,False,False,True,1,leading_edge_enrichment
 TSSC4,False,False,False,False,True,1,leading_edge_enrichment
 TST,False,False,False,False,True,1,leading_edge_enrichment
 TSTD1,False,False,False,False,True,1,leading_edge_enrichment
 TTC17,False,False,False,False,True,1,leading_edge_enrichment
 TTC19,False,False,False,False,True,1,leading_edge_enrichment
-TTC28,False,False,False,False,True,1,leading_edge_enrichment
 TTC36,False,False,False,False,True,1,leading_edge_enrichment
 TTC39B,False,False,False,False,True,1,leading_edge_enrichment
 TTC5,False,False,False,False,True,1,leading_edge_enrichment
@@ -7258,7 +7235,6 @@ TUBG1,False,False,False,False,True,1,leading_edge_enrichment
 TUBG2,False,False,False,False,True,1,leading_edge_enrichment
 TUBGCP3,False,False,False,False,True,1,leading_edge_enrichment
 TUBGCP4,False,False,False,False,True,1,leading_edge_enrichment
-TUBGCP5,False,False,False,False,True,1,leading_edge_enrichment
 TULP1,False,False,False,False,True,1,leading_edge_enrichment
 TULP3,False,False,False,False,True,1,leading_edge_enrichment
 TUSC3,False,False,False,False,True,1,leading_edge_enrichment
@@ -7301,18 +7277,25 @@ UBE2D2,False,False,False,False,True,1,leading_edge_enrichment
 UBE2D3,False,False,False,False,True,1,leading_edge_enrichment
 UBE2D4,False,False,False,False,True,1,leading_edge_enrichment
 UBE2E2,False,False,False,False,True,1,leading_edge_enrichment
+UBE2E3,False,False,False,False,True,1,leading_edge_enrichment
+UBE2G1,False,False,False,False,True,1,leading_edge_enrichment
 UBE2H,False,False,False,False,True,1,leading_edge_enrichment
 UBE2I,False,False,False,False,True,1,leading_edge_enrichment
+UBE2J1,False,False,False,False,True,1,leading_edge_enrichment
 UBE2J2,False,False,False,False,True,1,leading_edge_enrichment
+UBE2K,False,False,False,False,True,1,leading_edge_enrichment
 UBE2L3,False,False,False,False,True,1,leading_edge_enrichment
 UBE2M,False,False,False,False,True,1,leading_edge_enrichment
 UBE2N,False,False,False,False,True,1,leading_edge_enrichment
+UBE2NL,False,False,False,False,True,1,leading_edge_enrichment
 UBE2O,False,False,False,False,True,1,leading_edge_enrichment
 UBE2S,False,False,False,False,True,1,leading_edge_enrichment
 UBE2T,False,False,False,False,True,1,leading_edge_enrichment
 UBE2V2,False,False,False,False,True,1,leading_edge_enrichment
 UBE2W,False,False,False,False,True,1,leading_edge_enrichment
 UBE3A,False,False,False,False,True,1,leading_edge_enrichment
+UBE3B,False,False,False,False,True,1,leading_edge_enrichment
+UBE3C,False,False,False,False,True,1,leading_edge_enrichment
 UBE3D,False,False,False,False,True,1,leading_edge_enrichment
 UBL4A,False,False,False,False,True,1,leading_edge_enrichment
 UBL5,False,False,False,False,True,1,leading_edge_enrichment
@@ -7363,7 +7346,6 @@ UPF1,False,False,False,False,True,1,leading_edge_enrichment
 UPF3A,False,False,False,False,True,1,leading_edge_enrichment
 UPF3B,False,False,False,False,True,1,leading_edge_enrichment
 UPP1,False,False,False,False,True,1,leading_edge_enrichment
-UPRT,False,False,False,False,True,1,leading_edge_enrichment
 UQCC1,False,False,False,False,True,1,leading_edge_enrichment
 UQCC3,False,False,False,False,True,1,leading_edge_enrichment
 UQCC5,False,False,False,False,True,1,leading_edge_enrichment
@@ -7555,13 +7537,13 @@ WNT10B,False,False,False,False,True,1,leading_edge_enrichment
 WNT11,False,False,False,False,True,1,leading_edge_enrichment
 WNT2,False,False,False,False,True,1,leading_edge_enrichment
 WNT2B,False,False,False,False,True,1,leading_edge_enrichment
-WNT4,False,False,False,False,True,1,leading_edge_enrichment
 WNT5A,False,False,False,False,True,1,leading_edge_enrichment
 WNT5B,False,False,False,False,True,1,leading_edge_enrichment
 WRAP53,False,False,False,False,True,1,leading_edge_enrichment
 WRAP73,False,False,False,False,True,1,leading_edge_enrichment
 WRN,False,False,False,False,True,1,leading_edge_enrichment
 WRNIP1,False,False,False,False,True,1,leading_edge_enrichment
+WSB2,False,False,False,False,True,1,leading_edge_enrichment
 WT1,False,False,False,False,True,1,leading_edge_enrichment
 WTIP,False,False,False,False,True,1,leading_edge_enrichment
 WWC3,False,False,False,False,True,1,leading_edge_enrichment
@@ -7599,7 +7581,9 @@ YBX2,False,False,False,False,True,1,leading_edge_enrichment
 YBX3,False,False,False,False,True,1,leading_edge_enrichment
 YEATS2,False,False,False,False,True,1,leading_edge_enrichment
 YEATS4,False,False,False,False,True,1,leading_edge_enrichment
+YIF1A,False,False,False,False,True,1,leading_edge_enrichment
 YIPF4,False,False,False,False,True,1,leading_edge_enrichment
+YIPF6,False,False,False,False,True,1,leading_edge_enrichment
 YKT6,False,False,False,False,True,1,leading_edge_enrichment
 YME1L1,False,False,False,False,True,1,leading_edge_enrichment
 YRDC,False,False,False,False,True,1,leading_edge_enrichment
@@ -7675,7 +7659,6 @@ ZNF24,False,False,False,False,True,1,leading_edge_enrichment
 ZNF251,False,False,False,False,True,1,leading_edge_enrichment
 ZNF268,False,False,False,False,True,1,leading_edge_enrichment
 ZNF281,False,False,False,False,True,1,leading_edge_enrichment
-ZNF304,False,False,False,False,True,1,leading_edge_enrichment
 ZNF318,False,False,False,False,True,1,leading_edge_enrichment
 ZNF322,False,False,False,False,True,1,leading_edge_enrichment
 ZNF335,False,False,False,False,True,1,leading_edge_enrichment
@@ -7696,7 +7679,7 @@ ZNF598,False,False,False,False,True,1,leading_edge_enrichment
 ZNF618,False,False,False,False,True,1,leading_edge_enrichment
 ZNF622,False,False,False,False,True,1,leading_edge_enrichment
 ZNF638,False,False,False,False,True,1,leading_edge_enrichment
-ZNF692,False,False,False,False,True,1,leading_edge_enrichment
+ZNF703,False,False,False,False,True,1,leading_edge_enrichment
 ZNF706,False,False,False,False,True,1,leading_edge_enrichment
 ZNF750,False,False,False,False,True,1,leading_edge_enrichment
 ZNF764,False,False,False,False,True,1,leading_edge_enrichment
@@ -7714,6 +7697,7 @@ ZRANB1,False,False,False,False,True,1,leading_edge_enrichment
 ZRANB3,False,False,False,False,True,1,leading_edge_enrichment
 ZRSR2,False,False,False,False,True,1,leading_edge_enrichment
 ZSCAN21,False,False,False,False,True,1,leading_edge_enrichment
+ZSWIM2,False,False,False,False,True,1,leading_edge_enrichment
 ZSWIM6,False,False,False,False,True,1,leading_edge_enrichment
 ZSWIM8,False,False,False,False,True,1,leading_edge_enrichment
 ZW10,False,False,False,False,True,1,leading_edge_enrichment

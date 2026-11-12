@@ -243,7 +243,7 @@ for (comparison in names(ranked_definitions)) {
   names(ranks) <- names(sort(collapsed, decreasing = TRUE))
   gsea <- gseGO(
     ranks, OrgDb = org.Hs.eg.db, keyType = "ENTREZID", ont = "BP",
-    pAdjustMethod = "BH", verbose = FALSE
+    pAdjustMethod = "BH", verbose = FALSE, BPPARAM = BiocParallel::SerialParam()
   )
   gsea_frame <- as.data.frame(gsea)
   standardized <- standardize(

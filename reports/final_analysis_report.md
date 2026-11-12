@@ -252,12 +252,14 @@ compared explicitly rather than conflated.
 
 ## Limitations
 
-The study is retrospective and single-cohort for Task B; healthy and adjacent
-samples differ demographically; bulk expression is composition-sensitive;
-processing metadata are incomplete; no independent field-effect cohort exists;
-one Task C gene is absent on GPL96; external threshold/calibration transport is
-imperfect; and no prospective clinical-utility analysis is available. Docker
-execution is blocked by the unavailable host Linux-container engine.
+The study is retrospective and single-cohort for Task B. Healthy and adjacent
+samples differ demographically, bulk expression is composition-sensitive, and
+processing metadata are incomplete. Acquisition-matched field-effect validation
+remains outstanding. GPL96 lacks one Task C gene, and external threshold and
+calibration transport are imperfect. Prospective clinical utility remains
+unevaluated. The
+[raw-CEL audit](ai_audit/15_raw_reproduction_continuation.md) records archive
+identities, execution evidence and remaining reproducibility gates.
 
 ## Final scientific conclusions
 
@@ -266,7 +268,5 @@ technical and demographic checks, but its marked composition sensitivity and
 lack of independent Task B validation require a cohort-specific, noncausal
 interpretation. Task B is ready for internal research use, not clinical use.
 Task C supplies strong cross-platform ranking evidence but only moderate
-threshold/probability transport. Publication readiness remains partial because
-current-revision remote CI and container execution are blocked in this host
-session and administrative manuscript metadata remain to be supplied; clinical
-readiness is not claimed.
+threshold/probability transport. Publication readiness also depends on the
+reproducibility gates and manuscript metadata tracked in the acceptance report.

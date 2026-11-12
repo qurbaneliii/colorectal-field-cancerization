@@ -79,8 +79,8 @@ D:\R\R-4.5.1\bin\Rscript.exe R/05_functional_enrichment.R
 .\.venv-publication\Scripts\python scripts/run_permutation_tests.py --provenance raw_cel_rma
 .\.venv-publication\Scripts\python scripts/select_task_c_threshold.py
 .\.venv-publication\Scripts\python scripts/run_external_validation.py --provenance raw_cel_rma
-.\.venv-publication\Scripts\python scripts/build_publication_figures.py
 .\.venv-publication\Scripts\python scripts/build_publication_tables.py
+.\.venv-publication\Scripts\python scripts/build_publication_figures.py
 .\.venv-publication\Scripts\python scripts/build_manuscript_outputs.py
 .\.venv-publication\Scripts\python -m pip check
 .\.venv-publication\Scripts\ruff check src scripts tests

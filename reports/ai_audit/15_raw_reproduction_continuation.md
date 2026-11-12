@@ -13,13 +13,18 @@ analysis. The fresh run uses a separate worktree and records actual inputs.
 | Cause of the historical differences | BLOCKED | Requires the historical TARs or historical per-member fingerprints. |
 | Pipeline on the original historical bytes | NOT RUN | The original pinned TARs are unavailable. |
 | Windows R 4.5.1 / Bioconductor 3.21 | PASS | 219 exact package-version matches. The pipeline used gzip CSV with Python Parquet conversion. |
-| Current GEO raw RMA, core QC and GPL96 NUSE | PASS | Both cohorts and all 636 arrays. |
+| Current GEO raw RMA, array QC and GPL96 NUSE | PASS | Both cohorts and all 636 arrays. Both fresh `arrayQualityMetrics` reports reproduced the archived flag counts for every array. |
 | limma, covariate, composition and stress sensitivities | PASS | Fresh fits and archived comparisons. |
+| GO and Reactome enrichment | PASS | Hosted full run. Windows regenerated both ranked contrasts with seed 44076 and the serial backend. |
 | Nested grouped CV, biomarker panels, permutations and bootstraps | PASS | Fresh model fits, three 1,000-permutation tests and 1,000-draw cluster intervals. |
 | Task C threshold and external validation | PASS | Fresh nested selection, GSE44076 lock and GSE41258 evaluation reproduced the archived primary result. |
+| Independent Linux pipeline and tests | PASS | 20 stages, 54 tests, and the same five verified inputs. |
+| Windows publication rebuild and tests | PASS | 10 tables, 36 figure renderings, 18 manuscript sections, and 54 tests against the fresh outputs. |
 | Acquisition-matched Task B validation | BLOCKED | JGAD000785 requires approved access and cohort eligibility review. |
 
 [Machine-readable stage status](../../results/ai_audit/current_geo_stage_status.csv)
+[Hosted run summary](../../results/ai_audit/current_geo_hosted_run.json)
+[Native artifact hashes](../../results/ai_audit/current_geo_native_artifact_manifest.csv)
 
 ## Archive identity
 
@@ -83,6 +88,9 @@ stage completed in 3,049.9 s. The 390 NUSE medians and IQRs agreed with the
 archive within 1.0 × 10⁻¹⁴. Core QC retained all 636 arrays and recovered
 GSM1077736 as the sole one-metric review case. The fresh probe-set counts
 were 49,386 and 22,283 and the mapped gene counts were 18,490 and 12,650.
+The separate Windows `arrayQualityMetrics` runs from the saved fresh RMA
+objects flagged 8 GSE44076 arrays and 48 GSE41258 arrays. Every per-array
+flag count matched the archive, and no exclusion changed.
 
 The initial Linux restore built 176 packages and failed at `fs` (missing
 `libuv1-dev`), `oligo` (the Bioconductor source endpoint did not serve the
@@ -112,6 +120,16 @@ current recipe installs the locked Bioconductor source with the configure
 option explicitly on `R CMD INSTALL`.
 [Hosted restore and RMA attempt](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43017039168),
 [Bioconductor threading diagnosis](https://github.com/Bioconductor/bioconductor_docker/issues/22)
+
+The direct serial build passed locked environment verification and the
+background-correction and quantile-normalization smoke test. It reused
+the verified GEO and R package caches. All 20 workflow stages completed,
+including enrichment, manuscript generation, dependency and lint checks,
+and all 54 tests. The downloaded workflow evidence matched the five native
+input pins exactly. The hosted run recovered the same panels, 0.41 lock,
+and primary external performance.
+[Hosted serial run](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43021218025),
+[Uploaded evidence](https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43021218025/artifacts/13859252355)
 
 For the nondefault Windows toolchain install, `RTOOLS45_HOME` pointed to
 the Rtools45 directory. The PATH began with its `usr/bin` and
@@ -181,6 +199,20 @@ macro-F1, null means and Monte Carlo p-values reproduced the archive.
 Each p-value was 1/1,001. The Task B null concerns the observed group
 association, which includes the acquisition protocol.
 
+The first Windows ranked-enrichment attempt stopped when a child worker
+activated the worktree's separate R library and could not load `snow`.
+The restart recovered 1,062 over-representation terms from 18 fresh
+per-set tables. All term keys agreed with the archived ORA output.
+Both ranked contrasts then ran with the configured seed and
+`BiocParallel::SerialParam()`. The package emitted its multilevel
+P-value precision warnings, which apply to interpretation of the
+reported ranked estimates.
+
+The publication tables were rebuilt before the figures that read them.
+The manuscript and reports were then regenerated, followed by the full
+test suite. Dependency checks, Python compilation and lint also passed.
+[Windows publication run](../../results/ai_audit/current_geo_native_publication_run.json)
+
 ## Task B raw versus deposited expression
 
 The continuation reran the same grouped, fold-local Task B ablations on the
@@ -216,8 +248,8 @@ This refit assesses reproducibility conditional on the archived selection.
 
 On the canonical GSE41258 set (233 arrays, 190 patients), fresh rank-transport
 ROC-AUC was 0.9829, macro-F1 0.8282, sensitivity 1.0000, specificity 0.5577,
-Brier 0.0533 and calibration intercept/slope −2.0661/2.6198. All 13 primary
-patient-cluster bootstrap interval endpoints reproduced exactly. The
+Brier 0.0533 and calibration intercept/slope −2.0661/2.6198. Both endpoints
+of all 13 primary patient-cluster bootstrap intervals reproduced exactly. The
 prespecified 0.50 sensitivity had macro-F1 0.8898 and specificity 0.7115.
 These retrospective operating points quantify threshold and calibration
 transport on this cohort. Neither external outcome set entered fitting,
@@ -252,7 +284,7 @@ endoscopic biopsies from 55 colorectal cancer cases and 17 healthy
 participants in its RNA-seq cohort, with multiple mucosa sites per donor.
 An acquisition-matched Task B test requires an approved Type I data-use
 request and eligible analysis environment, followed by a patient/site
-eligibility audit. GSE44076 sampled mucosa 10 cm from the tumor. The reported
+eligibility audit. GSE44076 sampled mucosa at least 10 cm from the tumor. The reported
 JGAD000785 1–2 cm specimens and other anatomical sites require a prespecified
 distance and site rule before any evaluation. RNA-seq transfer introduces a
 platform change. [NBDC dataset](https://humandbs-production.ddbj.nig.ac.jp/dataset/JGAD000785),

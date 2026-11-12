@@ -43,8 +43,8 @@ retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was
 CLC, DYNC1H1, FOS, VIP, SNORA12. Its aggregated repeated out-of-fold ROC-AUC was
 1.000 (1.000-1.000) and Brier score was
-0.027 (0.023-0.031). Validation under matched acquisition protocols remains
-outstanding. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
+0.027 (0.023-0.031). Validation under matched acquisition
+protocols remains outstanding. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
 CEMIP, ETV4 were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In 233 canonical patient-tissue

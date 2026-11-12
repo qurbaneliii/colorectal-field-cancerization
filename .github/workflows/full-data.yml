@@ -148,7 +148,7 @@ jobs:
           blocked=0
           for target in audit extract preprocess convert differential-expression sensitivity composition \
               stress train compact-panel enrichment confounding permutation threshold validate \
-              figures tables manuscript quality full-data-test; do
+              tables figures manuscript quality full-data-test; do
             if (( blocked )); then
               printf '%s,BLOCKED,\n' "$target" >> "$logs/stages.csv"
               continue

@@ -49,7 +49,12 @@ intervals to within 1.5 × 10⁻¹⁴ in endpoint differences. See
 
 A separate fresh raw-CEL refit with the archived panel and hyperparameters
 reselected 0.41 using GSE44076 only. The new GSE41258 predictions reproduced
-the primary metrics and all 13 patient-cluster interval endpoints.
+the primary metrics and both endpoints of all 13 patient-cluster intervals.
+Fresh nested panel selection recovered the same panel and predictions.
+Using the same mappings and external cohort, the deposited-expression
+sensitivity retained similar ROC-AUC (0.986) and reached specificity 0.942
+at the raw reference cutoff. This comparison shows sensitivity of the
+operating point and calibration to the expression input.
 [Raw-CEL continuation](15_raw_reproduction_continuation.md)
 
 Calibration diagnostics follow [Van Calster et al.](https://doi.org/10.1186/s12916-019-1466-7).
