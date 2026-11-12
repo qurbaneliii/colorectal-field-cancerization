@@ -68,6 +68,7 @@ REQUIRED_OUTPUTS = {
     "results/metrics/nested_cv_predictions.csv",
     "results/metrics/fold_assignments.csv",
     "results/metrics/external_validation_predictions.csv",
+    "results/figures/internal_validation_figure_data.json",
     *(f"results/tables/{name}" for name in MAIN_TABLES),
     *(f"results/figures/{stem}.{ext}" for stem in PUBLICATION_FIGURES for ext in ("png", "pdf", "svg")),
 }

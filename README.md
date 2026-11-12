@@ -116,13 +116,17 @@ hyperparameters selected on all development samples. The external scores and
 threshold were frozen for evaluation.
 
 The locked environments are `requirements-lock.txt` and `renv.lock`. CI runs lint,
-no-data tests, and a synthetic grouped-CV smoke test; the manual full-data workflow is
-provided for a self-hosted runner with the local GEO inputs.
+no-data tests, and a synthetic grouped-CV smoke test. The manual full-data workflow
+supports a self-hosted runner with local inputs or `github-hosted` with the
+`current-geo` pins. Hosted runs retain the input hashes, stage logs, generated
+publication outputs and their checksums. The optional `analysis_sha` input replays
+an exact prior commit with matching pins and dependency locks.
 
 The [independent scientific audit](reports/ai_audit/FINAL_EXECUTIVE_RESEARCH_REPORT.md)
 documents sampling-protocol confounding, validation estimands and real-data
 sensitivities. Run `python scripts/verify_external_results.py` to reconcile the
 active external reports with saved predictions.
+[Final acceptance code review](reports/ai_audit/16_final_acceptance_review.md)
 
 ## Data availability
 

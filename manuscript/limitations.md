@@ -16,6 +16,8 @@ were recruited during colonoscopy and cancer-associated mucosa came from
 surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
 so the observed discrimination cannot establish a cancer-specific field effect.
 See the independent audit for the external cohort-association sensitivity.
+The permutation tests reuse splits and hyperparameters derived from the
+observed labels. Their p values describe conditional cohort diagnostics.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized

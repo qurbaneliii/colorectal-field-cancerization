@@ -52,6 +52,20 @@ plus calibration intercept -2.066
 and slope 2.620, indicates incomplete
 threshold and calibration transport despite strong discrimination.
 
+In the separately pinned current-GEO expression sensitivity, the same
+panel, probe mapping and evaluation patients were used for both expression
+routes. At the common 0.41 cutoff, specificity
+was 0.558 with raw-CEL RMA and
+0.942 with GEO-deposited expression.
+ROC-AUC was 0.983 and
+0.986, respectively. The calibration intercept
+and slope were -2.066 and
+2.620 for raw RMA, and
+1.372 and
+1.420 for deposited expression.
+The comparison changes the expression route in both cohorts and cannot isolate
+a single normalization step. The cutoff was fixed using GSE44076.
+
 The study's strongest contribution is methodological alignment: biological
 field genes, the primary Task B classifier, the supporting Task A model, and the
 secondary Task C transfer model are no longer conflated. Prospective translation

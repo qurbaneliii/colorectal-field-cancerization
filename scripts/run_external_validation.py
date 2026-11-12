@@ -137,17 +137,65 @@ def main() -> None:
         raise AssertionError("Model/expression provenance mismatch")
     if "transport_threshold" not in artifact:
         raise AssertionError("Task C transport threshold has not been locked on GSE44076")
-    if "transport_threshold_input_sha256" not in artifact:
-        raise ValueError("Regenerate the Task C threshold lock to bind it to its inputs")
-    for filename, digest in artifact["transport_threshold_input_sha256"].items():
+    primary_path = expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
+    primary_metadata_path = ROOT / paths["metadata"] / "gse44076_samples.csv"
+    threshold_path = tables_root / "task_c_primary_threshold_selection.csv"
+    expected_lock_inputs = {
+        path.relative_to(ROOT).as_posix()
+        for path in (primary_path, primary_metadata_path, ROOT / "config/analysis.yaml", threshold_path)
+    }
+    lock_inputs = artifact.get("transport_threshold_input_sha256", {})
+    if lock_inputs.keys() != expected_lock_inputs:
+        raise ValueError("Regenerate the Task C threshold lock with all four input digests")
+    for filename, digest in lock_inputs.items():
         if artifact_sha256(ROOT / filename) != digest:
             raise ValueError(f"Task C threshold lock input changed: {filename}")
-
-    primary_path = expression_path(ROOT / paths["processed"], "GSE44076", "gene", provenance)
+    threshold_grid = pd.read_csv(threshold_path)
+    locked_threshold = float(artifact["transport_threshold"])
+    if (
+        threshold_grid.loc[threshold_grid["selected"], "threshold"].tolist() != [locked_threshold]
+        or artifact["external_labels_used"] is not False
+    ):
+        raise ValueError("The Task C threshold lock differs from the GSE44076 selection")
     external_path = expression_path(ROOT / paths["processed"], "GSE41258", "gene", provenance)
     primary = pd.read_parquet(primary_path).set_index("gene_symbol")
+    primary_meta = pd.read_csv(primary_metadata_path)
+    signature = list(artifact["feature_genes"])
+    external_genes = set(pd.read_parquet(external_path, columns=["gene_symbol"])["gene_symbol"].astype(str))
+    common_signature = [
+        gene for gene in signature if gene in primary.index and gene in external_genes
+    ]
+    common_universe = [gene for gene in primary.index.astype(str) if gene in external_genes]
+    if (
+        artifact["transport_signature_genes"] != common_signature
+        or artifact["transport_common_universe"] != common_universe
+    ):
+        raise ValueError("Current platform mapping differs from the Task C threshold lock")
+    excluded_signature = [gene for gene in signature if gene not in common_signature]
+    if len(common_signature) < 2:
+        raise RuntimeError("Fewer than two locked genes occur on both platforms")
+    primary_task = primary_meta[
+        primary_meta["inclusion_status"].eq("included")
+        & primary_meta["tissue_class"].isin(["adjacent_normal", "tumor"])
+    ].copy()
+    if set(primary_task["geo_accession"]) != set(artifact["training_sample_ids"]):
+        raise ValueError("Task C development samples differ from the locked model")
+    default_threshold = float(config["external_validation"]["default_threshold"])
+    primary_representation = config["external_validation"]["primary_representation"]
+    representations = [
+        primary_representation,
+        *config["external_validation"].get("sensitivity_representations", []),
+    ]
+    if primary_representation != "within_sample_percentile_rank":
+        raise AssertionError("Primary external representation must be within-sample rank")
+    fitted_models = {
+        representation: fit_transport_model(
+            artifact, primary, primary_task, common_signature, common_universe, config, representation
+        )
+        for representation in representations
+    }
+
     external = pd.read_parquet(external_path).set_index("gene_symbol")
-    primary_meta = pd.read_csv(ROOT / paths["metadata"] / "gse44076_samples.csv")
     external_meta = pd.read_csv(
         ROOT / paths["metadata"] / "gse41258_samples.csv", dtype={"patient_id": str}
     )
@@ -167,34 +215,6 @@ def main() -> None:
     one_per_patient = deterministic_subset(
         eligible, ["donor_or_patient_group"], int(config["project"]["random_seed"])
     )
-
-    signature = list(artifact["feature_genes"])
-    external_genes = set(external.index.astype(str))
-    common_signature = [
-        gene for gene in signature if gene in primary.index and gene in external_genes
-    ]
-    common_universe = [gene for gene in primary.index.astype(str) if gene in external_genes]
-    if (
-        artifact["transport_signature_genes"] != common_signature
-        or artifact["transport_common_universe"] != common_universe
-    ):
-        raise ValueError("Current platform mapping differs from the Task C threshold lock")
-    excluded_signature = [gene for gene in signature if gene not in common_signature]
-    if len(common_signature) < 2:
-        raise RuntimeError("Fewer than two locked genes occur on both platforms")
-    primary_task = primary_meta[
-        primary_meta["inclusion_status"].eq("included")
-        & primary_meta["tissue_class"].isin(["adjacent_normal", "tumor"])
-    ].copy()
-    locked_threshold = float(artifact["transport_threshold"])
-    default_threshold = float(config["external_validation"]["default_threshold"])
-    primary_representation = config["external_validation"]["primary_representation"]
-    representations = [
-        primary_representation,
-        *config["external_validation"].get("sensitivity_representations", []),
-    ]
-    if primary_representation != "within_sample_percentile_rank":
-        raise AssertionError("Primary external representation must be within-sample rank")
     evaluation_sets = {
         "canonical_patient_tissue": canonical,
         "all_array_patient_cluster_sensitivity": eligible,
@@ -207,18 +227,7 @@ def main() -> None:
 
     prediction_frames: list[pd.DataFrame] = []
     metric_rows: list[dict[str, object]] = []
-    fitted_models = {}
-    for representation in representations:
-        model = fit_transport_model(
-            artifact,
-            primary,
-            primary_task,
-            common_signature,
-            common_universe,
-            config,
-            representation,
-        )
-        fitted_models[representation] = model
+    for representation, model in fitted_models.items():
         for evaluation_set, frame in evaluation_sets.items():
             matrix = transport_matrix(
                 external, frame, common_signature, common_universe, representation

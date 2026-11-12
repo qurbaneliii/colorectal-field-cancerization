@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.calibration import calibration_curve
+from sklearn.metrics import ConfusionMatrixDisplay, PrecisionRecallDisplay, RocCurveDisplay
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -17,6 +19,8 @@ if str(ROOT) not in sys.path:
 
 from src.visualization.publication_figures import PALETTE, save_figure
 from scripts.build_publication_tables import biological_predictive_intersection
+from scripts.run_compact_panel_analysis import average_repeated_predictions
+from src.data.provenance import artifact_sha256
 
 TABLES = ROOT / "results/tables"
 METRICS = ROOT / "results/metrics"
@@ -388,6 +392,65 @@ def biological_predictive_intersection_figure() -> None:
     save_figure(fig, FIGURES / "biological_predictive_gene_intersection")
 
 
+def internal_validation_figures() -> list[str]:
+    task_a_source = METRICS / "nested_cv_predictions.csv"
+    compact_source = METRICS / "nested_panel_outer_predictions.csv"
+    task_a = pd.read_csv(task_a_source)
+    task_a = average_repeated_predictions(
+        task_a.loc[task_a["task"].eq("task_a_three_class") & task_a["model"].eq("elastic_net")]
+    )
+    fig, ax = plt.subplots(figsize=(6.5, 5.5))
+    confusion = ConfusionMatrixDisplay.from_predictions(
+        task_a["y_true"], task_a["y_pred"], ax=ax, colorbar=False, cmap="Blues",
+        labels=["healthy", "adjacent_normal", "tumor"],
+        display_labels=["Healthy", "Adjacent normal", "Tumor"],
+    )
+    ax.set_title("Task A Elastic Net · grouped out-of-fold predictions")
+    task_a_stem = "task_a_out_of_fold_confusion_matrix"
+    save_figure(fig, FIGURES / task_a_stem)
+    evidence = {
+        task_a_stem: {
+            "source": task_a_source.relative_to(ROOT).as_posix(),
+            "source_sha256": artifact_sha256(task_a_source),
+            "samples": len(task_a),
+            "confusion_matrix": confusion.confusion_matrix.tolist(),
+        }
+    }
+    compact = pd.read_csv(compact_source)
+    for task, stem, positive, title in (
+        ("task_b_field_effect", "task_b_roc_pr_calibration", "adjacent_normal", "Task B · healthy vs adjacent"),
+        ("task_c_tumor_vs_adjacent", "task_c_roc_pr_calibration", "tumor", "Task C · tumor vs adjacent"),
+    ):
+        averaged = average_repeated_predictions(compact.loc[compact["task"].eq(task)])
+        observed = averaged["y_true"].eq(positive)
+        scores = averaged[f"probability_{positive}"]
+        fig, axes = plt.subplots(1, 3, figsize=(13, 4.5), layout="constrained")
+        roc = RocCurveDisplay.from_predictions(observed, scores, ax=axes[0])
+        pr = PrecisionRecallDisplay.from_predictions(observed, scores, ax=axes[1])
+        fraction, probability = calibration_curve(observed, scores, n_bins=8, strategy="quantile")
+        axes[2].plot(probability, fraction, marker="o")
+        axes[2].plot([0, 1], [0, 1], linestyle="--", color="black", linewidth=0.8)
+        axes[2].set(
+            xlabel="Mean predicted probability", ylabel="Observed positive fraction",
+            title="Calibration", xlim=(0, 1), ylim=(0, 1),
+        )
+        fig.suptitle(f"{title}, grouped out-of-fold predictions (n={len(averaged)})")
+        save_figure(fig, FIGURES / stem)
+        evidence[stem] = {
+            "source": compact_source.relative_to(ROOT).as_posix(),
+            "source_sha256": artifact_sha256(compact_source),
+            "samples": len(averaged),
+            "positive_class": positive,
+            "roc": {"fpr": roc.fpr.tolist(), "tpr": roc.tpr.tolist()},
+            "pr": {"precision": pr.precision.tolist(), "recall": pr.recall.tolist()},
+            "calibration": {"mean_probability": probability.tolist(), "observed_fraction": fraction.tolist()},
+        }
+    (FIGURES / "internal_validation_figure_data.json").write_text(
+        json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
+    )
+    return list(evidence)
+
+
 def main() -> None:
     os.chdir(ROOT)
     study_design()
@@ -400,6 +463,7 @@ def main() -> None:
     external_sensitivity()
     signature_intersection()
     biological_predictive_intersection_figure()
+    internal_stems = internal_validation_figures()
     generated = [
         "study_objectives_and_dataset_roles",
         "sample_count_flowchart",
@@ -413,6 +477,7 @@ def main() -> None:
         "external_patient_structure_sensitivity",
         "signature_intersection",
         "biological_predictive_gene_intersection",
+        *internal_stems,
     ]
     for stem in generated:
         for suffix in (".png", ".pdf", ".svg"):

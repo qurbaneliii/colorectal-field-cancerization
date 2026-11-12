@@ -52,7 +52,7 @@ def threshold_grid(probability: np.ndarray, labels: np.ndarray, config: dict) ->
     ).index[0]
     frame["selected"] = frame.index == selected_index
     frame["selection_rule"] = (
-        "maximize balanced accuracy on patient-aggregated repeated grouped GSE44076 OOF "
+        "maximize balanced accuracy on sample-averaged, patient-grouped GSE44076 OOF "
         "rank-transport probabilities; ties closest to 0.5 then lower threshold"
     )
     return frame

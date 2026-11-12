@@ -122,9 +122,10 @@ figures; full BH-adjusted results and tested-set provenance remain available.
 
 ## Task A
 
-Task A is supporting three-state discrimination. Elastic Net aggregated OOF
-macro-F1 was 0.959 (0.929-0.982); the fully nested compact-panel
-policy produced mean outer-fold macro-F1
+Task A is supporting three-state discrimination. The Elastic Net
+donor/patient-bootstrap median and interval for aggregated OOF macro-F1 were
+0.959 (0.929-0.982). The fully nested compact-panel policy
+produced mean outer-fold macro-F1
 0.948.
 It is not the study's primary endpoint.
 
@@ -133,8 +134,9 @@ It is not the study's primary endpoint.
 Task B is the primary predictive endpoint. Grouped repeated nested CV keeps all
 feature filtering, selection, scaling, hyperparameter search, calibration, and
 panel-size choice within the relevant training boundary. The nested-policy mean
-outer-fold macro-F1 was 1.000;
-aggregated OOF ROC-AUC was 1.000 (1.000-1.000). Near-perfect
+outer-fold macro-F1 was 1.000.
+The donor-bootstrap median and interval for aggregated OOF ROC-AUC were
+1.000 (1.000-1.000). Near-perfect
 performance is treated as a reason for additional confounding scrutiny, not as
 proof that confounding is absent.
 
@@ -225,10 +227,11 @@ this is reported as finite Monte Carlo resolution, not p=0.
 
 Mean outer-fold scores, repeat variability, aggregated repeated OOF scores,
 group-bootstrap intervals, and external patient-cluster intervals are distinct
-estimands. Task B aggregated OOF macro-F1 was
-1.000 (1.000-1.000). External ROC-AUC was
-0.985 (0.957-1.000) and macro-F1 was
-0.831 (0.755-0.889).
+estimands. The Task B donor-bootstrap median and interval for aggregated OOF
+macro-F1 were 1.000 (1.000-1.000). External ROC-AUC was
+0.983 (0.957–1.000)
+and macro-F1 was 0.828
+(0.755–0.889).
 
 ## Raw-vs-deposited sensitivity
 
@@ -240,6 +243,20 @@ sign agreement
 and 1466
 overlapping significant genes. Raw-CEL analysis remains primary; the deposited
 matrix is a sensitivity, not a substitute provenance route.
+
+In the separately pinned current-GEO expression sensitivity, the same
+panel, probe mapping and evaluation patients were used for both expression
+routes. At the common 0.41 cutoff, specificity
+was 0.558 with raw-CEL RMA and
+0.942 with GEO-deposited expression.
+ROC-AUC was 0.983 and
+0.986, respectively. The calibration intercept
+and slope were -2.066 and
+2.620 for raw RMA, and
+1.372 and
+1.420 for deposited expression.
+The comparison changes the expression route in both cohorts and cannot isolate
+a single normalization step. The cutoff was fixed using GSE44076.
 
 ## Biological interpretation
 
@@ -266,7 +283,7 @@ identities, execution evidence and remaining reproducibility gates.
 The primary field-effect evidence is strong within GSE44076 and survives several
 technical and demographic checks, but its marked composition sensitivity and
 lack of independent Task B validation require a cohort-specific, noncausal
-interpretation. Task B is ready for internal research use, not clinical use.
+interpretation. Task B supports retrospective within-cohort research.
 Task C supplies strong cross-platform ranking evidence but only moderate
 threshold/probability transport. Publication readiness also depends on the
 reproducibility gates and manuscript metadata tracked in the acceptance report.

@@ -77,7 +77,11 @@ with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
 ranking, and compact-panel selection occurred within training partitions for
 the nested CV analyses. RMA normalized and summarized each entire cohort before
-splitting. Internal estimates therefore describe cohort-processed expression.
+splitting. Internal estimates therefore describe cohort-processed expression
+and do not estimate performance after frozen-reference preprocessing of a new
+array. For the SVM comparator, the supervised selector was fit on the enclosing
+training partition before its grouped sigmoid calibration splits. The held-out
+nested-CV patients remained outside that partition.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner

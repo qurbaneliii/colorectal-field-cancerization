@@ -4,7 +4,7 @@
 
 [AFFILIATION]
 
-Corresponding author: [AUTHOR NAME]
+Corresponding author: [AUTHOR NAME], [CORRESPONDING AUTHOR EMAIL]
 
 Article type: Original research
 

@@ -11,6 +11,7 @@ import yaml
 
 from scripts.run_compact_panel_analysis import choose_panel
 from scripts.select_task_c_threshold import threshold_grid
+from src.data.provenance import artifact_sha256
 from src.modeling.residualization import TrainingCompositionPCs, TrainingCovariateResidualizer
 from src.modeling.stability import feature_stability
 
@@ -240,6 +241,17 @@ def test_required_publication_figure_renderings_are_nonempty(root: Path):
         for suffix in (".png", ".pdf", ".svg"):
             path = root / "results/figures" / f"{stem}{suffix}"
             assert path.exists() and path.stat().st_size > 0, path
+    evidence = json.loads(
+        (root / "results/figures/internal_validation_figure_data.json").read_text(encoding="utf-8")
+    )
+    assert {stem: record["samples"] for stem, record in evidence.items()} == {
+        "task_a_out_of_fold_confusion_matrix": 246,
+        "task_b_roc_pr_calibration": 148,
+        "task_c_roc_pr_calibration": 196,
+    }
+    for record in evidence.values():
+        assert record["source_sha256"] == artifact_sha256(root / record["source"])
+    assert np.asarray(evidence["task_a_out_of_fold_confusion_matrix"]["confusion_matrix"]).sum() == 246
 
 
 @pytest.mark.full_data
