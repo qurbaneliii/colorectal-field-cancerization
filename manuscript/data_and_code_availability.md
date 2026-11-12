@@ -7,5 +7,7 @@ configuration, machine-readable provenance, result tables, model cards, and
 manuscript sources are available at
 https://github.com/qurbaneliii/colorectal-field-cancerization. Multi-gigabyte raw
 archives and generated intermediate matrices are intentionally excluded from
-Git; their expected checksums and reconstruction paths are documented in the
-metadata manifests. No restricted patient-level clinical data were used.
+Git. The historical TAR hashes and separately pinned current GEO archives are
+documented in the reproduction audit. The original historical archive bytes
+were unavailable, leaving historical byte identity unresolved. JGAD000785
+requires approved Type I data use and was not accessed for this study.

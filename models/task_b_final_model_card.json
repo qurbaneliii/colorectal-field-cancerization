@@ -1,7 +1,7 @@
 {
   "model_version": "2.0.0",
   "task": "task_b_field_effect",
-  "repository_commit": "70998d6ffb537ddf720adb46ff217c373edce9fb",
+  "repository_commit": "d0cce43469bb4dce48f4236ec279c1e7c226c4d8",
   "training_accession": "GSE44076",
   "training_representation": "raw_cel_rma",
   "training_sample_ids": [
@@ -337,9 +337,9 @@
     "src/modeling/splitters.py",
     "src/modeling/stability.py"
   ],
-  "analysis_source_sha256": "dc074de0f3440b78c90a02ea91bdf6f1c41190e7af29cebf8753a530180b8c2b",
+  "analysis_source_sha256": "b200e335a5fd125e6990d34886fb2f6568e349f3e97448ee217c83a2269d678e",
   "software_versions": {
-    "python": "3.12.10",
+    "python": "3.12.14",
     "scikit_learn": "1.8.0",
     "pandas": "3.0.3",
     "numpy": "2.4.4"

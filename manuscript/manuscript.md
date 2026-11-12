@@ -1,10 +1,10 @@
-# Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning
+# Transcriptomic field associations in colorectal cancer with patient-grouped validation
 
 [AUTHOR NAME]
 
 [AFFILIATION]
 
-Corresponding author: [AUTHOR NAME]
+Corresponding author: [AUTHOR NAME], [CORRESPONDING AUTHOR EMAIL]
 
 Article type: Original research
 
@@ -29,9 +29,9 @@ tiered by adjusted evidence, direction consistency, preprocessing concordance,
 quality-control sensitivity, demographic strata, and expression trajectory.
 MCP-counter and a curated immediate-early/stress set assessed microenvironmental
 and preanalytical sensitivity. Elastic Net panels were evaluated with three
-repeats of five-fold donor/patient-grouped nested cross-validation. A separate
-tumor-versus-adjacent model was locked in GSE44076 and evaluated on GSE41258 with
-patient-cluster bootstrap uncertainty.
+repeats of five-fold donor/patient-grouped nested cross-validation. A two-gene
+tumor-versus-adjacent transport refit and cutoff were locked using GSE44076 and
+evaluated on GSE41258 with patient-cluster bootstrap uncertainty.
 
 ## Results
 
@@ -41,25 +41,27 @@ genes at Benjamini-Hochberg FDR <0.05 and absolute log2 fold change >=0.5;
 were provisional. Of the high-confidence genes, 74/101
 retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was
-CLC, DYNC1H1, FOS, VIP, SNORA12. Its aggregated repeated out-of-fold ROC-AUC was
-1.000 (1.000-1.000) and Brier score was
-0.027 (0.023-0.031); there is no independent healthy-versus-adjacent
-cohort. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
+CLC, DYNC1H1, FOS, VIP, SNORA12. The donor-bootstrap medians and 95% intervals were
+1.000 (1.000-1.000) for out-of-fold ROC-AUC and
+0.027 (0.023-0.031) for Brier score. Validation under matched acquisition
+protocols remains outstanding. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
 CEMIP, ETV4 were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In 233 canonical patient-tissue
-arrays from 190 patients, ROC-AUC was
-0.985 (0.957-1.000), macro-F1 was
-0.831 (0.755-0.889), and specificity was
-0.561 (0.417-0.692) at the GSE44076-locked threshold.
+arrays from 190 patients, point estimates with 95% patient-cluster
+intervals were ROC-AUC 0.983
+(0.957–1.000), macro-F1 0.828
+(0.755–0.889), and specificity
+0.558 (0.417–0.692)
+at the GSE44076-locked threshold.
 
 ## Conclusions
 
-GSE44076 supports a reproducible, internally validated field-effect classifier
-and a composition-sensitive candidate field signature. The GSE41258 analysis is
-external evaluation of a separate tumor-normal transfer model, not validation of
-Task B. These retrospective findings are biomarker-discovery evidence and do not
-establish clinical utility or causal mechanisms.
+The Task B panel discriminated the sampled GSE44076 mucosa cohorts. The
+acquisition protocol was aliased with case status, leaving the cancer-specific
+contribution unresolved. GSE41258 evaluates the separate Task C tumor-normal
+endpoint. These retrospective findings support biomarker discovery. Clinical
+utility and causal mechanisms remain unevaluated.
 
 # Keywords
 
@@ -182,7 +184,13 @@ Task C (tumor versus adjacent-normal) was secondary; Task A was supporting.
 Elastic Net logistic regression [8] was prespecified as the interpretable model,
 with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
-ranking, and compact-panel selection occurred within training partitions.
+ranking, and compact-panel selection occurred within training partitions for
+the nested CV analyses. RMA normalized and summarized each entire cohort before
+splitting. Internal estimates therefore describe cohort-processed expression
+and do not estimate performance after frozen-reference preprocessing of a new
+array. For the SVM comparator, the supervised selector was fit on the enclosing
+training partition before its grouped sigmoid calibration splits. The held-out
+nested-CV patients remained outside that partition.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
@@ -200,19 +208,23 @@ compact-consensus and exploratory labels were reported separately. Null tests
 were task-specific: Task A held healthy labels fixed while permuting the
 tumor/adjacent component, Task B permuted group-level healthy/adjacent labels,
 and Task C exchanged tumor/adjacent labels within patients. Each used 1,000
-permutations.
+permutations. The original-label split assignments and modal hyperparameters
+were held fixed. The resulting p values are conditional development diagnostics.
 
 ## Locked Task C threshold and external evaluation
 
 The Task C panel and probability threshold were derived without GSE41258 labels.
 Within-sample percentile ranks were computed over the label-independent common
-gene universe. Repeated grouped GSE44076 OOF probabilities were averaged by
-patient and the threshold maximizing balanced accuracy was selected, with ties
+gene universe. Repeated grouped GSE44076 OOF probabilities used a signature and
+hyperparameters previously selected on all development samples. Scores were
+averaged across repeats by sample. The development threshold maximized balanced
+accuracy on these same scores, with ties
 resolved toward 0.5 and then the lower threshold. Because FOXQ1 was
 absent from GPL96, the exact three-gene serialized primary model was not directly
 transportable. A distinct two-gene refit using CEMIP, ETV4 and
 GSE44076 outcomes was serialized and labeled as a transport refit. External
-labels were used only for final evaluation. The primary external estimand used
+labels were used for evaluation of the locked model and threshold. The cohort
+had already been analyzed in prior repository work. The primary estimand used
 all canonical patient-tissue rows and patient-cluster bootstrap intervals (1,000
 replicates); one-array-per-patient and threshold 0.5 were sensitivities.
 
@@ -297,18 +309,19 @@ terms; these small-set results are descriptive, not mechanistic evidence.
 
 ## Internal predictive performance
 
-Task A was supporting. Elastic Net patient/donor-bootstrap aggregated OOF
-macro-F1 was 0.959 (0.929-0.982) and multiclass ROC-AUC was
-0.995 (0.988-0.999). Its conditional permutation null was
-correctly restricted to tumor-versus-adjacent information and gave p=
+Task A was supporting. The Elastic Net donor/patient-bootstrap median and
+interval were 0.959 (0.929-0.982) for aggregated OOF macro-F1 and
+0.995 (0.988-0.999) for multiclass ROC-AUC. Its conditional
+permutation null tested tumor-versus-adjacent information and gave p=
 0.0010.
 
 Task B was primary. The nested panel policy selected a median of
 5 genes and produced mean
 outer-fold macro-F1 1.000 (fold SD
 0.000). The final panel was
-CLC, DYNC1H1, FOS, VIP, SNORA12. Aggregated repeated OOF ROC-AUC was
-1.000 (1.000-1.000), macro-F1 1.000 (1.000-1.000),
+CLC, DYNC1H1, FOS, VIP, SNORA12. Donor-bootstrap medians and intervals for aggregated
+repeated OOF predictions were ROC-AUC 1.000 (1.000-1.000),
+macro-F1 1.000 (1.000-1.000),
 Brier score 0.027 (0.023-0.031), and log loss
 0.164 (0.153-0.178). The group-level permutation p value was
 0.0010.
@@ -330,14 +343,16 @@ Task C was secondary. The nested policy selected a median of
 3 genes and mean outer-fold
 macro-F1 was 0.990 (fold SD
 0.016). The final panel was
-FOXQ1, CEMIP, ETV4; FOXQ1: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; CEMIP: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; ETV4: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000. Aggregated repeated OOF ROC-AUC was
-0.991 (0.963-1.000), Brier score 0.021 (0.014-0.033),
-and paired-permutation p=
+FOXQ1, CEMIP, ETV4. FOXQ1: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; CEMIP: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; ETV4: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000. Patient-bootstrap medians and
+intervals for aggregated OOF predictions were ROC-AUC
+0.991 (0.963-1.000) and Brier score 0.021 (0.014-0.033).
+Paired-permutation p=
 0.0010.
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 0.41 with internal balanced accuracy
 0.995; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only
@@ -353,9 +368,9 @@ balanced accuracy 0.779, sensitivity
 0.558, Brier score
 0.053, and log loss
 0.195. Patient-cluster 95% bootstrap intervals
-were 0.985 (0.957-1.000) for ROC-AUC,
-0.831 (0.755-0.889) for macro-F1, and
-0.561 (0.417-0.692) for specificity. Calibration
+were 0.957–1.000 for ROC-AUC,
+0.755–0.889 for macro-F1, and
+0.417–0.692 for specificity. Calibration
 intercept was -2.066 and slope was
 2.620. Thus ranking remained strong,
 but the locked threshold produced incomplete specificity and non-ideal
@@ -417,6 +432,20 @@ plus calibration intercept -2.066
 and slope 2.620, indicates incomplete
 threshold and calibration transport despite strong discrimination.
 
+In the separately pinned current-GEO expression sensitivity, the same
+panel, probe mapping and evaluation patients were used for both expression
+routes. At the common 0.41 cutoff, specificity
+was 0.558 with raw-CEL RMA and
+0.942 with GEO-deposited expression.
+ROC-AUC was 0.983 and
+0.986, respectively. The calibration intercept
+and slope were -2.066 and
+2.620 for raw RMA, and
+1.372 and
+1.420 for deposited expression.
+The comparison changes the expression route in both cohorts and cannot isolate
+a single normalization step. The cutoff was fixed using GSE44076.
+
 The study's strongest contribution is methodological alignment: biological
 field genes, the primary Task B classifier, the supporting Task A model, and the
 secondary Task C transfer model are no longer conflated. Prospective translation
@@ -438,10 +467,13 @@ and composition-PC residualization may remove biologically meaningful field
 signals as well as confounding. The immediate-early/stress audit is limited by a
 curated gene list and incomplete preanalytical metadata.
 
-Task B has internal grouped nested validation only. No independent cohort with
-both genuinely healthy donor mucosa and tumor-adjacent mucosa was available, so
-there is no external field-effect validation. Very high internal discrimination
-may still reflect cohort-specific structure.
+The primary Task B estimate comes from internal grouped validation. Controls
+were recruited during colonoscopy and cancer-associated mucosa came from
+surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
+so the observed discrimination cannot establish a cancer-specific field effect.
+See the independent audit for the external cohort-association sensitivity.
+The permutation tests reuse splits and hyperparameters derived from the
+observed labels. Their p values describe conditional cohort diagnostics.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized
@@ -457,15 +489,16 @@ the three cross-sectional tissue groups.
 
 # Conclusion
 
-Raw-CEL reanalysis of GSE44076 identified a graded colorectal field-associated
-transcriptomic signal and a five-gene, internally validated healthy-versus-adjacent
-classifier. Composition sensitivity shows that stromal and vascular context is
-part of that signal. A separate three-gene tumor-versus-adjacent model supported
+Raw-CEL reanalysis of GSE44076 identified tissue-group expression associations.
+A five-gene panel distinguished the sampled healthy and adjacent mucosa in
+internal grouped validation. Acquisition protocol and case status were aliased,
+so the study cannot isolate a cancer-specific field effect. Composition
+sensitivity implicates stromal and vascular context in the cohort association.
+A separate three-gene tumor-versus-adjacent model supported
 cross-platform tumor-normal ranking in GSE41258 through a clearly labeled
 two-gene transport refit, with incomplete threshold and calibration transport.
-The repository supports retrospective biomarker discovery and transparent
-reproduction; it does not support an externally validated clinical
-field-cancerization diagnostic.
+The repository supports retrospective biomarker discovery and reproducibility
+assessment. Clinical validity and utility remain unevaluated.
 
 # Data and code availability
 
@@ -476,14 +509,14 @@ configuration, machine-readable provenance, result tables, model cards, and
 manuscript sources are available at
 https://github.com/qurbaneliii/colorectal-field-cancerization. Multi-gigabyte raw
 archives and generated intermediate matrices are intentionally excluded from
-Git; their expected checksums and reconstruction paths are documented in the
-metadata manifests. No restricted patient-level clinical data were used.
+Git. The historical TAR hashes and separately pinned current GEO archives are
+documented in the reproduction audit. The original historical archive bytes
+were unavailable, leaving historical byte identity unresolved. JGAD000785
+requires approved Type I data use and was not accessed for this study.
 
 # Author contributions
 
-[AUTHOR NAME]: conceptualization, methodology, software, formal analysis,
-validation, visualization, data curation, writing—original draft, and
-writing—review and editing.
+[AUTHOR-APPROVED CONTRIBUTIONS]
 
 # Funding
 
@@ -491,7 +524,7 @@ writing—review and editing.
 
 # Conflicts of interest
 
-The author declares no conflicts of interest.
+[AUTHOR-APPROVED CONFLICTS OF INTEREST STATEMENT]
 
 # Acknowledgments
 
@@ -581,8 +614,9 @@ gene universe; ranked panels are explicitly labeled separately.
 
 **Figure 12. Supporting Task A validation.** Confusion counts are aggregated
 repeated OOF predictions from three repeats of five-fold donor/patient-grouped
-nested CV on 246 GSE44076 samples. All transformations and tuning were training
-only. Bootstrap intervals are reported in the text, not as matrix error bars.
+nested CV on 246 GSE44076 samples. Feature selection and tuning used the
+training partitions after cohort-wide RMA. Bootstrap intervals are reported in
+the text.
 
 **Figure 13. Primary Task B discrimination and calibration.** ROC, precision-
 recall, and calibration curves use aggregated repeated OOF predictions from 50

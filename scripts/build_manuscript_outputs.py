@@ -4,12 +4,18 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.verify_external_results import verify
+
 TABLES = ROOT / "results/tables"
 METRICS = ROOT / "results/metrics"
 MANUSCRIPT = ROOT / "manuscript"
@@ -31,7 +37,7 @@ def interval(frame: pd.DataFrame, metric: str) -> str:
 
 def external_interval(frame: pd.DataFrame, metric: str) -> str:
     row = frame.loc[frame["metric"].eq(metric)].iloc[0]
-    return f"{number(row['median'])} ({number(row['ci_lower'])}-{number(row['ci_upper'])})"
+    return f"{number(row['ci_lower'])}–{number(row['ci_upper'])}"
 
 
 def write(name: str, value: str) -> None:
@@ -39,26 +45,6 @@ def write(name: str, value: str) -> None:
 
 
 def artifact_manifest(commit: str) -> pd.DataFrame:
-    command_rules = {
-        "array_quality": "Rscript R/02_preprocess_gse44076.R or R/03_preprocess_gse41258.R",
-        "nuse": "Rscript R/03_preprocess_gse41258.R",
-        "differential_expression": "Rscript R/04_differential_expression.R",
-        "enrichment": "Rscript R/05_functional_enrichment.R",
-        "composition": "Rscript R/06_tissue_composition_sensitivity.R",
-        "confounding": "python scripts/run_task_b_confounding_sensitivity.py",
-        "compact_panel": "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma",
-        "external": "python scripts/run_external_validation.py --provenance raw_cel_rma",
-        "threshold": "python scripts/select_task_c_threshold.py",
-        "permutation": "python scripts/run_permutation_tests.py --provenance raw_cel_rma",
-        "task_c_cross_platform_transport": (
-            "python scripts/run_external_validation.py --provenance raw_cel_rma"
-        ),
-        "task_b_": "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma",
-        "task_c_primary": (
-            "python scripts/run_compact_panel_analysis.py --provenance raw_cel_rma"
-        ),
-        "task_c_model_card": "python scripts/select_task_c_threshold.py",
-    }
     rows: list[dict[str, object]] = []
     created = datetime.now(timezone.utc).isoformat()
     for base in (
@@ -72,27 +58,14 @@ def artifact_manifest(commit: str) -> pd.DataFrame:
             if not path.is_file() or path == REPORTS / "result_artifact_manifest.csv":
                 continue
             relative = path.relative_to(ROOT).as_posix()
-            producing = "python scripts/build_manuscript_outputs.py"
-            for token, command in command_rules.items():
-                if token in relative.lower():
-                    producing = command
-                    break
             digest = hashlib.sha256(path.read_bytes()).hexdigest()
             rows.append(
                 {
                     "path": relative,
                     "size_bytes": path.stat().st_size,
                     "sha256": digest,
-                    "producing_command": producing,
-                    "input_provenance": (
-                        "raw_cel_rma"
-                        if relative.startswith(
-                            ("results/", "reports/", "manuscript/", "models/")
-                        )
-                        else "GEO_metadata"
-                    ),
-                    "creation_timestamp_utc": created,
-                    "git_commit_sha_at_generation": commit,
+                    "observed_at_utc": created,
+                    "inventory_head_commit": commit,
                 }
             )
     return pd.DataFrame(rows)
@@ -100,6 +73,7 @@ def artifact_manifest(commit: str) -> pd.DataFrame:
 
 def main() -> None:
     os.chdir(ROOT)
+    verify(ROOT)
     MANUSCRIPT.mkdir(exist_ok=True)
     REPORTS.mkdir(exist_ok=True)
 
@@ -116,9 +90,35 @@ def main() -> None:
     task_b_confounding = read("task_b_confounding_sensitivity.csv").set_index("scenario")
     threshold = read("task_c_primary_threshold_selection.csv")
     threshold_row = threshold.loc[threshold["selected"]].iloc[0]
-    external = read("external_patient_tissue_metrics.csv", METRICS)
+    external = read("external_validation_metrics.csv", METRICS)
     external_primary = external.loc[external["is_primary"]].iloc[0]
-    external_ci = read("external_patient_cluster_bootstrap_ci.csv", METRICS)
+    transport_sensitivity = read(
+        "current_geo_task_c_raw_vs_deposited.csv", ROOT / "results/ai_audit"
+    )
+    raw_reference = transport_sensitivity.loc[
+        transport_sensitivity["analysis_provenance"].eq("raw_cel_rma")
+        & transport_sensitivity["threshold_policy"].eq("primary_gse44076_locked")
+    ].iloc[0]
+    deposited_reference = transport_sensitivity.loc[
+        transport_sensitivity["analysis_provenance"].eq("geo_deposited_series_matrix")
+        & transport_sensitivity["threshold_policy"].eq("raw_reference_cutoff")
+    ].iloc[0]
+    if raw_reference["threshold"] != deposited_reference["threshold"]:
+        raise ValueError("The Task C expression sensitivity requires a shared reference cutoff")
+    expression_sensitivity = f"""In the separately pinned current-GEO expression sensitivity, the same
+panel, probe mapping and evaluation patients were used for both expression
+routes. At the common {number(raw_reference['threshold'], 2)} cutoff, specificity
+was {number(raw_reference['specificity'])} with raw-CEL RMA and
+{number(deposited_reference['specificity'])} with GEO-deposited expression.
+ROC-AUC was {number(raw_reference['roc_auc'])} and
+{number(deposited_reference['roc_auc'])}, respectively. The calibration intercept
+and slope were {number(raw_reference['calibration_intercept'])} and
+{number(raw_reference['calibration_slope'])} for raw RMA, and
+{number(deposited_reference['calibration_intercept'])} and
+{number(deposited_reference['calibration_slope'])} for deposited expression.
+The comparison changes the expression route in both cohorts and cannot isolate
+a single normalization step. The cutoff was fixed using GSE44076."""
+    external_ci = read("external_validation_bootstrap_ci.csv", METRICS)
     external_ci = external_ci.loc[
         external_ci["representation"].eq("within_sample_percentile_rank")
         & external_ci["evaluation_set"].eq("canonical_patient_tissue")
@@ -175,13 +175,13 @@ def main() -> None:
         read("external_patient_tissue_structure.csv")["has_both_tissues"].sum()
     )
 
-    title_page = """# Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning
+    title_page = """# Transcriptomic field associations in colorectal cancer with patient-grouped validation
 
 [AUTHOR NAME]
 
 [AFFILIATION]
 
-Corresponding author: [AUTHOR NAME]
+Corresponding author: [AUTHOR NAME], [CORRESPONDING AUTHOR EMAIL]
 
 Article type: Original research
 
@@ -207,9 +207,9 @@ tiered by adjusted evidence, direction consistency, preprocessing concordance,
 quality-control sensitivity, demographic strata, and expression trajectory.
 MCP-counter and a curated immediate-early/stress set assessed microenvironmental
 and preanalytical sensitivity. Elastic Net panels were evaluated with three
-repeats of five-fold donor/patient-grouped nested cross-validation. A separate
-tumor-versus-adjacent model was locked in GSE44076 and evaluated on GSE41258 with
-patient-cluster bootstrap uncertainty.
+repeats of five-fold donor/patient-grouped nested cross-validation. A two-gene
+tumor-versus-adjacent transport refit and cutoff were locked using GSE44076 and
+evaluated on GSE41258 with patient-cluster bootstrap uncertainty.
 
 ## Results
 
@@ -219,25 +219,27 @@ genes at Benjamini-Hochberg FDR <0.05 and absolute log2 fold change >=0.5;
 were provisional. Of the high-confidence genes, {robust_count}/{len(high)}
 retained direction and significance after composition-PC adjustment and
 {stress_flagged} overlapped the curated stress set. The primary Task B panel was
-{', '.join(task_b_genes)}. Its aggregated repeated out-of-fold ROC-AUC was
-{interval(task_b_ci, 'roc_auc')} and Brier score was
-{interval(task_b_ci, 'brier_score')}; there is no independent healthy-versus-adjacent
-cohort. The secondary Task C panel was {', '.join(task_c_genes)}. Only
+{', '.join(task_b_genes)}. The donor-bootstrap medians and 95% intervals were
+{interval(task_b_ci, 'roc_auc')} for out-of-fold ROC-AUC and
+{interval(task_b_ci, 'brier_score')} for Brier score. Validation under matched acquisition
+protocols remains outstanding. The secondary Task C panel was {', '.join(task_c_genes)}. Only
 {', '.join(common_task_c)} were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In {external_arrays} canonical patient-tissue
-arrays from {external_patients} patients, ROC-AUC was
-{external_interval(external_ci, 'roc_auc')}, macro-F1 was
-{external_interval(external_ci, 'f1_macro')}, and specificity was
-{external_interval(external_ci, 'specificity')} at the GSE44076-locked threshold.
+arrays from {external_patients} patients, point estimates with 95% patient-cluster
+intervals were ROC-AUC {number(external_primary['roc_auc'])}
+({external_interval(external_ci, 'roc_auc')}), macro-F1 {number(external_primary['f1_macro'])}
+({external_interval(external_ci, 'f1_macro')}), and specificity
+{number(external_primary['specificity'])} ({external_interval(external_ci, 'specificity')})
+at the GSE44076-locked threshold.
 
 ## Conclusions
 
-GSE44076 supports a reproducible, internally validated field-effect classifier
-and a composition-sensitive candidate field signature. The GSE41258 analysis is
-external evaluation of a separate tumor-normal transfer model, not validation of
-Task B. These retrospective findings are biomarker-discovery evidence and do not
-establish clinical utility or causal mechanisms.
+The Task B panel discriminated the sampled GSE44076 mucosa cohorts. The
+acquisition protocol was aliased with case status, leaving the cancer-specific
+contribution unresolved. GSE41258 evaluates the separate Task C tumor-normal
+endpoint. These retrospective findings support biomarker discovery. Clinical
+utility and causal mechanisms remain unevaluated.
 """
 
     keywords = """# Keywords
@@ -363,7 +365,13 @@ Task C (tumor versus adjacent-normal) was secondary; Task A was supporting.
 Elastic Net logistic regression [8] was prespecified as the interpretable model,
 with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
-ranking, and compact-panel selection occurred within training partitions.
+ranking, and compact-panel selection occurred within training partitions for
+the nested CV analyses. RMA normalized and summarized each entire cohort before
+splitting. Internal estimates therefore describe cohort-processed expression
+and do not estimate performance after frozen-reference preprocessing of a new
+array. For the SVM comparator, the supervised selector was fit on the enclosing
+training partition before its grouped sigmoid calibration splits. The held-out
+nested-CV patients remained outside that partition.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
@@ -381,19 +389,23 @@ compact-consensus and exploratory labels were reported separately. Null tests
 were task-specific: Task A held healthy labels fixed while permuting the
 tumor/adjacent component, Task B permuted group-level healthy/adjacent labels,
 and Task C exchanged tumor/adjacent labels within patients. Each used 1,000
-permutations.
+permutations. The original-label split assignments and modal hyperparameters
+were held fixed. The resulting p values are conditional development diagnostics.
 
 ## Locked Task C threshold and external evaluation
 
 The Task C panel and probability threshold were derived without GSE41258 labels.
 Within-sample percentile ranks were computed over the label-independent common
-gene universe. Repeated grouped GSE44076 OOF probabilities were averaged by
-patient and the threshold maximizing balanced accuracy was selected, with ties
+gene universe. Repeated grouped GSE44076 OOF probabilities used a signature and
+hyperparameters previously selected on all development samples. Scores were
+averaged across repeats by sample. The development threshold maximized balanced
+accuracy on these same scores, with ties
 resolved toward 0.5 and then the lower threshold. Because {task_c_genes[0]} was
 absent from GPL96, the exact three-gene serialized primary model was not directly
 transportable. A distinct two-gene refit using {', '.join(common_task_c)} and
 GSE44076 outcomes was serialized and labeled as a transport refit. External
-labels were used only for final evaluation. The primary external estimand used
+labels were used for evaluation of the locked model and threshold. The cohort
+had already been analyzed in prior repository work. The primary estimand used
 all canonical patient-tissue rows and patient-cluster bootstrap intervals (1,000
 replicates); one-array-per-patient and threshold 0.5 were sensitivities.
 
@@ -479,18 +491,19 @@ terms; these small-set results are descriptive, not mechanistic evidence.
 
 ## Internal predictive performance
 
-Task A was supporting. Elastic Net patient/donor-bootstrap aggregated OOF
-macro-F1 was {interval(task_a_ci, 'f1_macro')} and multiclass ROC-AUC was
-{interval(task_a_ci, 'roc_auc_ovr_macro')}. Its conditional permutation null was
-correctly restricted to tumor-versus-adjacent information and gave p=
+Task A was supporting. The Elastic Net donor/patient-bootstrap median and
+interval were {interval(task_a_ci, 'f1_macro')} for aggregated OOF macro-F1 and
+{interval(task_a_ci, 'roc_auc_ovr_macro')} for multiclass ROC-AUC. Its conditional
+permutation null tested tumor-versus-adjacent information and gave p=
 {float(permutations.loc[permutations['task'].eq('task_a_three_class'), 'permutation_p_value'].iloc[0]):.4f}.
 
 Task B was primary. The nested panel policy selected a median of
 {int(task_b_nested['effective_gene_count_median'])} genes and produced mean
 outer-fold macro-F1 {number(task_b_nested['outer_fold_macro_f1_mean'])} (fold SD
 {number(task_b_nested['outer_fold_macro_f1_sd'])}). The final panel was
-{', '.join(task_b_genes)}. Aggregated repeated OOF ROC-AUC was
-{interval(task_b_ci, 'roc_auc')}, macro-F1 {interval(task_b_ci, 'f1_macro')},
+{', '.join(task_b_genes)}. Donor-bootstrap medians and intervals for aggregated
+repeated OOF predictions were ROC-AUC {interval(task_b_ci, 'roc_auc')},
+macro-F1 {interval(task_b_ci, 'f1_macro')},
 Brier score {interval(task_b_ci, 'brier_score')}, and log loss
 {interval(task_b_ci, 'log_loss')}. The group-level permutation p value was
 {float(permutations.loc[permutations['task'].eq('task_b_field_effect'), 'permutation_p_value'].iloc[0]):.4f}.
@@ -512,14 +525,16 @@ Task C was secondary. The nested policy selected a median of
 {int(task_c_nested['effective_gene_count_median'])} genes and mean outer-fold
 macro-F1 was {number(task_c_nested['outer_fold_macro_f1_mean'])} (fold SD
 {number(task_c_nested['outer_fold_macro_f1_sd'])}). The final panel was
-{', '.join(task_c_genes)}; {task_c_stability}. Aggregated repeated OOF ROC-AUC was
-{interval(task_c_ci, 'roc_auc')}, Brier score {interval(task_c_ci, 'brier_score')},
-and paired-permutation p=
+{', '.join(task_c_genes)}. {task_c_stability}. Patient-bootstrap medians and
+intervals for aggregated OOF predictions were ROC-AUC
+{interval(task_c_ci, 'roc_auc')} and Brier score {interval(task_c_ci, 'brier_score')}.
+Paired-permutation p=
 {float(permutations.loc[permutations['task'].eq('task_c_tumor_vs_adjacent'), 'permutation_p_value'].iloc[0]):.4f}.
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 {number(threshold_row['threshold'], 2)} with internal balanced accuracy
 {number(threshold_row['balanced_accuracy'])}; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only
@@ -600,6 +615,8 @@ plus calibration intercept {number(external_primary['calibration_intercept'])}
 and slope {number(external_primary['calibration_slope'])}, indicates incomplete
 threshold and calibration transport despite strong discrimination.
 
+{expression_sensitivity}
+
 The study's strongest contribution is methodological alignment: biological
 field genes, the primary Task B classifier, the supporting Task A model, and the
 secondary Task C transfer model are no longer conflated. Prospective translation
@@ -622,10 +639,13 @@ and composition-PC residualization may remove biologically meaningful field
 signals as well as confounding. The immediate-early/stress audit is limited by a
 curated gene list and incomplete preanalytical metadata.
 
-Task B has internal grouped nested validation only. No independent cohort with
-both genuinely healthy donor mucosa and tumor-adjacent mucosa was available, so
-there is no external field-effect validation. Very high internal discrimination
-may still reflect cohort-specific structure.
+The primary Task B estimate comes from internal grouped validation. Controls
+were recruited during colonoscopy and cancer-associated mucosa came from
+surgical margins at least 10 cm from tumor. Class and acquisition are aliased,
+so the observed discrimination cannot establish a cancer-specific field effect.
+See the independent audit for the external cohort-association sensitivity.
+The permutation tests reuse splits and hyperparameters derived from the
+observed labels. Their p values describe conditional cohort diagnostics.
 
 Task C uses a different normal comparator in GSE41258 and one of three primary
 genes is absent on GPL96. Its two-gene transport refit is not the exact serialized
@@ -642,15 +662,16 @@ the three cross-sectional tissue groups.
 
     conclusion = """# Conclusion
 
-Raw-CEL reanalysis of GSE44076 identified a graded colorectal field-associated
-transcriptomic signal and a five-gene, internally validated healthy-versus-adjacent
-classifier. Composition sensitivity shows that stromal and vascular context is
-part of that signal. A separate three-gene tumor-versus-adjacent model supported
+Raw-CEL reanalysis of GSE44076 identified tissue-group expression associations.
+A five-gene panel distinguished the sampled healthy and adjacent mucosa in
+internal grouped validation. Acquisition protocol and case status were aliased,
+so the study cannot isolate a cancer-specific field effect. Composition
+sensitivity implicates stromal and vascular context in the cohort association.
+A separate three-gene tumor-versus-adjacent model supported
 cross-platform tumor-normal ranking in GSE41258 through a clearly labeled
 two-gene transport refit, with incomplete threshold and calibration transport.
-The repository supports retrospective biomarker discovery and transparent
-reproduction; it does not support an externally validated clinical
-field-cancerization diagnostic.
+The repository supports retrospective biomarker discovery and reproducibility
+assessment. Clinical validity and utility remain unevaluated.
 """
 
     availability = """# Data and code availability
@@ -662,15 +683,15 @@ configuration, machine-readable provenance, result tables, model cards, and
 manuscript sources are available at
 https://github.com/qurbaneliii/colorectal-field-cancerization. Multi-gigabyte raw
 archives and generated intermediate matrices are intentionally excluded from
-Git; their expected checksums and reconstruction paths are documented in the
-metadata manifests. No restricted patient-level clinical data were used.
+Git. The historical TAR hashes and separately pinned current GEO archives are
+documented in the reproduction audit. The original historical archive bytes
+were unavailable, leaving historical byte identity unresolved. JGAD000785
+requires approved Type I data use and was not accessed for this study.
 """
 
     author_contributions = """# Author contributions
 
-[AUTHOR NAME]: conceptualization, methodology, software, formal analysis,
-validation, visualization, data curation, writing—original draft, and
-writing—review and editing.
+[AUTHOR-APPROVED CONTRIBUTIONS]
 """
     funding = """# Funding
 
@@ -678,7 +699,7 @@ writing—review and editing.
 """
     conflicts = """# Conflicts of interest
 
-The author declares no conflicts of interest.
+[AUTHOR-APPROVED CONFLICTS OF INTEREST STATEMENT]
 """
     acknowledgments = """# Acknowledgments
 
@@ -770,8 +791,9 @@ gene universe; ranked panels are explicitly labeled separately.
 
 **Figure 12. Supporting Task A validation.** Confusion counts are aggregated
 repeated OOF predictions from three repeats of five-fold donor/patient-grouped
-nested CV on 246 GSE44076 samples. All transformations and tuning were training
-only. Bootstrap intervals are reported in the text, not as matrix error bars.
+nested CV on 246 GSE44076 samples. Feature selection and tuning used the
+training partitions after cohort-wide RMA. Bootstrap intervals are reported in
+the text.
 
 **Figure 13. Primary Task B discrimination and calibration.** ROC, precision-
 recall, and calibration curves use aggregated repeated OOF predictions from 50
@@ -1032,9 +1054,10 @@ figures; full BH-adjusted results and tested-set provenance remain available.
 
 ## Task A
 
-Task A is supporting three-state discrimination. Elastic Net aggregated OOF
-macro-F1 was {interval(task_a_ci, 'f1_macro')}; the fully nested compact-panel
-policy produced mean outer-fold macro-F1
+Task A is supporting three-state discrimination. The Elastic Net
+donor/patient-bootstrap median and interval for aggregated OOF macro-F1 were
+{interval(task_a_ci, 'f1_macro')}. The fully nested compact-panel policy
+produced mean outer-fold macro-F1
 {number(compact.loc[compact['task'].eq('task_a_three_class') & compact['panel_size'].eq('nested_selected_policy'), 'outer_fold_macro_f1_mean'].iloc[0])}.
 It is not the study's primary endpoint.
 
@@ -1043,8 +1066,9 @@ It is not the study's primary endpoint.
 Task B is the primary predictive endpoint. Grouped repeated nested CV keeps all
 feature filtering, selection, scaling, hyperparameter search, calibration, and
 panel-size choice within the relevant training boundary. The nested-policy mean
-outer-fold macro-F1 was {number(task_b_nested['outer_fold_macro_f1_mean'])};
-aggregated OOF ROC-AUC was {interval(task_b_ci, 'roc_auc')}. Near-perfect
+outer-fold macro-F1 was {number(task_b_nested['outer_fold_macro_f1_mean'])}.
+The donor-bootstrap median and interval for aggregated OOF ROC-AUC were
+{interval(task_b_ci, 'roc_auc')}. Near-perfect
 performance is treated as a reason for additional confounding scrutiny, not as
 proof that confounding is absent.
 
@@ -1135,10 +1159,11 @@ this is reported as finite Monte Carlo resolution, not p=0.
 
 Mean outer-fold scores, repeat variability, aggregated repeated OOF scores,
 group-bootstrap intervals, and external patient-cluster intervals are distinct
-estimands. Task B aggregated OOF macro-F1 was
-{interval(task_b_ci, 'f1_macro')}. External ROC-AUC was
-{external_interval(external_ci, 'roc_auc')} and macro-F1 was
-{external_interval(external_ci, 'f1_macro')}.
+estimands. The Task B donor-bootstrap median and interval for aggregated OOF
+macro-F1 were {interval(task_b_ci, 'f1_macro')}. External ROC-AUC was
+{number(external_primary['roc_auc'])} ({external_interval(external_ci, 'roc_auc')})
+and macro-F1 was {number(external_primary['f1_macro'])}
+({external_interval(external_ci, 'f1_macro')}).
 
 ## Raw-vs-deposited sensitivity
 
@@ -1151,6 +1176,8 @@ and {int(raw_vs_deposited.loc['adjacent_vs_healthy', 'significant_gene_overlap']
 overlapping significant genes. Raw-CEL analysis remains primary; the deposited
 matrix is a sensitivity, not a substitute provenance route.
 
+{expression_sensitivity}
+
 ## Biological interpretation
 
 The most defensible interpretation is a bulk-tissue field-associated program
@@ -1162,24 +1189,24 @@ compared explicitly rather than conflated.
 
 ## Limitations
 
-The study is retrospective and single-cohort for Task B; healthy and adjacent
-samples differ demographically; bulk expression is composition-sensitive;
-processing metadata are incomplete; no independent field-effect cohort exists;
-one Task C gene is absent on GPL96; external threshold/calibration transport is
-imperfect; and no prospective clinical-utility analysis is available. Docker
-execution is blocked by the unavailable host Linux-container engine.
+The study is retrospective and single-cohort for Task B. Healthy and adjacent
+samples differ demographically, bulk expression is composition-sensitive, and
+processing metadata are incomplete. Acquisition-matched field-effect validation
+remains outstanding. GPL96 lacks one Task C gene, and external threshold and
+calibration transport are imperfect. Prospective clinical utility remains
+unevaluated. The
+[raw-CEL audit](ai_audit/15_raw_reproduction_continuation.md) records archive
+identities, execution evidence and remaining reproducibility gates.
 
 ## Final scientific conclusions
 
 The primary field-effect evidence is strong within GSE44076 and survives several
 technical and demographic checks, but its marked composition sensitivity and
 lack of independent Task B validation require a cohort-specific, noncausal
-interpretation. Task B is ready for internal research use, not clinical use.
+interpretation. Task B supports retrospective within-cohort research.
 Task C supplies strong cross-platform ranking evidence but only moderate
-threshold/probability transport. Publication readiness remains partial because
-current-revision remote CI and container execution are blocked in this host
-session and administrative manuscript metadata remain to be supplied; clinical
-readiness is not claimed.
+threshold/probability transport. Publication readiness also depends on the
+reproducibility gates and manuscript metadata tracked in the acceptance report.
 """
     (REPORTS / "final_analysis_report.md").write_text(
         scientific_report.strip() + "\n", encoding="utf-8"
@@ -1198,13 +1225,13 @@ executed, inspected, non-empty artifact; code presence alone is insufficient.
 | D. Confounding and biology | PASS | Demographic, subgroup, MCP-counter, stress, QC, preprocessing, trajectory, and tier-specific enrichment sensitivities | Independent cell-resolved confirmation remains a scientific limitation |
 | E. Modeling and external boundaries | PASS | Grouped nested selection; Task B primary; Task C secondary; locked GSE44076 threshold; exact model versus transport-refit distinction | Independent Task B cohort remains unavailable |
 | F. Uncertainty | PASS | Separate fold and aggregated-OOF estimands, 1,000 group bootstraps, task-specific 1,000-permutation tests, calibration | Prospective uncertainty remains unavailable |
-| G. Reproducibility | PARTIAL | Locked Python/R files, 40 passing local tests, R verification, and a passing baseline-branch CI run | Current-revision CI awaits an authenticated push; Docker is host-blocked until the Windows Linux-container engine/WSL service is available |
-| H. Manuscript | PASS | Complete sections, verified references, no citation placeholders, expanded results/discussion, full legends, ten tables, vector/raster figures | Supply author, affiliation, and funding metadata |
+| G. Reproducibility | PARTIAL | Locked Python/R files and a checksummed result inventory | See the [raw-CEL audit](ai_audit/15_raw_reproduction_continuation.md) for current input and execution evidence. Historical TAR identity remains unresolved. |
+| H. Manuscript content | PASS | Complete scientific sections, references, legends, ten tables and figure renderings | Submission metadata is tracked separately |
+| I. Submission metadata | BLOCKED | Author information and declarations remain provisional | Supply authors, affiliations, corresponding author details, approved contributions, funding, and conflicts declarations |
+| J. Independent Task B validation | BLOCKED | GSE44076 case status is aliased with acquisition protocol | Obtain approved Type I JGAD000785 access and verify cohort eligibility, sampling distance, and sites |
 
-Overall decision: **PARTIAL publication readiness**. The scientific and reporting
-gates are complete, but current-revision remote CI and independent container
-execution remain blocked at the host. This does not invalidate the executed
-analyses; it prevents a full reproducibility PASS.
+Overall decision is **partial publication readiness**. Review the raw-CEL
+audit for the run-specific gates and historical archive identity.
 """
     (REPORTS / "publication_readiness_final.md").write_text(
         readiness.strip() + "\n", encoding="utf-8"

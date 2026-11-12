@@ -1,0 +1,8 @@
+candidate,controls_present,cancer_associated_normal_present,matched_acquisition,independence,decision,limitation
+JGAS000655 / JGAD000785,yes,yes,yes,distinct institution and study; donor linkage pending,pending controlled-access matched-protocol replication,"Tis–T1-heavy case mix; site and distance harmonization; verify gene coverage including SNORA12"
+GSE4107,yes,yes,no,distinct Spanish and Singapore cohorts; no shared GEO samples,include only as separate sensitivity,"22 early-onset subjects; surgical versus endoscopic acquisition remains tied to class"
+GSE95132 / PRJNA376161,normal crypts from individuals with ACF,yes,unresolved,distinct study; sample-level overlap not reviewed,exclude from confirmatory Task B,"Five crypt controls; ACF-bearing donors and potentially incompatible tissue compartment"
+GSE90627,no,yes,within-patient surgical only,distinct study,exclude from Task B; distance sensitivity,"Rectal-only case series; no cancer-free comparison"
+GSE166427,same COLONOMICS controls,yes,no,confirmed GSE44076 overlap,exclude from independent validation,"GSE44076 is the expression subseries"
+FieldEffectCrc / syn22237139,yes,yes,no,component overlap unresolved,exclude from locked Task B performance,"Source and acquisition heterogeneous by label"
+GSE214695 + GSE132465,yes,yes,no,component linkage unresolved,exclude from locked bulk Task B performance,"Different studies and single-cell rather than whole-mucosa estimand"

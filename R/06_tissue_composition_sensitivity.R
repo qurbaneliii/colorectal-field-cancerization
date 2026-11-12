@@ -37,7 +37,9 @@ dir.create(dirname(signature_path), recursive = TRUE, showWarnings = FALSE)
 if (!file.exists(signature_path)) {
   download.file(signature_url, signature_path, mode = "wb", quiet = FALSE)
 }
-observed_sha256 <- digest::digest(file = signature_path, algo = "sha256")
+signature_text <- rawToChar(readBin(signature_path, "raw", n = file.info(signature_path)$size))
+signature_bytes <- charToRaw(gsub("\r\n", "\n", signature_text, fixed = TRUE))
+observed_sha256 <- digest::digest(signature_bytes, algo = "sha256", serialize = FALSE)
 if (!identical(observed_sha256, signature_sha256)) {
   stop("Pinned MCP-counter signature SHA-256 mismatch: ", observed_sha256)
 }
@@ -119,10 +121,12 @@ long_scores <- reshape(
   times = score_columns, direction = "long"
 )
 long_scores$population <- factor(long_scores$population, levels = score_columns)
+plot_seed <- as.integer(yaml::read_yaml("config/analysis.yaml")$project$random_seed)
 composition_plot <- ggplot(long_scores,
                            aes(x = tissue_class, y = score, fill = tissue_class)) +
   geom_boxplot(outlier.shape = NA, linewidth = 0.3) +
-  geom_jitter(width = 0.15, alpha = 0.25, size = 0.45) +
+  geom_point(position = position_jitter(width = 0.15, height = 0, seed = plot_seed),
+             alpha = 0.25, size = 0.45) +
   facet_wrap(~ population, scales = "free_y", ncol = 3) +
   labs(title = "MCP-counter composition scores by GSE44076 tissue group",
        x = NULL, y = "MCP-counter score") +

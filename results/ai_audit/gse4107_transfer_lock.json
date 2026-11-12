@@ -1,0 +1,27 @@
+{
+  "role": "external_cohort_association_sensitivity",
+  "training_accession": "GSE44076",
+  "evaluation_accession": "GSE4107",
+  "expression_provenance": "geo_deposited_series_matrix",
+  "representation": "within_sample_percentile_rank",
+  "genes": [
+    "CLC",
+    "DYNC1H1",
+    "FOS",
+    "VIP"
+  ],
+  "missing_genes": [
+    "SNORA12"
+  ],
+  "universe_size": 16318,
+  "threshold": 0.5,
+  "positive_class": "adjacent_normal",
+  "external_labels_used_for_fitting_or_threshold_selection": false,
+  "seed": 44076,
+  "primary_matrix_sha256": "096db6c83516d01e39a8c1e3b84b2b3759d9edb133e0ce40807251a69b2671bb",
+  "external_annotation_sha256": "d7cd44352127b1e34f3a720ebea86093ef255a38f1612a85a2962b71bde8f394",
+  "task_b_card_sha256": "fc8f530773f304c7155128998ccde9cca5c60119f5d55fee09ec66ca48987ab8",
+  "development_metadata_sha256": "ef866c70f52adcf094fa56f211fd5d80519aee05d72715b1e779233ad6231dd9",
+  "primary_annotation_sha256": "cf7fa37fd4e8a41c1b7228ccf4a7d265a796b27306cc581bcd7fe11fff515c24",
+  "configuration_sha256": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985"
+}

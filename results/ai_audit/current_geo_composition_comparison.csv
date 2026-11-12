@@ -1,0 +1,16 @@
+table,column,n,max_abs_difference
+tissue_composition_sensitivity.csv,log2_fold_change,18490,1.9012569296705806e-14
+tissue_composition_sensitivity.csv,adjusted_p_value,18490,2.1604940059205546e-13
+tissue_composition_group_comparison.csv,adjusted_difference,10,4.0028744208164824e-16
+tissue_composition_group_comparison.csv,adjusted_p_value,10,1.199040866595169e-14
+tissue_composition_scores.csv,T cells,246,1.021405182655144e-14
+tissue_composition_scores.csv,CD8 T cells,246,1.021405182655144e-14
+tissue_composition_scores.csv,Cytotoxic lymphocytes,246,1.021405182655144e-14
+tissue_composition_scores.csv,B lineage,246,1.021405182655144e-14
+tissue_composition_scores.csv,NK cells,246,1.021405182655144e-14
+tissue_composition_scores.csv,Monocytic lineage,246,1.0658141036401503e-14
+tissue_composition_scores.csv,Myeloid dendritic cells,246,1.021405182655144e-14
+tissue_composition_scores.csv,Neutrophils,246,1.021405182655144e-14
+tissue_composition_scores.csv,Endothelial cells,246,1.021405182655144e-14
+tissue_composition_scores.csv,Fibroblasts,246,1.9539925233402755e-14
+tissue_composition_scores.csv,age,246,0.0

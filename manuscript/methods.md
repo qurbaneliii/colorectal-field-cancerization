@@ -75,7 +75,13 @@ Task C (tumor versus adjacent-normal) was secondary; Task A was supporting.
 Elastic Net logistic regression [8] was prespecified as the interpretable model,
 with calibrated linear SVM and random forest comparators. All scaling, variance
 filtering, univariate selection, residualization, hyperparameter tuning, feature
-ranking, and compact-panel selection occurred within training partitions.
+ranking, and compact-panel selection occurred within training partitions for
+the nested CV analyses. RMA normalized and summarized each entire cohort before
+splitting. Internal estimates therefore describe cohort-processed expression
+and do not estimate performance after frozen-reference preprocessing of a new
+array. For the SVM comparator, the supervised selector was fit on the enclosing
+training partition before its grouped sigmoid calibration splits. The held-out
+nested-CV patients remained outside that partition.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
@@ -93,19 +99,23 @@ compact-consensus and exploratory labels were reported separately. Null tests
 were task-specific: Task A held healthy labels fixed while permuting the
 tumor/adjacent component, Task B permuted group-level healthy/adjacent labels,
 and Task C exchanged tumor/adjacent labels within patients. Each used 1,000
-permutations.
+permutations. The original-label split assignments and modal hyperparameters
+were held fixed. The resulting p values are conditional development diagnostics.
 
 ## Locked Task C threshold and external evaluation
 
 The Task C panel and probability threshold were derived without GSE41258 labels.
 Within-sample percentile ranks were computed over the label-independent common
-gene universe. Repeated grouped GSE44076 OOF probabilities were averaged by
-patient and the threshold maximizing balanced accuracy was selected, with ties
+gene universe. Repeated grouped GSE44076 OOF probabilities used a signature and
+hyperparameters previously selected on all development samples. Scores were
+averaged across repeats by sample. The development threshold maximized balanced
+accuracy on these same scores, with ties
 resolved toward 0.5 and then the lower threshold. Because FOXQ1 was
 absent from GPL96, the exact three-gene serialized primary model was not directly
 transportable. A distinct two-gene refit using CEMIP, ETV4 and
 GSE44076 outcomes was serialized and labeled as a transport refit. External
-labels were used only for final evaluation. The primary external estimand used
+labels were used for evaluation of the locked model and threshold. The cohort
+had already been analyzed in prior repository work. The primary estimand used
 all canonical patient-tissue rows and patient-cluster bootstrap intervals (1,000
 replicates); one-array-per-patient and threshold 0.5 were sensitivities.
 

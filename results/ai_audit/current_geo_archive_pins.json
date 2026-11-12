@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "provenance": "current_geo_archives_with_historical_checksum_mismatch",
+  "archives": {
+    "GSE44076_RAW.tar": "059abdaa76f731c9d1af116875bb60663fb875c296bbf01e353de48eeed0a030",
+    "GSE41258_RAW.tar": "740aaf0c5ec4c0ba72107b1d4ef50b5a309cb5cab88aa29ea73fc48594f778ee"
+  }
+}

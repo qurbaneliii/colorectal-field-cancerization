@@ -1,0 +1,36 @@
+stage,scope,status,evidence
+Historical TAR hash equality,both raw archives,FAIL,current_geo_staged_inputs.json
+Historical difference attribution,tar headers and compressed and decompressed CEL bytes,BLOCKED,../../reports/ai_audit/15_raw_reproduction_continuation.md
+Historical byte-for-byte pipeline,original pinned TARs,NOT RUN,../../reports/ai_audit/15_raw_reproduction_continuation.md
+Current archive acquisition and metadata,GSE44076 and GSE41258,PASS,current_geo_staged_inputs.json
+Raw CEL extraction,636 members from the verified current archives,PASS,current_geo_extraction_verification.json
+Windows compiler smoke,Rtools45 GCC 14.3.0,PASS,../../reports/ai_audit/15_raw_reproduction_continuation.md
+Windows locked dependency verification,219 versions matched with optional Arrow absent,PASS,current_native_r_lock_comparison.csv
+Initial Linux dependency restore,GitHub Actions run 43008659539,FAIL,https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43008659539
+Second Linux dependency restore,GitHub Actions run 43013057519,FAIL,https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43013057519
+Linux locked dependency verification,GitHub Actions run 43017039168,PASS,https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43017039168
+Linux threaded RMA attempt,pthread_create error 22,FAIL,https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43017039168
+Linux serial RMA smoke,background correction and quantile normalization with locked preprocessCore,PASS,https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43021218025
+Linux end-to-end current GEO run,20 stages and 54 tests with five matching input pins,PASS,current_geo_hosted_run.json
+Raw RMA,both platforms and four matrices,PASS,current_geo_rma_artifacts.csv
+Core raw-array QC,both cohorts,PASS,current_geo_core_qc_comparison.json
+ArrayQualityMetrics,both cohorts and all 636 per-array flag counts,PASS,current_geo_aqm_comparison.json
+GPL96 probe-level QC,390 GSE41258 NUSE estimates,PASS,current_geo_nuse_comparison.json
+Differential expression,eight limma comparisons,PASS,current_geo_raw_limma_comparison.csv
+Covariate and stress sensitivities,GSE44076,PASS,../../reports/ai_audit/15_raw_reproduction_continuation.md
+Composition sensitivity,GSE44076 MCP-counter,PASS,current_geo_composition_comparison.csv
+Functional enrichment,hosted full GO and Reactome analysis,PASS,current_geo_hosted_stage_status.csv
+Windows functional enrichment,18 fresh ORA tables and seeded serial ranked GO contrasts,PASS,current_geo_native_publication_run.json
+Raw-versus-deposited differential expression,three matching contrasts,PASS,current_geo_raw_vs_deposited_de_concordance.csv
+Grouped nested cross-validation,three tasks and three models,PASS,current_geo_nested_cv_comparison.csv
+Biomarker signatures,fresh nested compact-panel selection,PASS,current_geo_compact_and_confounding_comparison.csv
+Patient and donor bootstraps,development nested CV and compact panels,PASS,current_geo_nested_cv_bootstrap_comparison.csv
+Group-preserving permutation tests,1000 iterations for each of three task-specific nulls,PASS,current_geo_permutation_comparison.csv
+Task B ablation and confounding,GSE44076 raw and deposited inputs,PASS,current_geo_task_b_raw_vs_deposited.csv
+Task B early-onset transfer sensitivity,22 GSE4107 donors,PASS,current_geo_gse4107_transfer_metrics.csv
+Task C development threshold and external validation,GSE44076 lock and GSE41258 evaluation,PASS,current_geo_task_c_nested_model_card.json
+Task C external patient-cluster bootstrap,1000 draws per estimable primary metric,PASS,current_geo_task_c_fixed_bootstrap_comparison.csv
+Task C deposited-expression sensitivity,matched annotation and external cohort,PASS,current_geo_task_c_raw_vs_deposited.csv
+Windows publication tables figures and reports,fresh inputs and verified dependency order,PASS,current_geo_native_publication_run.json
+Windows full-data tests,54 tests on the refreshed worktree,PASS,current_geo_native_publication_run.json
+Task B acquisition-matched external validation,JGAD000785,BLOCKED,https://humandbs-production.ddbj.nig.ac.jp/dataset/JGAD000785

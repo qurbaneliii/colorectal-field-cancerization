@@ -37,7 +37,7 @@ qc: preprocess
 differential-expression:
 	$(RSCRIPT) R/04_differential_expression.R
 
-sensitivity:
+sensitivity: processed-matrix
 	$(PYTHON) scripts/run_raw_vs_processed_sensitivity.py
 	$(PYTHON) scripts/run_covariate_sensitivity.py
 
@@ -68,7 +68,7 @@ validate:
 enrichment:
 	$(RSCRIPT) R/05_functional_enrichment.R
 
-figures:
+figures: tables
 	$(PYTHON) scripts/build_publication_figures.py
 
 tables:
@@ -95,8 +95,9 @@ sensitivity-all: audit processed-matrix
 	$(PYTHON) scripts/run_modeling.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_compact_panel_analysis.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_permutation_tests.py --provenance geo_deposited_series_matrix
+	$(PYTHON) scripts/select_task_c_threshold.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/run_external_validation.py --provenance geo_deposited_series_matrix
 	$(PYTHON) scripts/build_manuscript_outputs.py
 	$(PYTHON) -m pytest -q
 
-all: audit extract preprocess convert differential-expression sensitivity composition stress enrichment train compact-panel confounding permutation threshold validate figures tables manuscript quality full-data-test
+all: audit extract preprocess convert differential-expression sensitivity composition stress train compact-panel enrichment confounding permutation threshold validate tables figures manuscript quality full-data-test

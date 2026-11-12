@@ -1,0 +1,13 @@
+representation,evaluation_set,threshold_policy,rows,changed_classes,max_absolute_probability_delta
+training_zscore,all_array_patient_cluster_sensitivity,default_0_5,233,0,0.0
+training_zscore,all_array_patient_cluster_sensitivity,primary_gse44076_locked,233,0,0.0
+training_zscore,canonical_patient_tissue,default_0_5,233,0,0.0
+training_zscore,canonical_patient_tissue,primary_gse44076_locked,233,0,0.0
+training_zscore,one_array_per_patient_sensitivity,default_0_5,190,0,0.0
+training_zscore,one_array_per_patient_sensitivity,primary_gse44076_locked,190,0,0.0
+within_sample_percentile_rank,all_array_patient_cluster_sensitivity,default_0_5,233,0,0.0
+within_sample_percentile_rank,all_array_patient_cluster_sensitivity,primary_gse44076_locked,233,0,0.0
+within_sample_percentile_rank,canonical_patient_tissue,default_0_5,233,0,0.0
+within_sample_percentile_rank,canonical_patient_tissue,primary_gse44076_locked,233,0,0.0
+within_sample_percentile_rank,one_array_per_patient_sensitivity,default_0_5,190,0,0.0
+within_sample_percentile_rank,one_array_per_patient_sensitivity,primary_gse44076_locked,190,0,0.0

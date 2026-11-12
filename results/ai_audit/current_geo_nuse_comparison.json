@@ -1,0 +1,15 @@
+{
+  "accession": "GSE41258",
+  "arrays": 390,
+  "method": "affyPLM probe-level model; NUSE is valid for GPL96 AffyBatch only",
+  "fresh_median_range": [
+    0.979155690008895,
+    1.11278982671922
+  ],
+  "fresh_median_of_medians": 0.9989378510382125,
+  "maximum_absolute_deltas": {
+    "median": 9.992007221626409e-15,
+    "IQR": 5.495603971894525e-15
+  },
+  "nuse_summary_sha256": "8259a451cf5b9098784b736cc89e46b5f78e4aad8a2e5792d15e259025dca3ef"
+}

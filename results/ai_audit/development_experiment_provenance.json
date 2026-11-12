@@ -1,0 +1,18 @@
+{
+  "expression_provenance": "geo_deposited_series_matrix",
+  "accession": "GSE44076",
+  "series_matrix_sha256": "096db6c83516d01e39a8c1e3b84b2b3759d9edb133e0ce40807251a69b2671bb",
+  "probe_rows": 49386,
+  "gene_rows": 18490,
+  "common_universe_genes": 12039,
+  "external_expression_or_labels_loaded": false,
+  "sha256": {
+    "config/analysis.yaml": "35f4afadf7845c1e792c675b50b885a5f33b121f87ca2c45f3e4d17ae3ff8895",
+    "data/metadata/gse44076_samples.csv": "013dc254fb646cc980b00b423dbd5b575743c92624b8f9b7104f19a1fda25fdd",
+    "data/metadata/GSE44076_probe_gene_mapping_raw_cel_rma.csv": "a7e74a719751768cf8e83caa2d12df87a2fd92a6a83095120933e19ebfff3354",
+    "data/metadata/GSE41258_probe_gene_mapping_raw_cel_rma.csv": "f4d43a6e31acb610e18c39be5c342080db45046ad7392d2bac8cfa55c80fc71e",
+    "scripts/run_development_audit.py": "284d47ff0b77df2b29434f9a9c107bb23e5cd9c23d96c8fac5978719a1b692d2",
+    "data/reference/mcpcounter_genes_b6eac73e.tsv": "3bf042d9c1637ca2c1a6b8d1d1b2e4a14b97a6a7553b19a94fe47e4f37f3516a",
+    "config/immediate_early_stress_genes.tsv": "883a61b4b8acf974a205ee8b1e42aea4d588b17e9acd25fadb8869621f472eb8"
+  }
+}

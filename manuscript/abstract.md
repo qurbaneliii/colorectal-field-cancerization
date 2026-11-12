@@ -17,9 +17,9 @@ tiered by adjusted evidence, direction consistency, preprocessing concordance,
 quality-control sensitivity, demographic strata, and expression trajectory.
 MCP-counter and a curated immediate-early/stress set assessed microenvironmental
 and preanalytical sensitivity. Elastic Net panels were evaluated with three
-repeats of five-fold donor/patient-grouped nested cross-validation. A separate
-tumor-versus-adjacent model was locked in GSE44076 and evaluated on GSE41258 with
-patient-cluster bootstrap uncertainty.
+repeats of five-fold donor/patient-grouped nested cross-validation. A two-gene
+tumor-versus-adjacent transport refit and cutoff were locked using GSE44076 and
+evaluated on GSE41258 with patient-cluster bootstrap uncertainty.
 
 ## Results
 
@@ -29,22 +29,24 @@ genes at Benjamini-Hochberg FDR <0.05 and absolute log2 fold change >=0.5;
 were provisional. Of the high-confidence genes, 74/101
 retained direction and significance after composition-PC adjustment and
 3 overlapped the curated stress set. The primary Task B panel was
-CLC, DYNC1H1, FOS, VIP, SNORA12. Its aggregated repeated out-of-fold ROC-AUC was
-1.000 (1.000-1.000) and Brier score was
-0.027 (0.023-0.031); there is no independent healthy-versus-adjacent
-cohort. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
+CLC, DYNC1H1, FOS, VIP, SNORA12. The donor-bootstrap medians and 95% intervals were
+1.000 (1.000-1.000) for out-of-fold ROC-AUC and
+0.027 (0.023-0.031) for Brier score. Validation under matched acquisition
+protocols remains outstanding. The secondary Task C panel was FOXQ1, CEMIP, ETV4. Only
 CEMIP, ETV4 were represented on GPL96, so the external analysis
 used a separately labeled common-gene rank-transport refit, not direct transport
 of the exact serialized model. In 233 canonical patient-tissue
-arrays from 190 patients, ROC-AUC was
-0.985 (0.957-1.000), macro-F1 was
-0.831 (0.755-0.889), and specificity was
-0.561 (0.417-0.692) at the GSE44076-locked threshold.
+arrays from 190 patients, point estimates with 95% patient-cluster
+intervals were ROC-AUC 0.983
+(0.957–1.000), macro-F1 0.828
+(0.755–0.889), and specificity
+0.558 (0.417–0.692)
+at the GSE44076-locked threshold.
 
 ## Conclusions
 
-GSE44076 supports a reproducible, internally validated field-effect classifier
-and a composition-sensitive candidate field signature. The GSE41258 analysis is
-external evaluation of a separate tumor-normal transfer model, not validation of
-Task B. These retrospective findings are biomarker-discovery evidence and do not
-establish clinical utility or causal mechanisms.
+The Task B panel discriminated the sampled GSE44076 mucosa cohorts. The
+acquisition protocol was aliased with case status, leaving the cancer-specific
+contribution unresolved. GSE41258 evaluates the separate Task C tumor-normal
+endpoint. These retrospective findings support biomarker discovery. Clinical
+utility and causal mechanisms remain unevaluated.

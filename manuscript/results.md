@@ -70,18 +70,19 @@ terms; these small-set results are descriptive, not mechanistic evidence.
 
 ## Internal predictive performance
 
-Task A was supporting. Elastic Net patient/donor-bootstrap aggregated OOF
-macro-F1 was 0.959 (0.929-0.982) and multiclass ROC-AUC was
-0.995 (0.988-0.999). Its conditional permutation null was
-correctly restricted to tumor-versus-adjacent information and gave p=
+Task A was supporting. The Elastic Net donor/patient-bootstrap median and
+interval were 0.959 (0.929-0.982) for aggregated OOF macro-F1 and
+0.995 (0.988-0.999) for multiclass ROC-AUC. Its conditional
+permutation null tested tumor-versus-adjacent information and gave p=
 0.0010.
 
 Task B was primary. The nested panel policy selected a median of
 5 genes and produced mean
 outer-fold macro-F1 1.000 (fold SD
 0.000). The final panel was
-CLC, DYNC1H1, FOS, VIP, SNORA12. Aggregated repeated OOF ROC-AUC was
-1.000 (1.000-1.000), macro-F1 1.000 (1.000-1.000),
+CLC, DYNC1H1, FOS, VIP, SNORA12. Donor-bootstrap medians and intervals for aggregated
+repeated OOF predictions were ROC-AUC 1.000 (1.000-1.000),
+macro-F1 1.000 (1.000-1.000),
 Brier score 0.027 (0.023-0.031), and log loss
 0.164 (0.153-0.178). The group-level permutation p value was
 0.0010.
@@ -103,14 +104,16 @@ Task C was secondary. The nested policy selected a median of
 3 genes and mean outer-fold
 macro-F1 was 0.990 (fold SD
 0.016). The final panel was
-FOXQ1, CEMIP, ETV4; FOXQ1: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; CEMIP: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; ETV4: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000. Aggregated repeated OOF ROC-AUC was
-0.991 (0.963-1.000), Brier score 0.021 (0.014-0.033),
-and paired-permutation p=
+FOXQ1, CEMIP, ETV4. FOXQ1: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; CEMIP: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000; ETV4: strictly_stable_gene, selection frequency 1.000, sign consistency 1.000. Patient-bootstrap medians and
+intervals for aggregated OOF predictions were ROC-AUC
+0.991 (0.963-1.000) and Brier score 0.021 (0.014-0.033).
+Paired-permutation p=
 0.0010.
 
 ## Locked threshold and external evaluation
 
-The GSE44076-only grouped OOF rank-transport analysis selected threshold
+The grouped GSE44076 rank-transport analysis, conditional on the full-development
+signature and hyperparameters, selected threshold
 0.41 with internal balanced accuracy
 0.995; GSE41258 labels were not accessed.
 The common platform universe contained 12,039 genes, but only
@@ -126,9 +129,9 @@ balanced accuracy 0.779, sensitivity
 0.558, Brier score
 0.053, and log loss
 0.195. Patient-cluster 95% bootstrap intervals
-were 0.985 (0.957-1.000) for ROC-AUC,
-0.831 (0.755-0.889) for macro-F1, and
-0.561 (0.417-0.692) for specificity. Calibration
+were 0.957–1.000 for ROC-AUC,
+0.755–0.889 for macro-F1, and
+0.417–0.692 for specificity. Calibration
 intercept was -2.066 and slope was
 2.620. Thus ranking remained strong,
 but the locked threshold produced incomplete specificity and non-ideal

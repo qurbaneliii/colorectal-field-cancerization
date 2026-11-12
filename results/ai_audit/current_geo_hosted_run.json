@@ -1,0 +1,72 @@
+{
+  "workflow_run": 43021218025,
+  "workflow_job": 130524610828,
+  "revision": "96386722f2833d3aa25ac336661ea237077aa908",
+  "runner": "ubuntu-24.04",
+  "evidence_artifact": 13859252355,
+  "evidence_zip_sha256": "15a945842b343735856c3d401b69cd085c1521f6c0e8e674cc6dc9bc9804b067",
+  "matches_native_staged_manifest": true,
+  "input_count": 5,
+  "passed_stages": 20,
+  "passed_tests": 54,
+  "nested_cv": {
+    "provenance": "raw_cel_rma",
+    "fold_metric_rows": 135,
+    "prediction_rows": 5310,
+    "outer_repeats": 3,
+    "models": [
+      "elastic_net",
+      "linear_svm",
+      "random_forest"
+    ]
+  },
+  "threshold": 0.41,
+  "primary_external_metrics": {
+    "representation": "within_sample_percentile_rank",
+    "evaluation_set": "canonical_patient_tissue",
+    "threshold_policy": "primary_gse44076_locked",
+    "is_primary": true,
+    "arrays": 233,
+    "unique_patients": 190,
+    "normal_colon_arrays": 52,
+    "primary_tumor_arrays": 181,
+    "analysis_provenance": "raw_cel_rma",
+    "f1_macro": 0.8281545614878948,
+    "f1_weighted": 0.8902213772027792,
+    "balanced_accuracy": 0.7788461538461539,
+    "log_loss": 0.1949961732822611,
+    "precision_normal_colon": 1.0,
+    "recall_normal_colon": 0.5576923076923077,
+    "f1_normal_colon": 0.7160493827160493,
+    "precision_primary_tumor": 0.8872549019607843,
+    "recall_primary_tumor": 1.0,
+    "f1_primary_tumor": 0.9402597402597402,
+    "roc_auc": 0.9828941776455588,
+    "pr_auc": 0.993502236187968,
+    "brier_score": 0.0532505439454337,
+    "sensitivity": 1.0,
+    "specificity": 0.5576923076923077,
+    "negative_predictive_value": 1.0,
+    "positive_predictive_value": 0.8872549019607843,
+    "calibration_intercept": -2.0661141566371546,
+    "calibration_slope": 2.619824520244153
+  },
+  "report_generation": {
+    "manuscript_sections": 18,
+    "high_confidence_genes": 101,
+    "provisional_genes": 1370,
+    "task_b_panel": [
+      "CLC",
+      "DYNC1H1",
+      "FOS",
+      "VIP",
+      "SNORA12"
+    ],
+    "task_c_panel": [
+      "FOXQ1",
+      "CEMIP",
+      "ETV4"
+    ],
+    "manifest_artifacts": 643
+  }
+}

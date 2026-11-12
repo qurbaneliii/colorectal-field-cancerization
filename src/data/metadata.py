@@ -229,6 +229,7 @@ def build_gse41258_metadata(
                 "exclusion_reason": "; ".join(reasons),
                 "metadata_parsing_source": "GEO tissue, patient id, and included characteristics",
                 "metadata_parsing_confidence": "high" if original_tissue and patient else "low",
+                "scan_date": char.get("scan date", ""),
             }
         )
     frame = pd.DataFrame(rows)
@@ -283,7 +284,6 @@ def build_gse41258_metadata(
             frame[column] = ""
     frame["batch"] = ""
     frame["processing_date"] = ""
-    frame["scan_date"] = ""
     frame["molecular_subtype"] = ""
     frame["center"] = ""
     return frame

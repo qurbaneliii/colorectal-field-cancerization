@@ -1,0 +1,46 @@
+[
+  {
+    "accession": "GSE44076",
+    "arrays": 246,
+    "nonfinite": 0,
+    "one_custom_failure_metric": 1,
+    "two_or_more_custom_failure_metrics": 0,
+    "automatic_exclusions": 0,
+    "matches_archived_exclusions": true,
+    "matches_archived_flags": true,
+    "maximum_absolute_deltas": {
+      "sample_median": 0.0,
+      "sample_iqr": 0.0,
+      "median_robust_z": 0.0,
+      "iqr_robust_z": 0.0,
+      "missing_values": 0.0,
+      "non_finite_values": 0.0,
+      "independent_failure_metrics": 0.0
+    },
+    "one_metric_accessions": [
+      "GSM1077736"
+    ],
+    "technical_outlier_accessions": []
+  },
+  {
+    "accession": "GSE41258",
+    "arrays": 390,
+    "nonfinite": 0,
+    "one_custom_failure_metric": 0,
+    "two_or_more_custom_failure_metrics": 0,
+    "automatic_exclusions": 0,
+    "matches_archived_exclusions": true,
+    "matches_archived_flags": true,
+    "maximum_absolute_deltas": {
+      "sample_median": 0.0,
+      "sample_iqr": 0.0,
+      "median_robust_z": 3.9968028886505635e-14,
+      "iqr_robust_z": 1.9984014443252818e-14,
+      "missing_values": 0.0,
+      "non_finite_values": 0.0,
+      "independent_failure_metrics": 0.0
+    },
+    "one_metric_accessions": [],
+    "technical_outlier_accessions": []
+  }
+]

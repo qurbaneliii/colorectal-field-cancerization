@@ -1,0 +1,45 @@
+{
+  "task": "task_c_tumor_vs_adjacent",
+  "repository_commit": "0ede337ffc360bc96dea6724f974bd5ef7f184d4",
+  "training_accession": "GSE44076",
+  "analysis_provenance": "raw_cel_rma",
+  "feature_genes": [
+    "FOXQ1",
+    "CEMIP",
+    "ETV4"
+  ],
+  "hyperparameters": {
+    "model__C": 0.05,
+    "model__l1_ratio": 0.2,
+    "univariate__k": 20,
+    "variance_quantile__quantile": 0.5
+  },
+  "random_seed": 44076,
+  "analysis_source_sha256": "b200e335a5fd125e6990d34886fb2f6568e349f3e97448ee217c83a2269d678e",
+  "config_sha256": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+  "software_versions": {
+    "python": "3.12.14",
+    "scikit_learn": "1.8.0",
+    "pandas": "3.0.3",
+    "numpy": "2.4.4"
+  },
+  "external_labels_used": false,
+  "panel_size_origin": "GSE44076 grouped inner-CV only",
+  "final_panel_size": "3",
+  "fresh_complete_card_sha256": "7813e1c8bbe7e2399f706ccb0d61e452539e376d8800f5a5d2572eac3e8e0a13",
+  "training_arrays": 196,
+  "training_archive_sha256": "059abdaa76f731c9d1af116875bb60663fb875c296bbf01e353de48eeed0a030",
+  "training_expression_sha256": "db3d53c7a2e10a3f7bb1e6809b5b9a46effa7e26de2154ec2b3add5ecb009e11",
+  "transport_threshold": 0.41,
+  "transport_signature_genes": [
+    "CEMIP",
+    "ETV4"
+  ],
+  "transport_threshold_selection_scope": "fixed_full_development_panel_and_hyperparameters",
+  "transport_threshold_input_sha256": {
+    "data/processed/GSE44076_gene_expression_raw_cel_rma.parquet": "db3d53c7a2e10a3f7bb1e6809b5b9a46effa7e26de2154ec2b3add5ecb009e11",
+    "data/metadata/gse44076_samples.csv": "ef866c70f52adcf094fa56f211fd5d80519aee05d72715b1e779233ad6231dd9",
+    "config/analysis.yaml": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+    "results/tables/task_c_primary_threshold_selection.csv": "12f0e3dfe0dbd118fdb871277c82fdb6e0f34eb34a666904b142fb11e5eafb09"
+  }
+}

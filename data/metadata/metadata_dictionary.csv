@@ -9,3 +9,4 @@ pairing_status,Tumor/adjacent pair availability,pair audit,category
 technical_replicate_candidate,Title matches _ez or rehyb,deterministic regex,bool
 inclusion_status,Eligibility for the primary analysis of that accession,rules,category
 exclusion_reason,Semicolon-separated deterministic reasons,rules,string
+scan_date,Original GSE41258 scan date string,GEO scan date characteristic,string
