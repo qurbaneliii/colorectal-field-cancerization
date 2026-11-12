@@ -17,6 +17,10 @@ on:
           - historical
           - current-geo
         default: historical
+      analysis_sha:
+        description: Optional full analysis commit SHA for an evidence-export replay
+        type: string
+        required: false
 
 jobs:
   full-data:
@@ -76,8 +80,21 @@ jobs:
       - name: Prepare isolated worktree and verified input manifest
         env:
           ARCHIVE_IDENTITY: ${{ inputs.inputs }}
+          ANALYSIS_SHA: ${{ inputs.analysis_sha }}
         run: |
-          git worktree add --detach "$RUNNER_TEMP/raw-analysis" HEAD
+          analysis_sha="${ANALYSIS_SHA:-$GITHUB_SHA}"
+          [[ "$analysis_sha" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$analysis_sha" != "$GITHUB_SHA" ]]; then
+            git fetch --no-tags --depth=1 origin "$analysis_sha"
+          fi
+          git worktree add --detach "$RUNNER_TEMP/raw-analysis" "$analysis_sha"
+          cd "$RUNNER_TEMP/raw-analysis"
+          test "$(git rev-parse HEAD)" = "$analysis_sha"
+          # Replays share caches only when their input pins and dependency locks agree.
+          for pin in data/metadata/data_manifest.csv results/ai_audit/current_geo_archive_pins.json \
+              requirements-lock.txt renv.lock; do
+            cmp "$GITHUB_WORKSPACE/$pin" "$pin"
+          done
           pins=()
           if [[ "$ARCHIVE_IDENTITY" == current-geo ]]; then
             pins=(--alternate-pins results/ai_audit/current_geo_archive_pins.json)
@@ -144,6 +161,7 @@ jobs:
           set -o pipefail
           cd "$RUNNER_TEMP/raw-analysis"
           logs="$RUNNER_TEMP/raw-evidence"
+          touch "$logs/pipeline-start"
           printf 'stage,status,exit_code\n' > "$logs/stages.csv"
           blocked=0
           for target in audit extract preprocess convert differential-expression sensitivity composition \
@@ -161,6 +179,20 @@ jobs:
             fi
           done
           exit "$blocked"
+      - name: Collect fresh publication outputs and verify hashes
+        env:
+          ARCHIVE_IDENTITY: ${{ inputs.inputs }}
+        run: |
+          python scripts/collect_hosted_outputs.py --worktree "$RUNNER_TEMP/raw-analysis" \
+            --evidence "$RUNNER_TEMP/raw-evidence" --output "$RUNNER_TEMP/raw-outputs" \
+            --archive-identity "$ARCHIVE_IDENTITY"
+      - name: Upload fresh publication outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-raw-publication-outputs
+          path: ${{ runner.temp }}/raw-outputs/
+          if-no-files-found: error
+          retention-days: 30
       - name: Upload execution logs and input pins
         uses: actions/upload-artifact@v4
         if: always()
