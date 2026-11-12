@@ -27,6 +27,12 @@ ARTIFACTS = {
 }
 INTERVALS = "results/metrics/external_validation_bootstrap_ci.csv"
 REPORT = "reports/external_validation_report.json"
+EXECUTION_ONLY = {
+    "data/processed/GSE44076_gene_expression_raw_cel_rma.parquet",
+    "data/processed/GSE41258_gene_expression_raw_cel_rma.parquet",
+    "models/task_c_primary_full_signature_model.joblib",
+    "models/task_c_cross_platform_transport_model.joblib",
+}
 
 
 def read_components(root: Path) -> dict:
@@ -68,17 +74,21 @@ def verify(root: Path) -> dict:
             rtol=1e-12,
             atol=1e-12,
         )
-    for name in (*ARTIFACTS.values(), INTERVALS):
-        if artifact_sha256(root / name) != evidence["sha256"][name]:
-            raise ValueError(f"External evidence hash mismatch for {name}")
-    # Generated evidence also binds the report to the actual model and matrix bytes.
-    # These files are deliberately absent from a checkout of a historical snapshot.
-    if evidence["mode"] == "model_execution":
-        for name, digest in evidence["sha256"].items():
-            if artifact_sha256(root / name) != digest:
-                raise ValueError(f"External execution input or output hash mismatch for {name}")
-    elif evidence["mode"] != "historical_prediction_replay":
+    names = set(ARTIFACTS.values()) | {INTERVALS}
+    mode = evidence["mode"]
+    if mode in {"model_execution", "model_execution_snapshot"}:
+        names |= evidence["sha256"].keys() | EXECUTION_ONLY
+        if mode == "model_execution_snapshot":
+            # The publication snapshot carries the execution digests but only
+            # publishes the text results. Fresh pipeline runs verify every file.
+            if not EXECUTION_ONLY.issubset(evidence["sha256"]):
+                raise ValueError("External snapshot is missing matrix or model hashes")
+            names -= EXECUTION_ONLY
+    elif mode != "historical_prediction_replay":
         raise ValueError("Unknown external result evidence mode")
+    for name in sorted(names):
+        if artifact_sha256(root / name) != evidence["sha256"].get(name):
+            raise ValueError(f"External evidence hash mismatch for {name}")
     return expected
 
 

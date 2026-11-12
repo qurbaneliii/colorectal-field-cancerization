@@ -18,7 +18,7 @@
   ],
   "common_universe_gene_count": 12039,
   "locked_threshold": 0.41,
-  "threshold_origin": "GSE44076 patient-grouped repeated OOF rank-transport probabilities; maximize_balanced_accuracy; external labels not accessed",
+  "threshold_origin": "GSE44076 grouped OOF rank-transport scores conditional on a full-development signature and hyperparameters. maximize_balanced_accuracy.",
   "threshold_selection_scope": "fixed_full_development_panel_and_hyperparameters",
   "default_threshold_sensitivity": 0.5,
   "primary_evaluation": {
@@ -52,16 +52,31 @@
     "calibration_slope": 2.619824520244153
   },
   "evidence": {
-    "mode": "historical_prediction_replay",
-    "snapshot_commit": "c2a36a1d2f80fd25e1565b543c909eebef64ca09",
+    "mode": "model_execution_snapshot",
+    "head_commit": "d0cce43469bb4dce48f4236ec279c1e7c226c4d8",
+    "analysis_source_sha256": "9654615a891c30957548d0cd4d387be91924f7d4a6d2e597fb4298cecdb0b6a5",
+    "generated_at_utc": "2026-11-12T10:22:17.991429+00:00",
+    "python_version": "3.12.14",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "dependency_lock_sha256": "a0de6dafc8b45589d24bd8e22ec947ec5b3f74ccd87ab3875bcf1e21573e70ed",
     "sha256": {
+      "config/analysis.yaml": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+      "config/paths.yaml": "09b6b2be8cf49c49d510bebea0f0ae56d785811fc02cfedae809bd0216da422a",
+      "requirements-lock.txt": "a0de6dafc8b45589d24bd8e22ec947ec5b3f74ccd87ab3875bcf1e21573e70ed",
+      "data/metadata/gse44076_samples.csv": "ef866c70f52adcf094fa56f211fd5d80519aee05d72715b1e779233ad6231dd9",
+      "data/metadata/gse41258_samples.csv": "01bff4df334542de1848486f37010d9c6dfc004c6710d318e42eb156bcbf6de4",
+      "data/metadata/data_manifest.csv": "aba560292217d0f5fe4d17046050d8b6c7863fce0213e7248bc08e5bd7f7040b",
+      "data/processed/GSE44076_gene_expression_raw_cel_rma.parquet": "db3d53c7a2e10a3f7bb1e6809b5b9a46effa7e26de2154ec2b3add5ecb009e11",
+      "data/processed/GSE41258_gene_expression_raw_cel_rma.parquet": "25f9ed328e2404b8c937468eb7d1bd655b4bfd0e722d4f61d8c84158758983ef",
+      "models/task_c_primary_full_signature_model.joblib": "75bc360b8268a75064d51ec9953581c91dd4ef687a3f72a3e38c8f37178892af",
+      "models/task_c_cross_platform_transport_model.joblib": "cfa67a315a213f96033e206eeaee552f0c9b728b19a027d4fcf080d1b5781919",
+      "results/tables/task_c_primary_threshold_selection.csv": "06d240c5626713e89807e1eab8fdabd51427e62f913c0eb170382c1eae155109",
       "results/metrics/external_validation_metrics.csv": "e297ef4fec0ff430770bf3291f69535387bf0ce3223efe6a3f72ebe6edf0ca88",
+      "results/metrics/external_validation_bootstrap_ci.csv": "a1eecde1cb9fa1646007c22e8c38319b2b07f87706cb850ced06eaa92417871f",
       "results/tables/supplementary_external_predictions.csv": "3d7a48b66dc0b93b7f4c6f18ac99b99427f9575a6820ff374cbf7e62aa6f9ef6",
-      "results/tables/task_c_primary_threshold_selection.csv": "9a4e28c42b0d4730220ff8463eb3d5aaa47031b439e9b12af95836366ce98054",
-      "models/task_c_primary_full_signature_model_card.json": "49e643d274dda8b29fc527b5a43a795b96c1c25c0c11c98b0bc8030c40bb1228",
-      "models/task_c_cross_platform_transport_model_card.json": "9d967111b05449fdd34417d1e5d4f9fd7a1c45832b4df43c000a7900a5b74654",
       "results/tables/external_common_signature_audit.csv": "954d108394da71411510a2b9ebcdd1652c3bf3b5d2a4b5c4dae17ed5e47111c2",
-      "results/metrics/external_validation_bootstrap_ci.csv": "a1eecde1cb9fa1646007c22e8c38319b2b07f87706cb850ced06eaa92417871f"
+      "models/task_c_primary_full_signature_model_card.json": "33686fa16340c1deffd718e68ecee4bd1c9de6f5bec42ab64e92a0539b41ae4f",
+      "models/task_c_cross_platform_transport_model_card.json": "0ce8c28fe2751f21bf29cd3486d2d8ebb0b3edd9de25abdbc4886b447078e61b"
     }
   }
 }

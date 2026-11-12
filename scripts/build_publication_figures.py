@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import yaml
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import ConfusionMatrixDisplay, PrecisionRecallDisplay, RocCurveDisplay
 
@@ -223,6 +224,8 @@ def de_figures() -> None:
 
 
 def top_gene_distributions() -> None:
+    config = yaml.safe_load((ROOT / "config/analysis.yaml").read_text(encoding="utf-8"))
+    rng = np.random.default_rng(config["project"]["random_seed"])
     high = pd.read_csv(TABLES / "final_high_confidence_field_signature.csv")
     genes = high.sort_values("u1_fdr").head(6)["gene_symbol"].tolist()
     expression = pd.read_parquet(
@@ -253,16 +256,10 @@ def top_gene_distributions() -> None:
             showfliers=False,
             ax=ax,
         )
-        sns.stripplot(
-            data=frame,
-            x="tissue_class",
-            y="expression",
-            order=order,
-            color="black",
-            alpha=0.25,
-            size=2,
-            ax=ax,
-        )
+        for position, tissue in enumerate(order):
+            values = frame.loc[frame["tissue_class"].eq(tissue), "expression"]
+            offsets = rng.uniform(-0.1, 0.1, len(values))
+            ax.scatter(position + offsets, values, c="black", alpha=0.25, s=4, linewidths=0, zorder=3)
         ax.set_title(gene)
         ax.set_xlabel("")
         ax.tick_params(axis="x", rotation=25)

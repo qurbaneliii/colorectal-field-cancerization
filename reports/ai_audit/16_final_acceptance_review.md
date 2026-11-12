@@ -14,6 +14,7 @@ the PR description and in the hosted evidence bundles.
 | Task C verified the digests present in its lock without requiring all four inputs. The external outcomes were opened before the development refits. | An incomplete lock could reach the evaluation stage. The data-access order made the fit/evaluation boundary harder to audit. | Require the four digests and agreement with the unique selected GSE44076 threshold. Check the development sample IDs and refit both representations before opening the external outcomes. External platform gene identifiers are sufficient for the intersection. |
 | The manuscript discussed cutoff and calibration transport without quantifying the separately verified expression-route sensitivity. Author contributions and conflicts also needed author confirmation. | Readers could miss the magnitude of the expression-route effect or mistake draft declarations for verified submission metadata. | Report the fixed-cutoff sensitivity with the same panel, probe mapping and external cohort. Identify the author details and declarations as pending, separately from the scientific manuscript gate. |
 | The abstract labeled bootstrap medians as Task C point estimates. | It displayed 0.985 and 0.561 where the locked run produced point estimates of 0.983 and 0.558. | Report the actual point estimates with the same patient-cluster intervals. Label internal bootstrap medians as medians. |
+| Two sample distribution figures used unseeded point jitter. The checked-in Task C cards predated the complete lock. | Repeat plots moved individual points. The cards lacked the development input fingerprints and the ordered cross-platform rank universe. | Seed horizontal offsets from the project seed, preserving the expression and composition scores on the vertical axis. Refresh the checked-in model cards from the verified current-GEO raw-CEL matrices, retaining their actual generation revision and input hashes. |
 
 ## Scientific review
 
@@ -54,6 +55,10 @@ the PR description and in the hosted evidence bundles.
   identities and decisions. Run timestamps, source hashes, and rendering
   metadata can legitimately change. The figure evidence additionally binds
   the repaired figures to their saved prediction inputs.
+  The checked-in external report carries the verified native execution's
+  revision and hashes, including the two matrices and two fitted binaries
+  kept outside Git. Its snapshot verifier checks the published files.
+  Fresh execution verifies the matrix and model bytes as well.
 
 ## Open research and submission requirements
 

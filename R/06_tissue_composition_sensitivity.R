@@ -121,10 +121,12 @@ long_scores <- reshape(
   times = score_columns, direction = "long"
 )
 long_scores$population <- factor(long_scores$population, levels = score_columns)
+plot_seed <- as.integer(yaml::read_yaml("config/analysis.yaml")$project$random_seed)
 composition_plot <- ggplot(long_scores,
                            aes(x = tissue_class, y = score, fill = tissue_class)) +
   geom_boxplot(outlier.shape = NA, linewidth = 0.3) +
-  geom_jitter(width = 0.15, alpha = 0.25, size = 0.45) +
+  geom_point(position = position_jitter(width = 0.15, height = 0, seed = plot_seed),
+             alpha = 0.25, size = 0.45) +
   facet_wrap(~ population, scales = "free_y", ncol = 3) +
   labs(title = "MCP-counter composition scores by GSE44076 tissue group",
        x = NULL, y = "MCP-counter score") +
