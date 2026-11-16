@@ -1,6 +1,9 @@
 PYTHON ?= python
 RSCRIPT ?= Rscript
 
+# The aggregate targets share intermediate files between prerequisite stages.
+.NOTPARALLEL:
+
 .PHONY: help restore-r verify-env audit extract preprocess convert processed-matrix qc differential-expression sensitivity composition stress train compact-panel confounding permutation threshold validate enrichment figures tables manuscript quality test smoke full-data-test sensitivity-all all
 
 help:
