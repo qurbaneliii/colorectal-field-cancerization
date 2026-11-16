@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "status": "BLOCKED",
+  "candidate": "JGAD000785",
+  "training": "GSE44076",
+  "primary_estimand": "same-site, matched-acquisition distant-normal marker association",
+  "site": "rectosigmoid; exact sites to confirm against source dictionary before lock",
+  "acquisition": "endoscopic biopsy",
+  "positive": "histologically normal colorectal mucosa with active CRC",
+  "negative": "colonoscopy-negative controls",
+  "minimum_case_distance_cm": 10,
+  "require": [
+    "pretreatment",
+    "known donor and site",
+    "same acquisition and handling",
+    "no development overlap",
+    "documented grade and permissions"
+  ],
+  "secondary": [
+    "1–2 cm biopsies",
+    "frozen prediction only after verified compatible normalization"
+  ],
+  "bootstrap": {
+    "unit": "donor",
+    "iterations": 1000,
+    "seed": 44076
+  },
+  "model_lock": "pending compatible single-sample representation; freeze panel, mapping and threshold before external outcomes",
+  "export": "aggregate results only subject to access terms"
+}
