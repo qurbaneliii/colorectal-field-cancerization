@@ -1,0 +1,5 @@
+# EXTERNAL DATASET REGISTRY
+
+The screen covered GEO, linked SRA projects, BioStudies/ArrayExpress mirrors, Expression Atlas, original papers and JGA/NBDC. No candidate reached grade A. GSE23194 and GSE23011 supply endoscopically sampled mucosa after curative CRC resection for a persistence sensitivity. Their endpoint differs from active CRC, and overlapping participants need reconciliation. GSE90627 provides within-case distance sampling. FieldEffectCrc and single-cell studies support qualified biological triangulation. [Candidate registry](../../results/phase_ii/candidate_dataset_registry.csv) · [Eligibility matrix](../../results/phase_ii/dataset_eligibility_matrix.csv)
+
+Kaggle notebook version 1 declares `imrankhan77/crc-val-he-7k`, `imrankhan77/nct-crc-he-100k` and upstream notebook `alaaelshaer22/nct-crc-he-100k`. Its code reads both H&E image directories and uses a ResNet checkpoint. The Kather original deposit confirms the modality. Grade D for both transcriptomic endpoints. [Notebook metadata](https://www.kaggle.com/api/v1/kernels/pull/prachikulkarni1515/colorectral-cancer-detectionphase11) · [Original images](https://zenodo.org/records/1214456)

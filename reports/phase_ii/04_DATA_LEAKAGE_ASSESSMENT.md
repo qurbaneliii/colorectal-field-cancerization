@@ -1,0 +1,5 @@
+# DATA LEAKAGE ASSESSMENT
+
+Independent replay matched 5,310 nested predictions to 45 outer holdouts, checked donor/patient disjointness and recalculated 135 model/fold and 12 external configurations (1,449 metric and confusion-count records). Metric calculations use rank sums, tied score blocks and confusion counts with relative tolerance 1e-7 and absolute tolerance 1e-10. [Recalculated metrics](../../results/phase_ii/metric_recalculation.csv)
+
+Elastic Net and random forest selectors fit in their enclosing training partitions. Compact-panel selection and residualization are nested. The corrected SVM fits its entire feature pipeline within each grouped calibration partition. Joint RMA includes held-out raw inputs without outcomes. Permutations condition on observed split assignments and modal hyperparameters. Bootstrap intervals condition on fitted scores and cutoff. They omit model redevelopment and cross-cohort variation. [Prior patient-cluster replay](../ai_audit/16_final_acceptance_review.md)
