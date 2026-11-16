@@ -224,6 +224,8 @@ def test_required_publication_figure_renderings_are_nonempty(root: Path):
         "field_gene_evidence_tier_summary",
         "high_confidence_field_enrichment",
         "task_a_out_of_fold_confusion_matrix",
+        "nested_cv_model_comparison",
+        "nested_cv_performance_distribution",
         "task_b_roc_pr_calibration",
         "task_b_panel_size_performance",
         "task_c_roc_pr_calibration",

@@ -448,6 +448,27 @@ def internal_validation_figures() -> list[str]:
     return list(evidence)
 
 
+def model_comparison_figures() -> list[str]:
+    metrics = pd.read_csv(METRICS / "nested_cv_metrics.csv")
+    metrics["task"] = metrics["task"].str.extract(r"task_([abc])")[0].str.upper()
+    metrics["model"] = metrics["model"].map({
+        "elastic_net": "Elastic Net", "linear_svm": "Linear SVM",
+        "random_forest": "Random Forest",
+    })
+    stems = []
+    for stem, plot, options in (
+        ("nested_cv_model_comparison", sns.barplot, {"errorbar": "sd"}),
+        ("nested_cv_performance_distribution", sns.boxplot, {}),
+    ):
+        fig, ax = plt.subplots(figsize=(9, 5), layout="constrained")
+        plot(data=metrics, x="task", y="f1_macro", hue="model", ax=ax, **options)
+        ax.set(xlabel="Task", ylabel="Outer-fold macro-F1", ylim=(0, 1.05))
+        ax.legend(title=None, loc="lower right")
+        save_figure(fig, FIGURES / stem)
+        stems.append(stem)
+    return stems
+
+
 def main() -> None:
     os.chdir(ROOT)
     study_design()
@@ -475,6 +496,7 @@ def main() -> None:
         "signature_intersection",
         "biological_predictive_gene_intersection",
         *internal_stems,
+        *model_comparison_figures(),
     ]
     for stem in generated:
         for suffix in (".png", ".pdf", ".svg"):

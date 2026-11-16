@@ -188,9 +188,9 @@ ranking, and compact-panel selection occurred within training partitions for
 the nested CV analyses. RMA normalized and summarized each entire cohort before
 splitting. Internal estimates therefore describe cohort-processed expression
 and do not estimate performance after frozen-reference preprocessing of a new
-array. For the SVM comparator, the supervised selector was fit on the enclosing
-training partition before its grouped sigmoid calibration splits. The held-out
-nested-CV patients remained outside that partition.
+array. For the SVM comparator, variance filtering, supervised selection and
+scaling were refitted separately inside each group-disjoint calibration training
+partition. Sigmoid calibration used the corresponding held-out groups.
 
 Internal performance used three deterministic repetitions of five-fold outer
 cross-validation with donor/patient groups kept intact. Four-fold grouped inner
