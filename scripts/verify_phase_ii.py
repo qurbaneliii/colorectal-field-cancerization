@@ -116,6 +116,35 @@ def main():
         assert decision.eq(group.y_pred.eq("primary_tumor")).all()
         add("external", key, binary_metrics(group.y_true.eq("primary_tumor"), decision, scores),
             metrics.loc[key], source)
+    primary = external.loc[
+        external.representation.eq("within_sample_percentile_rank")
+        & external.evaluation_set.eq("canonical_patient_tissue")
+        & external.threshold_policy.eq("primary_gse44076_locked")
+    ]
+    assert len(primary) == 233 and primary.patient_id.nunique() == 190
+    assert not primary.duplicated(["patient_id", "y_true"]).any()
+    assert primary.locked_threshold.tolist() == [0.41] * 233
+    groups = primary.patient_id.to_numpy()
+    donors = pd.unique(groups)
+    indices = {donor: np.flatnonzero(groups == donor) for donor in donors}
+    observed = primary.y_true.eq("primary_tumor").to_numpy()
+    probabilities = primary.probability_primary_tumor.to_numpy()
+    selected = probabilities >= 0.41
+    rng = np.random.default_rng(44076)
+    draws = []
+    for _ in range(1000):
+        sample = np.concatenate([indices[donor] for donor in rng.choice(donors, len(donors), replace=True)])
+        draws.append(binary_metrics(observed[sample], selected[sample], probabilities[sample]))
+    reference = pd.read_csv(root / "external_validation_bootstrap_ci.csv").loc[lambda data:
+        data.representation.eq("within_sample_percentile_rank")
+        & data.evaluation_set.eq("canonical_patient_tissue")
+        & data.threshold_policy.eq("primary_gse44076_locked")
+    ].set_index("metric")
+    for metric in ("roc_auc", "f1_macro", "specificity", "sensitivity", "balanced_accuracy",
+                   "pr_auc", "brier_score", "log_loss"):
+        lower, upper = np.quantile([row[metric] for row in draws], [0.025, 0.975])
+        add("conditional_patient_bootstrap", [metric], {"ci_lower": lower, "ci_upper": upper},
+            reference.loc[metric], source)
     pd.DataFrame(rows).to_csv(args.output, index=False)
     print(f"Verified 45 fold assignments, {len(predictions)} held-out rows and {len(rows)} metric records")
 

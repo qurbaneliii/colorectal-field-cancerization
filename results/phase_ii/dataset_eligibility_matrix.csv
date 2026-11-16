@@ -9,3 +9,4 @@
 "GSE41258","D","FAIL","Task C frozen retrospective evaluation | endpoint incompatible with Task B"
 "GSE4107","C","FAIL","shared-confounding sensitivity | previously evaluated"
 "Kaggle NCT/CRC-VAL","D","FAIL","excluded for both transcriptomic endpoints | no expression matrix"
+"E-MTAB-8410","C","FAIL","paired tumor and normal cells within CRC patients; no cancer-free controls"
