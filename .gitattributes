@@ -1,0 +1,2 @@
+# Preserve synthetic execution fixtures and recorded digests byte-for-byte.
+results/phase_iii/independent_validation/** -text
