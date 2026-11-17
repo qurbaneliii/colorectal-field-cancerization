@@ -1,0 +1,11 @@
+{
+  "mode": "synthetic",
+  "metadata_sha256": "28fb6d0b01420dbb7aefeb6cda608155d96c1ea6c6d18ec87b2d2430fdfaef82",
+  "approval_record_sha256": null,
+  "primary_site": "sigmoid",
+  "minimum_distance_cm": 10,
+  "eligible_samples": 4,
+  "eligible_donors": 4,
+  "exclusions": {},
+  "empirical_validation": "NOT RUN"
+}

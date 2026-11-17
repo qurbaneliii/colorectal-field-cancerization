@@ -1,0 +1,7 @@
+accession,grade,decision,source,reviewed
+JGAD000785,E,Controlled-access candidate with repeated endoscopic biopsies; eligibility and full panel coverage unresolved,https://humandbs-production.ddbj.nig.ac.jp/en/dataset/JGAD000785,2026-11-17
+GSE73487,D,microRNA assay cannot measure original mRNA/snoRNA Task B panel,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE73487,2026-11-17
+GSE199057,D,DNA methylation rather than transcriptomic assay,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE199057,2026-11-17
+GSE176499,C,Healthy left-right single-cell comparison without CRC endpoint,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176499,2026-11-17
+GSE8671,C,Adenoma-normal pairs do not provide active-CRC versus healthy normal endpoint,https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE8671,2026-11-17
+E-MTAB-12022,D,Liver metastases and hepatic normal tissue unsuitable for colonic field endpoint,https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-12022,2026-11-17
