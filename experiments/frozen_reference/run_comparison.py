@@ -200,10 +200,31 @@ def main():
         for accession in ["GSE44076", "GSE41258"]:
             expression = ref.transform(ranks[accession], maps[accession]) if method == "frozen" else baseline[accession]
             matrices[accession] = expression[common].rank(axis=1, pct=True)[panel]
-        _, scores = fit_predict(matrices["GSE44076"].loc[dev.index], dev.tissue_class.eq("tumor"),
-                                matrices["GSE41258"], locks / f"external_{method}_model.json")
+        model, scores = fit_predict(matrices["GSE44076"].loc[dev.index], dev.tissue_class.eq("tumor"),
+                                    matrices["GSE41258"], locks / f"external_{method}_model.json")
         score_table = pd.DataFrame({"sample_id": matrices["GSE41258"].index, "score": scores})
         score_table.to_csv(args.output / f"external_{method}_locked_scores.csv", index=False)
+        if method == "frozen":
+            digest_before = ref.digest()
+            for i in np.linspace(0, len(scores)-1, 5, dtype=int):
+                gsm = score_table.sample_id.iloc[i]
+                alone = ref.transform(ranks["GSE41258"][[gsm]], maps["GSE41258"])
+                gene_abs = float(np.max(np.abs(alone.loc[gsm] - expression.loc[gsm])))
+                gene_relative = float(np.max(np.abs(alone.loc[gsm] - expression.loc[gsm])
+                                             / np.maximum(np.abs(alone.loc[gsm]), 1e-12)))
+                pair = ranks["GSE41258"].iloc[:, [i, (i+1) % len(scores)]]
+                probes_alone = ref.probe_values(ranks["GSE41258"][gsm].to_numpy())
+                probes_batch = ref.probe_values(pair.to_numpy())[:, 0]
+                probe_abs = float(np.max(np.abs(probes_alone - probes_batch)))
+                p = model.predict_proba(alone[common].rank(axis=1, pct=True)[panel])[0, 1]
+                np.testing.assert_allclose(p, scores[i], atol=1e-12, rtol=1e-12)
+                assert max(gene_abs, gene_relative, probe_abs) <= 1e-12
+                invariance.append({"task": "external_task_c", "repeat": -1, "fold": -1,
+                                   "sample_id": gsm, "gene_max_abs": gene_abs,
+                                   "gene_max_relative": gene_relative, "probeset_max_abs": probe_abs,
+                                   "probability_abs": abs(p-scores[i]),
+                                   "decision_equal": (p >= .41) == (scores[i] >= .41)})
+            assert ref.digest() == digest_before
         external = meta["GSE41258"].loc[score_table.sample_id]
         observed = external.tissue_class.eq("primary_tumor").to_numpy()
         external_metrics.append({"method": method, "threshold": .41,
@@ -216,6 +237,7 @@ def main():
     external_frame.to_csv(args.output / "external_predictions.csv", index=False)
     pd.DataFrame(external_metrics).to_csv(args.output / "external_metrics.csv", index=False)
     pd.DataFrame(paired_bootstrap(external_frame, .41)).to_csv(args.output / "external_paired_intervals.csv", index=False)
+    pd.DataFrame(invariance).to_csv(args.output / "invariance.csv", index=False)
     output_hashes = {str(p.relative_to(args.output)): file_sha256(p) for p in args.output.rglob("*") if p.is_file()}
     dump(args.output / "execution.json", {"analysis_commit": subprocess.check_output(
         ["git", "rev-parse", "HEAD"], text=True).strip(), "python": platform.python_version(),
