@@ -1,0 +1,5 @@
+sample_id,donor_id,source_record,source_tissue,cohort,histology,site,acquisition,pretreatment,tumor_distance_cm,qc_pass,consent_compatible,biopsy_order,age,sex,batch,platform,overlap_review
+SYNTHETIC_0,donor0,synthetic fixture,normal mucosa,healthy,normal_confirmed,sigmoid,endoscopic_biopsy,yes,,yes,yes,1,60,female,fixture,synthetic,independent
+SYNTHETIC_1,donor1,synthetic fixture,normal mucosa,healthy,normal_confirmed,sigmoid,endoscopic_biopsy,yes,,yes,yes,1,60,female,fixture,synthetic,independent
+SYNTHETIC_2,donor2,synthetic fixture,normal mucosa,crc,normal_confirmed,sigmoid,endoscopic_biopsy,yes,12,yes,yes,1,60,female,fixture,synthetic,independent
+SYNTHETIC_3,donor3,synthetic fixture,normal mucosa,crc,normal_confirmed,sigmoid,endoscopic_biopsy,yes,12,yes,yes,1,60,female,fixture,synthetic,independent
