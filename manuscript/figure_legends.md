@@ -59,8 +59,9 @@ gene universe; ranked panels are explicitly labeled separately.
 
 **Figure 12. Supporting Task A validation.** Confusion counts are aggregated
 repeated OOF predictions from three repeats of five-fold donor/patient-grouped
-nested CV on 246 GSE44076 samples. All transformations and tuning were training
-only. Bootstrap intervals are reported in the text, not as matrix error bars.
+nested CV on 246 GSE44076 samples. Feature selection and tuning used the
+training partitions after cohort-wide RMA. Bootstrap intervals are reported in
+the text.
 
 **Figure 13. Primary Task B discrimination and calibration.** ROC, precision-
 recall, and calibration curves use aggregated repeated OOF predictions from 50

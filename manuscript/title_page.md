@@ -1,10 +1,10 @@
-# Identification of transcriptomic field-cancerization signatures in colorectal cancer using explainable and leakage-safe machine learning
+# Transcriptomic field associations in colorectal cancer with patient-grouped validation
 
 [AUTHOR NAME]
 
 [AFFILIATION]
 
-Corresponding author: [AUTHOR NAME]
+Corresponding author: [AUTHOR NAME], [CORRESPONDING AUTHOR EMAIL]
 
 Article type: Original research
 

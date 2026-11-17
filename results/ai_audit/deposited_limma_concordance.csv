@@ -1,0 +1,5 @@
+"model","comparison","samples","rank","genes","pearson_log2fc","spearman_log2fc","sign_agreement","original_hits","deposited_hits","common_hits","common_hits_same_sign","deposited_treat_hits","deposited_provenance"
+"U0_unadjusted","adjacent_vs_healthy",148,2,18490,0.999986464167003,0.999941515290577,0.997187669010276,1662,1656,1655,1655,661,"geo_deposited_matrix_raw_route_probe_annotation"
+"U1_age_sex_adjusted","adjacent_vs_healthy",148,4,18490,0.999984273662757,0.999931230094854,0.996755002704164,1580,1579,1578,1578,537,"geo_deposited_matrix_raw_route_probe_annotation"
+"U2_age_sex_location_adjusted","adjacent_vs_healthy",148,5,18490,0.999983634257873,0.999929254177961,0.997025419145484,1521,1514,1512,1512,522,"geo_deposited_matrix_raw_route_probe_annotation"
+"P_patient_fixed_effect","tumor_vs_adjacent",196,99,18490,0.99999636319743,0.999982514591795,0.997674418604651,4502,4503,4496,4496,3184,"geo_deposited_matrix_raw_route_probe_annotation"

@@ -1,0 +1,48 @@
+{
+  "included": 233,
+  "excluded": 157,
+  "normal_colon": 52,
+  "primary_tumor": 181,
+  "signature_genes_primary": 19,
+  "signature_genes_common": 14,
+  "technical_replicates_excluded": 8,
+  "metrics": [
+    {
+      "representation": "training_zscore",
+      "f1_macro": 0.7697676863239777,
+      "f1_weighted": 0.8146275550646981,
+      "balanced_accuracy": 0.8701657458563536,
+      "log_loss": 4.775477568470554,
+      "precision_adjacent_normal": 0.5252525252525253,
+      "recall_adjacent_normal": 1.0,
+      "f1_adjacent_normal": 0.6887417218543046,
+      "precision_tumor": 1.0,
+      "recall_tumor": 0.7403314917127072,
+      "f1_tumor": 0.8507936507936508,
+      "roc_auc": 0.9927751806204844,
+      "pr_auc": 0.9970546338565748,
+      "brier_score": 0.197129072316211,
+      "sensitivity": 0.7403314917127072,
+      "specificity": 1.0
+    },
+    {
+      "representation": "within_sample_percentile_rank",
+      "f1_macro": 0.9876221844453889,
+      "f1_weighted": 0.9914163090128756,
+      "balanced_accuracy": 0.9876221844453889,
+      "log_loss": 0.091143681747883,
+      "precision_adjacent_normal": 0.9807692307692307,
+      "recall_adjacent_normal": 0.9807692307692307,
+      "f1_adjacent_normal": 0.9807692307692307,
+      "precision_tumor": 0.994475138121547,
+      "recall_tumor": 0.994475138121547,
+      "f1_tumor": 0.994475138121547,
+      "roc_auc": 0.9957501062473437,
+      "pr_auc": 0.9986331084396243,
+      "brier_score": 0.013569738589764945,
+      "sensitivity": 0.994475138121547,
+      "specificity": 0.9807692307692307
+    }
+  ],
+  "claim_boundary": "Validates the tumor-versus-normal-colon component only; it is not independent validation of healthy-versus-adjacent field cancerization."
+}

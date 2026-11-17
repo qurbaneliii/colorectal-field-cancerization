@@ -1,0 +1,35 @@
+accession,measure,value
+GSE44076,total_arrays,246
+GSE44076,eligible_arrays,246
+GSE44076,excluded_arrays,0
+GSE44076,eligible_donor_or_patient_groups,148
+GSE44076,groups_with_both_endpoint_tissues,98
+GSE44076,compared_fields_with_disagreements,0
+GSE44076,eligible_adjacent_normal,98
+GSE44076,eligible_healthy,50
+GSE44076,eligible_tumor,98
+GSE44076,source_tissue_Healthy colon mucosa cells,50
+GSE44076,source_tissue_Normal distant colon mucosa cells,98
+GSE44076,source_tissue_Primary colon adenocarcinoma cells,98
+GSE41258,total_arrays,390
+GSE41258,eligible_arrays,233
+GSE41258,excluded_arrays,157
+GSE41258,eligible_donor_or_patient_groups,190
+GSE41258,groups_with_both_endpoint_tissues,43
+GSE41258,compared_fields_with_disagreements,0
+GSE41258,eligible_normal_colon,52
+GSE41258,eligible_primary_tumor,181
+GSE41258,source_tissue_,12
+GSE41258,source_tissue_Liver Metastasis,47
+GSE41258,source_tissue_Lung Metastasis,20
+GSE41258,source_tissue_Microadenoma,2
+GSE41258,source_tissue_Normal Colon,54
+GSE41258,source_tissue_Normal Liver,13
+GSE41258,source_tissue_Normal Lung,7
+GSE41258,source_tissue_Polyp,48
+GSE41258,"source_tissue_Polyp, high grade",1
+GSE41258,source_tissue_Primary Tumor,186
+GSE41258,exclusion_geo_author_not_included,77
+GSE41258,exclusion_outside_endpoint,150
+GSE41258,exclusion_technical_indicator_in_endpoint_tissues,2
+GSE41258,exclusion_technical_replicate_indicator,8

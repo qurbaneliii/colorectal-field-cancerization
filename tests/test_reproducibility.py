@@ -8,7 +8,7 @@ import yaml
 from sklearn.metrics import roc_auc_score
 
 from src.data.cross_platform import common_gene_symbols
-from src.data.provenance import expression_path, result_root
+from src.data.provenance import artifact_sha256, expression_path, result_root
 from src.modeling.stability import feature_stability
 
 pytestmark = pytest.mark.full_data
@@ -72,6 +72,11 @@ def test_locked_signature_is_primary_derived_and_cross_platform_subset(root):
     assert set(rank_artifact["feature_genes"]).issubset(artifact["feature_genes"])
     assert rank_artifact["refitting_occurred"] is True
     assert artifact["refitting_occurred"] is False
+    lock = artifact["transport_threshold_input_sha256"]
+    assert len(lock) == 4
+    assert all(artifact_sha256(root / path) == digest for path, digest in lock.items())
+    grid = pd.read_csv(root / "results/tables/task_c_primary_threshold_selection.csv")
+    assert grid.loc[grid["selected"], "threshold"].tolist() == [rank_artifact["threshold"]]
 
 
 def test_feature_stability_counts_repeat_fold_keys_once():

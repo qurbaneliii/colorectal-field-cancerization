@@ -1,0 +1,59 @@
+{
+  "worktree_base": "0ede337ffc360bc96dea6724f974bd5ef7f184d4",
+  "runtime": "Windows x64, R 4.5.1, Python 3.12.14",
+  "full_data_tests_passed": 54,
+  "publication_tables": {
+    "publication_tables": 10,
+    "checked_supplements": 16
+  },
+  "publication_figures": {
+    "figure_stems": [
+      "study_objectives_and_dataset_roles",
+      "sample_count_flowchart",
+      "raw_array_qc_summary",
+      "unadjusted_adjacent_vs_healthy_volcano",
+      "adjusted_adjacent_vs_healthy_volcano",
+      "paired_tumor_vs_adjacent_volcano",
+      "top_field_gene_group_distributions",
+      "field_gene_evidence_tier_summary",
+      "high_confidence_field_enrichment",
+      "external_patient_structure_sensitivity",
+      "signature_intersection",
+      "biological_predictive_gene_intersection"
+    ],
+    "renderings": 36
+  },
+  "manuscript": {
+    "manuscript_sections": 18,
+    "high_confidence_genes": 101,
+    "provisional_genes": 1370,
+    "task_b_panel": [
+      "CLC",
+      "DYNC1H1",
+      "FOS",
+      "VIP",
+      "SNORA12"
+    ],
+    "task_c_panel": [
+      "FOXQ1",
+      "CEMIP",
+      "ETV4"
+    ],
+    "manifest_artifacts": 604
+  },
+  "enrichment": {
+    "fresh_per_set_ora_files": 18,
+    "ora_terms": 1062,
+    "ora_analysis_sets": 11,
+    "ranked_seed": 44076,
+    "ranked_backend": "BiocParallel::SerialParam()",
+    "ranked_terms_by_contrast": {
+      "adjacent_vs_healthy_u1": 1370,
+      "tumor_vs_adjacent_paired": 1046
+    },
+    "fdr_below_0_05_by_ranked_contrast": {
+      "adjacent_vs_healthy_u1": 1370,
+      "tumor_vs_adjacent_paired": 1046
+    }
+  }
+}

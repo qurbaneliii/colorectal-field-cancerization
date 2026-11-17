@@ -1,0 +1,35 @@
+{
+  "task": "task_b_field_effect",
+  "repository_commit": "0ede337ffc360bc96dea6724f974bd5ef7f184d4",
+  "training_accession": "GSE44076",
+  "analysis_provenance": "raw_cel_rma",
+  "feature_genes": [
+    "CLC",
+    "DYNC1H1",
+    "FOS",
+    "VIP",
+    "SNORA12"
+  ],
+  "hyperparameters": {
+    "model__C": 0.05,
+    "model__l1_ratio": 0.2,
+    "univariate__k": 20,
+    "variance_quantile__quantile": 0.5
+  },
+  "random_seed": 44076,
+  "analysis_source_sha256": "b200e335a5fd125e6990d34886fb2f6568e349f3e97448ee217c83a2269d678e",
+  "config_sha256": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+  "software_versions": {
+    "python": "3.12.14",
+    "scikit_learn": "1.8.0",
+    "pandas": "3.0.3",
+    "numpy": "2.4.4"
+  },
+  "external_labels_used": false,
+  "panel_size_origin": "GSE44076 grouped inner-CV only",
+  "final_panel_size": "5",
+  "fresh_complete_card_sha256": "4d82d35a9c678874fabba17888da91e0f313f0896c254137bed6992d59187ce4",
+  "training_arrays": 148,
+  "training_archive_sha256": "059abdaa76f731c9d1af116875bb60663fb875c296bbf01e353de48eeed0a030",
+  "training_expression_sha256": "db3d53c7a2e10a3f7bb1e6809b5b9a46effa7e26de2154ec2b3add5ecb009e11"
+}

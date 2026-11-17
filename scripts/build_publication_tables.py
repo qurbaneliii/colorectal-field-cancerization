@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -419,7 +418,7 @@ def main() -> None:
         TABLES / "table_8_task_c_compact_signature.csv", index=False
     )
     biological_predictive_intersection()
-    pd.read_csv(METRICS / "external_patient_tissue_metrics.csv").to_csv(
+    pd.read_csv(METRICS / "external_validation_metrics.csv").to_csv(
         TABLES / "table_9_external_validation.csv", index=False
     )
     finalize_qc_exclusion_sensitivity()
@@ -443,28 +442,18 @@ def main() -> None:
         "results/metrics/external_validation_predictions.csv",
         "results/metrics/external_patient_cluster_bootstrap_ci.csv",
     ]
-    manifest_rows = []
-    for relative in required_supplements:
-        path = ROOT / relative
-        digest = hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else ""
-        manifest_rows.append(
-            {
-                "artifact": relative.replace("\\", "/"),
-                "exists": path.exists(),
-                "bytes": path.stat().st_size if path.exists() else 0,
-                "sha256": digest,
-            }
-        )
-    manifest = pd.DataFrame(manifest_rows)
-    manifest.to_csv(ROOT / "reports/result_artifact_manifest.csv", index=False)
-    if not manifest["exists"].all() or not manifest["bytes"].gt(0).all():
-        raise AssertionError("A required supplementary artifact is missing or empty")
+    missing = [
+        relative
+        for relative in required_supplements
+        if not (ROOT / relative).is_file() or (ROOT / relative).stat().st_size == 0
+    ]
+    if missing:
+        raise FileNotFoundError("Missing publication supplements: " + ", ".join(missing))
     print(
         json.dumps(
             {
                 "publication_tables": 10,
-                "manifest_artifacts": len(manifest),
-                "all_manifest_artifacts_nonempty": True,
+                "checked_supplements": len(required_supplements),
             },
             indent=2,
         )

@@ -67,6 +67,104 @@ def discover_rscript() -> str | None:
     return None
 
 
+def write_covariate_audit(paths: dict, primary: pd.DataFrame, external: pd.DataFrame) -> None:
+    covariates = [
+        "batch",
+        "processing_date",
+        "scan_date",
+        "sex",
+        "age",
+        "location",
+        "stage",
+        "msi_status",
+        "molecular_subtype",
+        "center",
+    ]
+    missingness_rows = []
+    association_rows = []
+    for accession, frame in (("GSE44076", primary), ("GSE41258", external)):
+        included = frame[frame["inclusion_status"].eq("included")].copy()
+        for covariate in covariates:
+            values = (
+                included[covariate].fillna("").astype(str).str.strip()
+                if covariate in included
+                else pd.Series([""] * len(included), index=included.index)
+            )
+            available = ~values.str.lower().isin({"", "--", "nan", "na", "n/a"})
+            compared_tissues = included.loc[available, "tissue_class"].nunique()
+            unique_values = values[available].nunique()
+            usable = (
+                covariate != "scan_date"
+                and available.sum() >= 10
+                and unique_values >= 2
+                and compared_tissues >= 2
+            )
+            missingness_rows.append(
+                {
+                    "accession": accession,
+                    "covariate": covariate,
+                    "included_samples": len(included),
+                    "available_values": int(available.sum()),
+                    "missing_values": int((~available).sum()),
+                    "unique_nonmissing_values": int(unique_values),
+                    "usable_for_association": bool(usable),
+                    "source": "deposited metadata only",
+                }
+            )
+            if usable:
+                numeric = pd.to_numeric(values[available], errors="coerce")
+                if numeric.notna().mean() >= 0.9:
+                    groups = [
+                        numeric[included.loc[available, "tissue_class"].eq(label)]
+                        for label in sorted(included.loc[available, "tissue_class"].unique())
+                    ]
+                    groups = [group.dropna().to_numpy() for group in groups if len(group.dropna())]
+                    statistic, p_value = stats.kruskal(*groups) if len(groups) >= 2 else (np.nan, np.nan)
+                    method = "Kruskal-Wallis"
+                else:
+                    contingency = pd.crosstab(
+                        included.loc[available, "tissue_class"], values[available]
+                    )
+                    statistic, p_value, _, _ = stats.chi2_contingency(contingency)
+                    method = "chi-square"
+                association_rows.append(
+                    {
+                        "accession": accession,
+                        "covariate": covariate,
+                        "method": method,
+                        "statistic": statistic,
+                        "p_value": p_value,
+                        "samples": int(available.sum()),
+                        "interpretation": "screening association only; no automatic batch correction",
+                    }
+                )
+    missingness = pd.DataFrame(missingness_rows)
+    associations = pd.DataFrame(association_rows)
+    missingness.to_csv(ROOT / paths["metadata"] / "covariate_missingness_usability.csv", index=False)
+    associations.to_csv(ROOT / paths["metadata"] / "covariate_tissue_associations.csv", index=False)
+    confounding_report = f"""# Batch and confounding audit
+
+The audit counts documented missing markers as missing. Raw scan dates are
+retained for provenance and excluded from association screening because GEO
+mixes date formats. Screens use available arrays and are descriptive.
+
+## Missingness and usability
+
+{missingness.to_markdown(index=False)}
+
+## Tissue-label association screens
+
+{associations.to_markdown(index=False) if not associations.empty else 'No covariate met the minimum usability rule.'}
+
+Any estimable covariate must be incorporated through a prespecified inferential
+design or learned inside training folds. GSE41258 labels must never be used to
+harmonize the external cohort with GSE44076.
+"""
+    (ROOT / paths["reports"] / "batch_confounding_audit.md").write_text(
+        confounding_report, encoding="utf-8"
+    )
+
+
 def main() -> None:
     os.chdir(ROOT)
     config = yaml.safe_load((ROOT / "config/analysis.yaml").read_text(encoding="utf-8"))
@@ -133,98 +231,13 @@ def main() -> None:
             ["technical_replicate_candidate", "Title matches _ez or rehyb", "deterministic regex", "bool"],
             ["inclusion_status", "Eligibility for the primary analysis of that accession", "rules", "category"],
             ["exclusion_reason", "Semicolon-separated deterministic reasons", "rules", "string"],
+            ["scan_date", "Original GSE41258 scan date string", "GEO scan date characteristic", "string"],
         ],
         columns=["field", "definition", "derivation", "type"],
     )
     dictionary.to_csv(ROOT / paths["metadata"] / "metadata_dictionary.csv", index=False)
 
-    covariates = [
-        "batch",
-        "processing_date",
-        "scan_date",
-        "sex",
-        "age",
-        "location",
-        "stage",
-        "msi_status",
-        "molecular_subtype",
-        "center",
-    ]
-    missingness_rows = []
-    association_rows = []
-    for accession, frame in (("GSE44076", primary), ("GSE41258", external)):
-        included = frame[frame["inclusion_status"].eq("included")].copy()
-        for covariate in covariates:
-            values = (
-                included[covariate].fillna("").astype(str).str.strip()
-                if covariate in included
-                else pd.Series([""] * len(included), index=included.index)
-            )
-            available = values.ne("") & values.str.lower().ne("nan")
-            unique_values = values[available].nunique()
-            missingness_rows.append(
-                {
-                    "accession": accession,
-                    "covariate": covariate,
-                    "included_samples": len(included),
-                    "available_values": int(available.sum()),
-                    "missing_values": int((~available).sum()),
-                    "unique_nonmissing_values": int(unique_values),
-                    "usable_for_association": bool(available.sum() >= 10 and unique_values >= 2),
-                    "source": "deposited metadata only",
-                }
-            )
-            if available.sum() >= 10 and unique_values >= 2:
-                numeric = pd.to_numeric(values[available], errors="coerce")
-                if numeric.notna().mean() >= 0.9:
-                    groups = [
-                        numeric[included.loc[available, "tissue_class"].eq(label)]
-                        for label in sorted(included.loc[available, "tissue_class"].unique())
-                    ]
-                    groups = [group.dropna().to_numpy() for group in groups if len(group.dropna())]
-                    statistic, p_value = stats.kruskal(*groups) if len(groups) >= 2 else (np.nan, np.nan)
-                    method = "Kruskal-Wallis"
-                else:
-                    contingency = pd.crosstab(
-                        included.loc[available, "tissue_class"], values[available]
-                    )
-                    statistic, p_value, _, _ = stats.chi2_contingency(contingency)
-                    method = "chi-square"
-                association_rows.append(
-                    {
-                        "accession": accession,
-                        "covariate": covariate,
-                        "method": method,
-                        "statistic": statistic,
-                        "p_value": p_value,
-                        "samples": int(available.sum()),
-                        "interpretation": "screening association only; no automatic batch correction",
-                    }
-                )
-    missingness = pd.DataFrame(missingness_rows)
-    associations = pd.DataFrame(association_rows)
-    missingness.to_csv(ROOT / paths["metadata"] / "covariate_missingness_usability.csv", index=False)
-    associations.to_csv(ROOT / paths["metadata"] / "covariate_tissue_associations.csv", index=False)
-    confounding_report = f"""# Batch and confounding audit
-
-Only deposited covariates were used; absent fields were not invented. Screening
-associations do not trigger automatic ComBat or sample exclusion.
-
-## Missingness and usability
-
-{missingness.to_markdown(index=False)}
-
-## Tissue-label association screens
-
-{associations.to_markdown(index=False) if not associations.empty else 'No covariate met the minimum usability rule.'}
-
-Any estimable covariate must be incorporated through a prespecified inferential
-design or learned inside training folds. GSE41258 labels must never be used to
-harmonize the external cohort with GSE44076.
-"""
-    (ROOT / paths["reports"] / "batch_confounding_audit.md").write_text(
-        confounding_report, encoding="utf-8"
-    )
+    write_covariate_audit(paths, primary, external)
 
     rscript = discover_rscript()
     r_status = command_version([rscript, "--version"]) if rscript else "unavailable"

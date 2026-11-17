@@ -1,0 +1,22 @@
+[
+  {
+    "accession": "GSE44076",
+    "arrays": 246,
+    "flagged_any": 8,
+    "flagged_two_or_more": 1,
+    "exclusions_changed": 0,
+    "archived_flag_disagreements": 0,
+    "summary_sha256": "1cfe44ef8c8e8b6f249b38ad162e2dfaa7af96369216dd1ac75c631ab0dd9922",
+    "index_html_sha256": "a0bb1c92dc73bc618b32909323256003d73fdfa692097522d0c00a6d22b1f5c6"
+  },
+  {
+    "accession": "GSE41258",
+    "arrays": 390,
+    "flagged_any": 48,
+    "flagged_two_or_more": 13,
+    "exclusions_changed": 0,
+    "archived_flag_disagreements": 0,
+    "summary_sha256": "d274fee5b9f312e44e0e8aa90fedc89bc471a95b13ae6925ced855fbc3e3a190",
+    "index_html_sha256": "d2ab094dd5cc528a57636338189b39ef4c1b5d16b5406f355d9e3a904c87e1a4"
+  }
+]

@@ -10,7 +10,7 @@ Preanalytical stress,high-confidence genes retained after curated stress removal
 Borderline-sample QC,borderline_samples,sensitivity_value,1.0,primary=0.0; GSM1077736,primary included; sensitivity excluded
 Borderline-sample QC,significant_DE_genes,sensitivity_value,1584.0,primary=1580.0; FDR<0.05 and |log2FC|>=0.5,primary included; sensitivity excluded
 Borderline-sample QC,top_100_gene_overlap,sensitivity_value,97.0,primary=100.0; ranked by adjusted p-value,primary included; sensitivity excluded
-Borderline-sample QC,log2FC_pearson,sensitivity_value,0.9998813705918352,primary=1.0; all shared tested genes,primary included; sensitivity excluded
+Borderline-sample QC,log2FC_pearson,sensitivity_value,0.9998813705918348,primary=1.0; all shared tested genes,primary included; sensitivity excluded
 Borderline-sample QC,task_b_aggregated_oof_macro_f1,sensitivity_value,1.0,primary=1.0; five-gene panel; repeated grouped OOF,primary included; sensitivity excluded
 Borderline-sample QC,task_b_aggregated_oof_balanced_accuracy,sensitivity_value,1.0,primary=1.0; five-gene panel; repeated grouped OOF,primary included; sensitivity excluded
 Borderline-sample QC,task_b_reselected_panel_overlap,sensitivity_value,4.0,primary=5.0; shared=CLC;DYNC1H1;FOS;VIP; sensitivity=APOLD1;CLC;DYNC1H1;FOS;VIP,primary included; sensitivity excluded

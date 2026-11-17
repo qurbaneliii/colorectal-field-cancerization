@@ -2,7 +2,6 @@ suppressPackageStartupMessages({
   library(oligo)
   library(pd.hg.u219)
   library(hgu219.db)
-  library(arrayQualityMetrics)
 })
 source("R/utils.R")
 
@@ -20,7 +19,7 @@ eset <- oligo::rma(raw)
 probe_expr <- Biobase::exprs(eset)
 if (nrow(probe_expr) != 49386L) stop("Unexpected HG-U219 core probe-set count: ", nrow(probe_expr))
 if (!all(is.finite(probe_expr)) || median(probe_expr) > 20) stop("Invalid GSE44076 RMA scale/values")
-colnames(probe_expr) <- extract_gsm(sampleNames(eset))
+colnames(probe_expr) <- extract_gsm(Biobase::sampleNames(eset))
 Biobase::sampleNames(eset) <- colnames(probe_expr)
 metadata <- metadata[match(colnames(probe_expr), toupper(metadata$geo_accession)), , drop = FALSE]
 if (anyNA(metadata$geo_accession)) stop("GSE44076 post-RMA metadata alignment failed")

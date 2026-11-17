@@ -18,11 +18,13 @@ def locked_binary_predictions(
     external_positive_label: str = "primary_tumor",
 ) -> tuple[pd.DataFrame, dict[str, float]]:
     classes = np.asarray(model.named_steps["model"].classes_)
-    probability = model.predict_proba(x)
-    if "tumor" not in classes:
+    if classes.size != 2 or set(classes) != {"adjacent_normal", "tumor"}:
         raise ValueError(f"Locked model has unexpected classes: {classes}")
+    if not 0 <= threshold <= 1:
+        raise ValueError("Locked threshold must lie in [0, 1]")
     tumor_index = int(np.flatnonzero(classes == "tumor")[0])
-    tumor_probability = probability[:, tumor_index]
+    probability = model.predict_proba(x)[:, [1 - tumor_index, tumor_index]]
+    tumor_probability = probability[:, 1]
     predicted = np.where(
         tumor_probability >= threshold, external_positive_label, external_negative_label
     )

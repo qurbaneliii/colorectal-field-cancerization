@@ -1,9 +1,3 @@
-suppressPackageStartupMessages({
-  library(Biobase)
-  library(AnnotationDbi)
-  library(matrixStats)
-})
-
 project_root <- function() normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 
 discover_files <- function(accession, pattern, root = "data/raw") {

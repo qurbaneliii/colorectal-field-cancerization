@@ -1,0 +1,12 @@
+[
+  {
+    "accession": "GSE44076",
+    "extracted_files": 246,
+    "gzip_sha256_matches": 246
+  },
+  {
+    "accession": "GSE41258",
+    "extracted_files": 390,
+    "gzip_sha256_matches": 390
+  }
+]

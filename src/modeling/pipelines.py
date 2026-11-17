@@ -38,12 +38,15 @@ class TrainingVarianceQuantile(BaseEstimator, TransformerMixin):
 
 
 class GroupCalibratedLinearSVC(BaseEstimator):
-    """Linear SVM with calibration splits that preserve patient/donor groups."""
+    """Fit the complete base pipeline within each grouped calibration split."""
 
-    def __init__(self, C: float = 1.0, calibration_splits: int = 3, random_state: int = 0):
+    def __init__(self, C: float = 1.0, calibration_splits: int = 3, random_state: int = 0,
+                 variance_quantile: float = 0.5, max_features: int | str = "all"):
         self.C = C
         self.calibration_splits = calibration_splits
         self.random_state = random_state
+        self.variance_quantile = variance_quantile
+        self.max_features = max_features
 
     def fit(self, x, y, groups=None):
         if groups is None:
@@ -72,7 +75,10 @@ class GroupCalibratedLinearSVC(BaseEstimator):
             max_iter=10000,
             random_state=self.random_state,
         )
-        self.calibrated_ = CalibratedClassifierCV(estimator=base, cv=splits, method="sigmoid")
+        base_pipeline = feature_pipeline(base, self.variance_quantile, self.max_features)
+        self.calibrated_ = CalibratedClassifierCV(
+            estimator=base_pipeline, cv=splits, method="sigmoid", ensemble=True
+        )
         self.calibrated_.fit(values, labels)
         self.classes_ = self.calibrated_.classes_
         self.n_features_in_ = values.shape[1]
@@ -83,6 +89,19 @@ class GroupCalibratedLinearSVC(BaseEstimator):
 
     def predict_proba(self, x):
         return self.calibrated_.predict_proba(x)
+
+
+def feature_pipeline(estimator, quantile: float = 0.5, max_features: int | str = "all") -> Pipeline:
+    return Pipeline(
+        [
+            ("zero_variance", VarianceThreshold()),
+            ("variance_quantile", TrainingVarianceQuantile(quantile)),
+            ("univariate", SelectKBest(score_func=f_classif, k=max_features)),
+            ("scale", StandardScaler()),
+            ("model", estimator),
+        ],
+        memory=None,
+    )
 
 
 def build_pipeline(model_name: str, seed: int, modeling_config: dict) -> Pipeline:
@@ -96,10 +115,10 @@ def build_pipeline(model_name: str, seed: int, modeling_config: dict) -> Pipelin
             tol=1e-3,
         )
     elif model_name == "linear_svm":
-        estimator = GroupCalibratedLinearSVC(
+        return Pipeline([("model", GroupCalibratedLinearSVC(
             calibration_splits=int(modeling_config["linear_svm"]["calibration_splits"]),
             random_state=seed,
-        )
+        ))])
     elif model_name == "random_forest":
         estimator = RandomForestClassifier(
             n_estimators=200,
@@ -109,16 +128,7 @@ def build_pipeline(model_name: str, seed: int, modeling_config: dict) -> Pipelin
         )
     else:
         raise ValueError(f"Unknown model: {model_name}")
-    return Pipeline(
-        [
-            ("zero_variance", VarianceThreshold()),
-            ("variance_quantile", TrainingVarianceQuantile()),
-            ("univariate", SelectKBest(score_func=f_classif)),
-            ("scale", StandardScaler()),
-            ("model", estimator),
-        ],
-        memory=None,
-    )
+    return feature_pipeline(estimator, max_features=10)
 
 
 def parameter_grid(model_name: str, modeling_config: dict) -> dict[str, list[object]]:
@@ -134,7 +144,8 @@ def parameter_grid(model_name: str, modeling_config: dict) -> dict[str, list[obj
         }
     if model_name == "linear_svm":
         return {
-            **common,
+            "model__variance_quantile": common["variance_quantile__quantile"],
+            "model__max_features": common["univariate__k"],
             "model__C": list(modeling_config["linear_svm"]["C"]),
         }
     if model_name == "random_forest":

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 import yaml
+from sklearn.feature_selection import SelectKBest
+from sklearn.model_selection import StratifiedGroupKFold
 
 from src.modeling.pipelines import (
-    GroupCalibratedLinearSVC,
     TrainingVarianceQuantile,
     build_pipeline,
     parameter_grid,
@@ -51,13 +52,35 @@ def test_runtime_parameter_grids_match_configuration(root):
     assert elastic["model__l1_ratio"] == modeling["elastic_net"]["l1_ratio"]
 
 
-def test_svm_calibration_preserves_groups():
+def test_svm_calibration_preserves_groups(monkeypatch):
     rng = np.random.default_rng(17)
     groups = np.repeat(np.arange(12), 2)
     y = np.tile(np.array(["adjacent_normal", "tumor"]), 12)
     x = rng.normal(size=(24, 8)) + (y == "tumor")[:, None]
-    model = GroupCalibratedLinearSVC(C=0.2, calibration_splits=3, random_state=7)
-    model.fit(x, y, groups=groups)
+    observed_labels = []
+    fit = SelectKBest.fit
+
+    def record_fit(self, features, labels):
+        observed_labels.append(labels.copy())
+        return fit(self, features, labels)
+
+    monkeypatch.setattr(SelectKBest, "fit", record_fit)
+    config = {"linear_svm": {"calibration_splits": 3}}
+    model = build_pipeline("linear_svm", 7, config).set_params(model__C=0.2, model__max_features=3)
+    model.fit(x, y, model__groups=groups)
+    expected = list(StratifiedGroupKFold(n_splits=3, shuffle=True, random_state=7).split(x, y, groups))
+    assert len(observed_labels) == len(expected)
+    for labels, (train, test), calibrated in zip(
+        observed_labels, expected, model.named_steps["model"].calibrated_.calibrated_classifiers_,
+        strict=True,
+    ):
+        assert set(groups[train]).isdisjoint(groups[test])
+        np.testing.assert_array_equal(labels, y[train])
+        steps = calibrated.estimator.named_steps
+        selected = steps["zero_variance"].transform(x[train])
+        selected = steps["variance_quantile"].transform(selected)
+        selected = steps["univariate"].transform(selected)
+        np.testing.assert_allclose(steps["scale"].mean_, selected.mean(axis=0))
     probability = model.predict_proba(x)
     assert probability.shape == (24, 2)
     np.testing.assert_allclose(probability.sum(axis=1), 1.0)

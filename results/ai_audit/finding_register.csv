@@ -1,0 +1,15 @@
+finding,category,severity,confidence,evidence_reference,status,impact
+F01,study design,critical,high,GSE44076 original study methods and GEO,confirmed,case status and sampling protocol aliased
+F02,preprocessing,high,high,R/02_preprocess_gse44076.R and R/03_preprocess_gse41258.R,confirmed,cohort processed estimand; inductive performance unmeasured
+F03,selection,high,high,scripts/select_task_c_threshold.py,confirmed and provenance hardened,conditional threshold OOF; separate nested diagnostic executed
+F04,artifact consistency,high,high,reports/archive and scripts/verify_external_results.py,corrected,legacy 19/14 experiment and active 3/2 experiment now traceable
+F05,confounding,high,high,scripts/run_task_b_confounding_sensitivity.py,confirmed and challenged,conditional fixed panel; reselected sensitivity retains macro-F1 0.843 after proxy adjustment
+F06,permutation,high,high,scripts/run_permutation_tests.py,confirmed,conditional null reused observed-label splits and hyperparameters
+F07,provenance,high,high,scripts/build_manuscript_outputs.py,partially corrected,external execution evidence distinct from inventory; full lineage pending
+F08,metadata,moderate,high,src/data/metadata.py and scripts/audit_geo_metadata.py,corrected,source scan dates restored for all eligible external arrays
+F09,class mapping,high,high,src/modeling/external_validation.py and tests/test_scientific_audit.py,corrected,reverse probability order regression fixed
+F10,raw archive identity,high,high,results/ai_audit/input_verification.csv,confirmed,downloaded HG-U219 archive passed all gzip CRCs but differs from baseline digest
+F11,statistical genomics,high,high,R/04_differential_expression.R and archived design audit,confirmed,paired contrast full rank; unpaired acquisition effect unidentified
+F12,enrichment,moderate,high,R/05_functional_enrichment.R,confirmed,ranked-only route can incorporate previous outputs; provenance pairing unverified
+F13,composition,high,high,R/06_tissue_composition_sensitivity.R and Task B ablations,confirmed,marker-derived scores combine potential abundance and cell state effects
+F14,SVM calibration,moderate,high,src/modeling/pipelines.py,confirmed,upstream feature selection precedes internal calibration cross-fitting

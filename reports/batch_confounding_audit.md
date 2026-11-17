@@ -1,7 +1,8 @@
 # Batch and confounding audit
 
-Only deposited covariates were used; absent fields were not invented. Screening
-associations do not trigger automatic ComBat or sample exclusion.
+The audit counts documented missing markers as missing. Raw scan dates are
+retained for provenance and excluded from association screening because GEO
+mixes date formats. Screens use available arrays and are descriptive.
 
 ## Missingness and usability
 
@@ -13,13 +14,13 @@ associations do not trigger automatic ComBat or sample exclusion.
 | GSE44076    | sex               |                246 |                246 |                0 |                          2 | True                     | deposited metadata only |
 | GSE44076    | age               |                246 |                246 |                0 |                         45 | True                     | deposited metadata only |
 | GSE44076    | location          |                246 |                246 |                0 |                          2 | True                     | deposited metadata only |
-| GSE44076    | stage             |                246 |                246 |                0 |                          3 | True                     | deposited metadata only |
+| GSE44076    | stage             |                246 |                 98 |              148 |                          2 | False                    | deposited metadata only |
 | GSE44076    | msi_status        |                246 |                  0 |              246 |                          0 | False                    | deposited metadata only |
 | GSE44076    | molecular_subtype |                246 |                  0 |              246 |                          0 | False                    | deposited metadata only |
 | GSE44076    | center            |                246 |                  0 |              246 |                          0 | False                    | deposited metadata only |
 | GSE41258    | batch             |                233 |                  0 |              233 |                          0 | False                    | deposited metadata only |
 | GSE41258    | processing_date   |                233 |                  0 |              233 |                          0 | False                    | deposited metadata only |
-| GSE41258    | scan_date         |                233 |                  0 |              233 |                          0 | False                    | deposited metadata only |
+| GSE41258    | scan_date         |                233 |                233 |                0 |                         53 | False                    | deposited metadata only |
 | GSE41258    | sex               |                233 |                224 |                9 |                          2 | True                     | deposited metadata only |
 | GSE41258    | age               |                233 |                224 |                9 |                         53 | True                     | deposited metadata only |
 | GSE41258    | location          |                233 |                224 |                9 |                          9 | True                     | deposited metadata only |
@@ -35,7 +36,6 @@ associations do not trigger automatic ComBat or sample exclusion.
 | GSE44076    | sex         | chi-square     |   6.30563   | 0.0427317  |       246 | screening association only; no automatic batch correction |
 | GSE44076    | age         | Kruskal-Wallis |  13.7302    | 0.00104358 |       246 | screening association only; no automatic batch correction |
 | GSE44076    | location    | chi-square     |   3.79379   | 0.150034   |       246 | screening association only; no automatic batch correction |
-| GSE44076    | stage       | chi-square     | 246         | 4.7337e-52 |       246 | screening association only; no automatic batch correction |
 | GSE41258    | sex         | chi-square     |   0         | 1          |       224 | screening association only; no automatic batch correction |
 | GSE41258    | age         | Kruskal-Wallis |   0.0226799 | 0.880292   |       224 | screening association only; no automatic batch correction |
 | GSE41258    | location    | chi-square     |   8.30964   | 0.403823   |       224 | screening association only; no automatic batch correction |

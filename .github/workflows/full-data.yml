@@ -2,9 +2,29 @@ name: Full raw-data verification
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: Execution environment
+        type: choice
+        options:
+          - self-hosted
+          - github-hosted
+        default: self-hosted
+      inputs:
+        description: Archive identity
+        type: choice
+        options:
+          - historical
+          - current-geo
+        default: historical
+      analysis_sha:
+        description: Optional full analysis commit SHA for an evidence-export replay
+        type: string
+        required: false
 
 jobs:
   full-data:
+    if: inputs.runner == 'self-hosted'
     runs-on: [self-hosted, colorectal-field-data]
     timeout-minutes: 1440
     steps:
@@ -22,3 +42,163 @@ jobs:
             results/tables/
             results/metrics/
           retention-days: 30
+
+  hosted-reproduction:
+    if: inputs.runner == 'github-hosted'
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      OPENBLAS_NUM_THREADS: 1
+      OMP_NUM_THREADS: 1
+      MKL_NUM_THREADS: 1
+      RENV_CONFIG_INSTALL_NCPUS: 2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.5.1"
+          use-public-rspm: false
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gfortran pandoc \
+            libcurl4-openssl-dev libssl-dev libxml2-dev libfontconfig1-dev libharfbuzz-dev \
+            libfribidi-dev libfreetype6-dev libpng-dev libtiff-dev libjpeg-dev \
+            libgit2-dev libglpk-dev libgsl-dev libicu-dev libcairo2-dev libuv1-dev
+      - name: Cache GEO archives
+        id: geo-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/geo-cache
+          key: geo-v1-${{ inputs.inputs }}-${{ hashFiles('data/metadata/data_manifest.csv', 'results/ai_audit/current_geo_archive_pins.json') }}
+      - name: Prepare isolated worktree and verified input manifest
+        env:
+          ARCHIVE_IDENTITY: ${{ inputs.inputs }}
+          ANALYSIS_SHA: ${{ inputs.analysis_sha }}
+        run: |
+          analysis_sha="${ANALYSIS_SHA:-$GITHUB_SHA}"
+          [[ "$analysis_sha" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$analysis_sha" != "$GITHUB_SHA" ]]; then
+            git fetch --no-tags --depth=1 origin "$analysis_sha"
+          fi
+          git worktree add --detach "$RUNNER_TEMP/raw-analysis" "$analysis_sha"
+          cd "$RUNNER_TEMP/raw-analysis"
+          test "$(git rev-parse HEAD)" = "$analysis_sha"
+          # Replays share caches only when their input pins and dependency locks agree.
+          for pin in data/metadata/data_manifest.csv results/ai_audit/current_geo_archive_pins.json \
+              requirements-lock.txt renv.lock; do
+            cmp "$GITHUB_WORKSPACE/$pin" "$pin"
+          done
+          cd "$GITHUB_WORKSPACE"
+          pins=()
+          if [[ "$ARCHIVE_IDENTITY" == current-geo ]]; then
+            pins=(--alternate-pins results/ai_audit/current_geo_archive_pins.json)
+          fi
+          python scripts/stage_geo_inputs.py --download --cache "$RUNNER_TEMP/geo-cache" \
+            --worktree "$RUNNER_TEMP/raw-analysis" \
+            --evidence "$RUNNER_TEMP/raw-evidence/inputs.json" "${pins[@]}"
+      - name: Save verified GEO cache
+        if: steps.geo-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/geo-cache
+          key: ${{ steps.geo-cache.outputs.cache-primary-key }}
+      - name: Restore locked R package cache
+        id: r-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/renv-cache
+          key: renv-ubuntu24-r451-v1-${{ hashFiles('renv.lock') }}
+      - name: Restore locked scientific dependencies
+        env:
+          RENV_PATHS_CACHE: ${{ runner.temp }}/renv-cache
+          RENV_PATHS_CELLAR: ${{ runner.temp }}/r-cellar
+        run: |
+          set -o pipefail
+          python -m pip install -r requirements-lock.txt
+          Rscript --vanilla -e 'install.packages("renv", repos="https://cloud.r-project.org")'
+          mkdir -p "$RENV_PATHS_CELLAR" "$RUNNER_TEMP/r-sources"
+          cd "$RUNNER_TEMP/r-sources"
+          # Build source tarballs from the commits recorded in renv.lock.
+          oligo=e073acb9f29886d4cc073f634c109d0bb76b2f81
+          mcp=b6eac73e91c246fcff0bb1a5c68a816cd588fc48
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://codeload.github.com/bioc/oligo/tar.gz/$oligo" | tar -xz
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://codeload.github.com/ebecht/MCPcounter/tar.gz/$mcp" | tar -xz
+          cd "$RENV_PATHS_CELLAR"
+          R CMD build --no-build-vignettes --no-manual "$RUNNER_TEMP/r-sources/oligo-$oligo"
+          R CMD build --no-build-vignettes --no-manual "$RUNNER_TEMP/r-sources/MCPcounter-$mcp/Source"
+          cd "$RUNNER_TEMP/raw-analysis"
+          # The pipeline supports gzip CSV plus Python conversion when optional R Arrow is absent.
+          # Install the pinned MCPcounter tarball directly to avoid renv's duplicate staging path.
+          Rscript -e 'renv::restore(exclude=c("arrow", "MCPcounter"), transactional=FALSE, prompt=FALSE)'
+          r_library=$(Rscript -e 'cat(renv::paths$library(), "\n", sep="")' | tail -n 1)
+          # Replace the threaded cache link with the same locked source built for serial execution.
+          read -r bioc preprocess_version < <(python -c 'import json; lock = json.load(open("renv.lock")); print(lock["Bioconductor"]["Version"], lock["Packages"]["preprocessCore"]["Version"])')
+          preprocess_source="$RENV_PATHS_CELLAR/preprocessCore_$preprocess_version.tar.gz"
+          curl --fail --show-error --silent --location --retry 4 \
+            "https://bioconductor.org/packages/$bioc/bioc/src/contrib/preprocessCore_$preprocess_version.tar.gz" \
+            --output "$preprocess_source"
+          if [[ -L "$r_library/preprocessCore" ]]; then unlink "$r_library/preprocessCore"; fi
+          R CMD INSTALL --configure-args=--disable-threading --library="$r_library" "$preprocess_source"
+          R CMD INSTALL --library="$r_library" "$RENV_PATHS_CELLAR/MCPcounter_1.2.0.tar.gz"
+          make verify-env
+          Rscript -e 'set.seed(1); x <- matrix(exp(rnorm(600)), nrow=200); y <- preprocessCore::normalize.quantiles(preprocessCore::rma.background.correct(x)); stopifnot(identical(dim(x), dim(y)), all(is.finite(y)))'
+      - name: Save locked R package cache
+        if: steps.r-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/renv-cache
+          key: ${{ steps.r-cache.outputs.cache-primary-key }}
+      - name: Execute and record the raw-CEL pipeline
+        run: |
+          set -o pipefail
+          cd "$RUNNER_TEMP/raw-analysis"
+          logs="$RUNNER_TEMP/raw-evidence"
+          touch "$logs/pipeline-start"
+          printf 'stage,status,exit_code\n' > "$logs/stages.csv"
+          blocked=0
+          for target in audit extract preprocess convert differential-expression sensitivity composition \
+              stress train compact-panel enrichment confounding permutation threshold validate \
+              tables figures manuscript quality full-data-test; do
+            if (( blocked )); then
+              printf '%s,BLOCKED,\n' "$target" >> "$logs/stages.csv"
+              continue
+            fi
+            if make "$target" 2>&1 | tee "$logs/$target.log"; then
+              printf '%s,PASS,0\n' "$target" >> "$logs/stages.csv"
+            else
+              printf '%s,FAIL,%s\n' "$target" "$?" >> "$logs/stages.csv"
+              blocked=1
+            fi
+          done
+          exit "$blocked"
+      - name: Collect fresh publication outputs and verify hashes
+        env:
+          ARCHIVE_IDENTITY: ${{ inputs.inputs }}
+        run: |
+          python scripts/collect_hosted_outputs.py --worktree "$RUNNER_TEMP/raw-analysis" \
+            --evidence "$RUNNER_TEMP/raw-evidence" --output "$RUNNER_TEMP/raw-outputs" \
+            --archive-identity "$ARCHIVE_IDENTITY"
+      - name: Upload fresh publication outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-raw-publication-outputs
+          path: ${{ runner.temp }}/raw-outputs/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload execution logs and input pins
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hosted-raw-reproduction-evidence
+          path: ${{ runner.temp }}/raw-evidence/
+          if-no-files-found: ignore
+          retention-days: 14

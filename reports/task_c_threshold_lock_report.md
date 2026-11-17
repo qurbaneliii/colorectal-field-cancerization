@@ -7,6 +7,10 @@ transformation. Probabilities were averaged across repeats per sample. The
 prespecified rule selected the balanced-accuracy maximum, resolving ties by
 proximity to 0.5 and then the lower threshold.
 
+The signature and hyperparameters were previously selected on all development
+samples. The displayed operating point uses the same development scores used
+to select the threshold. These are conditional development diagnostics.
+
 - Locked threshold: 0.41
 - Original Task C signature: FOXQ1, CEMIP, ETV4
 - Cross-platform signature: CEMIP, ETV4

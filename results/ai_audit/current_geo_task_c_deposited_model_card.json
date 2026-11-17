@@ -1,0 +1,41 @@
+{
+  "analysis_provenance": "geo_deposited_series_matrix",
+  "reproduction_scope": "Deposited-expression sensitivity using the archived panel and exact raw-CEL probe mappings",
+  "source_input_sha256": {
+    "GSE44076": {
+      "series_matrix_sha256": "096db6c83516d01e39a8c1e3b84b2b3759d9edb133e0ce40807251a69b2671bb",
+      "probe_mapping_sha256": "5c324e0c32a27d6a58a0b37bec5108e6f659708bd504d36ea31f0dee89d493aa",
+      "mapped_gene_expression_sha256": "399fad3f844cc9e1b47dad3936580286afb55413785c3e37768f20b2d610224b"
+    },
+    "GSE41258": {
+      "series_matrix_sha256": "95931c3bb5fef20e4e056e4e3b1c354aa9272a7e1c60e1fd54e2849b30bb582a",
+      "probe_mapping_sha256": "addf1da7a6992fa8ea577cdca730233fdb5f89acfd904cdee9246cc02e4a26e8",
+      "mapped_gene_expression_sha256": "4126b277d0996b153bf78bbb83adb83f3eec69f320c34433b3dfd420deb220ae"
+    }
+  },
+  "feature_genes": [
+    "FOXQ1",
+    "CEMIP",
+    "ETV4"
+  ],
+  "hyperparameters": {
+    "model__C": 0.05,
+    "model__l1_ratio": 0.2,
+    "univariate__k": 20,
+    "variance_quantile__quantile": 0.5
+  },
+  "transport_signature_genes": [
+    "CEMIP",
+    "ETV4"
+  ],
+  "transport_common_universe_gene_count": 12039,
+  "transport_threshold": 0.42,
+  "transport_threshold_origin": "GSE44076 grouped OOF rank-transport scores conditional on a full-development signature and hyperparameters. maximize_balanced_accuracy.",
+  "transport_threshold_input_sha256": {
+    "data/processed/GSE44076_gene_expression_geo_deposited_series_matrix.parquet": "399fad3f844cc9e1b47dad3936580286afb55413785c3e37768f20b2d610224b",
+    "data/metadata/gse44076_samples.csv": "ef866c70f52adcf094fa56f211fd5d80519aee05d72715b1e779233ad6231dd9",
+    "config/analysis.yaml": "905c540b1e31f7cb4709f559d326f1889af69720db37f32ef6cfabb8095be985",
+    "results/tables/geo_deposited_series_matrix/task_c_primary_threshold_selection.csv": "52091a92affda8521778506640554ea6e3daa6374ed8febdc4ecdac58ce8a9a4"
+  },
+  "external_labels_used": false
+}

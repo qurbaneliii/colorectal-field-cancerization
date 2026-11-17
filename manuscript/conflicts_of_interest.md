@@ -1,3 +1,3 @@
 # Conflicts of interest
 
-The author declares no conflicts of interest.
+[AUTHOR-APPROVED CONFLICTS OF INTEREST STATEMENT]

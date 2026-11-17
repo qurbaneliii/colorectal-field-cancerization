@@ -1,0 +1,10 @@
+experiment,dataset,mode,partition,seed,output,status
+E01,GSE44076 and GSE41258,independent source metadata audit,all source records,,geo_cohort_reconciliation.csv,executed
+E02,GSE41258,archived raw-CEL prediction replay,canonical and sensitivity sets,,external_validation_report.json,executed
+E03,GSE44076,real GEO-deposited expression,3 by 5 grouped outer folds,44076-44078,task_b_development_ablations.csv,executed
+E04,GSE44076,real GEO-deposited ranks,3 by 5 outer folds with grouped threshold cross-fitting and tuning,44076-44078,task_c_nested_threshold_metrics.csv,executed
+E05,GSE41258,archived raw-CEL prediction replay,canonical with equal patient weighting sensitivity,,external_prediction_replay.csv,executed
+E06,GSE44076 and GSE41258,real GEO-deposited expression,development Task C arrays and all external expression arrays,,deposited_platform_gene_shift.csv,executed
+E07,GSE44076 to GSE4107,real GEO-deposited rank transport,development and 22 external patients,44076,gse4107_transfer_metrics.csv,executed
+E08,JGAD000785,matched-acquisition external candidate,pending approved access,,,blocked
+E09,GSE44076,real GEO-deposited limma fit,148 unpaired and 196 paired arrays,,deposited_limma_concordance.csv,executed

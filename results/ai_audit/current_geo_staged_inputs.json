@@ -1,0 +1,40 @@
+{
+  "mode": "alternate_pinned_inputs",
+  "inputs": [
+    {
+      "accession": "GSE41258",
+      "relative_path": "data/raw/GSE41258/GSE41258_RAW.tar",
+      "bytes": 1378918400,
+      "historical_sha256": "965cc38ccf8cf5f803de2bf3e15da0232fd629196cd5c9e75f415a106902576d",
+      "verified_sha256": "740aaf0c5ec4c0ba72107b1d4ef50b5a309cb5cab88aa29ea73fc48594f778ee"
+    },
+    {
+      "accession": "GSE41258",
+      "relative_path": "data/raw/GSE41258/GSE41258_clinical_data.txt.gz",
+      "bytes": 3135,
+      "historical_sha256": "6ed90de8810b609d175c34b43443a64b6f973c9bf8aff85b7e666e16cbdb8194",
+      "verified_sha256": "6ed90de8810b609d175c34b43443a64b6f973c9bf8aff85b7e666e16cbdb8194"
+    },
+    {
+      "accession": "GSE41258",
+      "relative_path": "data/raw/GSE41258/GSE41258_series_matrix.txt.gz",
+      "bytes": 17537584,
+      "historical_sha256": "95931c3bb5fef20e4e056e4e3b1c354aa9272a7e1c60e1fd54e2849b30bb582a",
+      "verified_sha256": "95931c3bb5fef20e4e056e4e3b1c354aa9272a7e1c60e1fd54e2849b30bb582a"
+    },
+    {
+      "accession": "GSE44076",
+      "relative_path": "data/raw/GSE44076/GSE44076_RAW.tar",
+      "bytes": 532213760,
+      "historical_sha256": "8db70acb37d0fc85e85d090459312c8e97960f3cdcd19d1998ee03fb6be5f522",
+      "verified_sha256": "059abdaa76f731c9d1af116875bb60663fb875c296bbf01e353de48eeed0a030"
+    },
+    {
+      "accession": "GSE44076",
+      "relative_path": "data/raw/GSE44076/GSE44076_series_matrix.txt.gz",
+      "bytes": 32596137,
+      "historical_sha256": "096db6c83516d01e39a8c1e3b84b2b3759d9edb133e0ce40807251a69b2671bb",
+      "verified_sha256": "096db6c83516d01e39a8c1e3b84b2b3759d9edb133e0ce40807251a69b2671bb"
+    }
+  ]
+}

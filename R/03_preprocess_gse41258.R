@@ -3,7 +3,6 @@ suppressPackageStartupMessages({
   library(hgu133acdf)
   library(hgu133a.db)
   library(affyPLM)
-  library(arrayQualityMetrics)
 })
 source("R/utils.R")
 
@@ -26,7 +25,7 @@ eset <- affy::rma(raw)
 probe_expr <- Biobase::exprs(eset)
 if (nrow(probe_expr) != 22283L) stop("Unexpected HG-U133A probe-set count: ", nrow(probe_expr))
 if (!all(is.finite(probe_expr)) || median(probe_expr) > 20) stop("Invalid GSE41258 RMA scale/values")
-colnames(probe_expr) <- extract_gsm(sampleNames(eset))
+colnames(probe_expr) <- extract_gsm(Biobase::sampleNames(eset))
 Biobase::sampleNames(eset) <- colnames(probe_expr)
 metadata <- metadata[match(colnames(probe_expr), toupper(metadata$geo_accession)), , drop = FALSE]
 if (anyNA(metadata$geo_accession)) stop("GSE41258 post-RMA metadata alignment failed")
@@ -50,5 +49,7 @@ platform$normalized_probe_sets <- nrow(probe_expr)
 platform$normalized_genes <- nrow(gene_expr)
 write.csv(platform, "data/metadata/GSE41258_platform_validation.csv", row.names = FALSE)
 if (!identical(Sys.getenv("SKIP_ARRAY_QUALITY_METRICS"), "1")) {
+if (!identical(Sys.getenv("SKIP_ARRAY_QUALITY_METRICS"), "1")) {
   run_array_quality_metrics(eset, metadata, "GSE41258")
+}
 }
