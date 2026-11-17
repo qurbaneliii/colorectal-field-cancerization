@@ -1,0 +1,7 @@
+"severity","classification","file_line","evidence","impact","remediation_and_verification","status"
+"P1","confirmed defect","src/modeling/pipelines.py:40","original calibrator received globally selected inner-training features","calibration holdout labels informed selector; outer test remained held out","fit full pipeline per grouped calibration fold; test selector labels and scaler mean","FIXED"
+"P1","unresolved question","data/metadata/gse44076_samples.csv:1","case and surgical procurement indicators identical in eligible Task B design","cannot isolate cancer-associated expression from acquisition","use eligible matched-procurement external donor cohorts","BLOCKED"
+"P1","conditional procedure","R/02_preprocess_gse44076.R:19","RMA estimates target/summaries with whole cohort","no inductive single-array validation","fit and evaluate frozen training-only reference using common folds","NOT RUN"
+"P2","confirmed defect","Makefile:4","parallel aggregate targets shared implicit intermediate dependencies","race or stale consumption","serialize Make targets; inspect dry-run order","FIXED"
+"P2","plausible risk",".github/workflows/full-data.yml:48","version tags and mirror availability can change","execution environment and supply-chain reproducibility","retain exact hosted evidence and plan action hash pinning","OPEN"
+"P3","documentation","manuscript/methods.md:76","baseline text describes previous SVM implementation","method is version-specific","synchronized methods and comparator artifacts against hosted output","FIXED"

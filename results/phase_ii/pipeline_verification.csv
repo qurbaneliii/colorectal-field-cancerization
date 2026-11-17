@@ -1,0 +1,8 @@
+"gate","revision","status","evidence"
+"Baseline hosted 20 stages / 54 tests","562da065b3243c369fc0fe8085d0f7061245b671","PASS","https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43205328459"
+"Corrected calibration CI","a78de7e9afa6f15802b7e80a9f01e3db67f40a86","PASS","https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43844199152"
+"Corrected hosted pipeline","a78de7e9afa6f15802b7e80a9f01e3db67f40a86","PASS","https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43844209674"
+"Synthetic prototype tests","Phase II branch","PASS","27 data-independent tests, one synthetic protocol regression included"
+"Final exact-HEAD hosted raw-CEL run","835263e526053d2043daf04eeb2212863489a047","PASS","20 stages; 54 tests; 196 verified artifacts; https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43846818826"
+"Final exact-HEAD CI","835263e526053d2043daf04eeb2212863489a047","PASS","https://github.com/qurbaneliii/colorectal-field-cancerization/actions/runs/43846822896"
+"Independent final metric replay","835263e526053d2043daf04eeb2212863489a047","PASS","1465 metric, count and interval records in metric_recalculation_exact_head.csv"
