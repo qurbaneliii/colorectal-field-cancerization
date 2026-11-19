@@ -5,6 +5,17 @@ import pytest
 from src.preprocessing.frozen_quantile import FrozenQuantile
 
 
+def test_archived_baseline_is_restricted_to_same_eligible_endpoints():
+    from experiments.frozen_reference.run_comparison import eligible_baseline
+    values = pd.DataFrame({"gene": [1., 2., 3.]}, index=["polyp", "tumor", "normal"])
+    metadata = pd.DataFrame(index=["normal", "tumor"])
+    result = eligible_baseline(values, metadata)
+    assert result.index.tolist() == ["normal", "tumor"]
+    assert result.gene.tolist() == [3., 2.]
+    with pytest.raises(KeyError):
+        eligible_baseline(values, pd.DataFrame(index=["absent"]))
+
+
 def test_reference_train_only_and_single_array_invariance(tmp_path):
     grids = {"train": [1, 2, 4], "test": [100, 200, 400]}
     ref = FrozenQuantile.fit(grids, ["train"], ["test"])

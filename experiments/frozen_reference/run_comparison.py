@@ -26,6 +26,12 @@ def dump(path, obj):
                               default=lambda x: x.item()) + "\n", encoding="utf-8")
 
 
+def eligible_baseline(expression, metadata):
+    if not expression.index.is_unique or not metadata.index.is_unique:
+        raise ValueError("Duplicate sample identity in baseline or eligibility metadata")
+    return expression.loc[metadata.index].copy()
+
+
 def fit_predict(train, labels, test, model_path):
     model = make_pipeline(StandardScaler(), LogisticRegression(
         C=1, solver="lbfgs", max_iter=1000, class_weight="balanced", random_state=44076))
@@ -117,7 +123,8 @@ def main():
                            "quantiles_sha256": file_sha256(grid_path), "pm_count": int(identity.pm_count)})
         ranks[accession] = pd.concat(per_sample, axis=1)
         bp = args.baseline / f"{accession}_gene_expression_raw_cel_rma.parquet"
-        baseline[accession] = pd.read_parquet(bp).set_index("gene_symbol").T
+        baseline[accession] = eligible_baseline(
+            pd.read_parquet(bp).set_index("gene_symbol").T, meta[accession])
         inputs.append({"accession": accession, "sample_id": "baseline_and_mapping",
                        "baseline_sha256": file_sha256(bp), "mapping_sha256": file_sha256(mapping),
                        "metadata_sha256": file_sha256(source)})
