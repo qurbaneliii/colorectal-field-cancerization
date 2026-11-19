@@ -1,0 +1,53 @@
+task_b_field_effect 0 0 PASS
+task_b_field_effect 0 1 PASS
+task_b_field_effect 0 2 PASS
+task_b_field_effect 0 3 PASS
+task_b_field_effect 0 4 PASS
+task_b_field_effect 1 0 PASS
+task_b_field_effect 1 1 PASS
+task_b_field_effect 1 2 PASS
+task_b_field_effect 1 3 PASS
+task_b_field_effect 1 4 PASS
+task_b_field_effect 2 0 PASS
+task_b_field_effect 2 1 PASS
+task_b_field_effect 2 2 PASS
+task_b_field_effect 2 3 PASS
+task_b_field_effect 2 4 PASS
+task_c_tumor_vs_adjacent 0 0 PASS
+task_c_tumor_vs_adjacent 0 1 PASS
+task_c_tumor_vs_adjacent 0 2 PASS
+task_c_tumor_vs_adjacent 0 3 PASS
+task_c_tumor_vs_adjacent 0 4 PASS
+task_c_tumor_vs_adjacent 1 0 PASS
+task_c_tumor_vs_adjacent 1 1 PASS
+task_c_tumor_vs_adjacent 1 2 PASS
+task_c_tumor_vs_adjacent 1 3 PASS
+task_c_tumor_vs_adjacent 1 4 PASS
+task_c_tumor_vs_adjacent 2 0 PASS
+task_c_tumor_vs_adjacent 2 1 PASS
+task_c_tumor_vs_adjacent 2 2 PASS
+task_c_tumor_vs_adjacent 2 3 PASS
+task_c_tumor_vs_adjacent 2 4 PASS
+Traceback (most recent call last):
+  File "C:\Users\HP\AppData\Local\colorectal-audit\phase-iii-frozen\experiments\frozen_reference\run_comparison.py", line 250, in <module>
+    main()
+  File "C:\Users\HP\AppData\Local\colorectal-audit\phase-iii-frozen\experiments\frozen_reference\run_comparison.py", line 228, in main
+    external = meta["GSE41258"].loc[score_table.sample_id]
+               ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexing.py", line 1207, in __getitem__
+    return self._getitem_axis(maybe_callable, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexing.py", line 1438, in _getitem_axis
+    return self._getitem_iterable(key, axis=axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexing.py", line 1378, in _getitem_iterable
+    keyarr, indexer = self._get_listlike_indexer(key, axis)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexing.py", line 1576, in _get_listlike_indexer
+    keyarr, indexer = ax._get_indexer_strict(key, axis_name)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexes\base.py", line 6302, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "C:\Users\HP\AppData\Local\colorectal-audit\venv\Lib\site-packages\pandas\core\indexes\base.py", line 6355, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['GSM1012278', 'GSM1012279', 'GSM1012280', 'GSM1012281', 'GSM1012282', 'GSM1012283', 'GSM1012284', 'GSM1012285', 'GSM1012287', 'GSM1012288', 'GSM1012289', 'GSM1012290', 'GSM1012291', 'GSM1012292', 'GSM1012293', 'GSM1012294', 'GSM1012295', 'GSM1012296', 'GSM1012298', 'GSM1012299', 'GSM1012300', 'GSM1012301', 'GSM1012302', 'GSM1012309', 'GSM1012311', 'GSM1012313', 'GSM1012321', 'GSM1012323', 'GSM1012329', 'GSM1012332', 'GSM1012343', 'GSM1012348', 'GSM1012349', 'GSM1012353', 'GSM1012360', 'GSM1012362', 'GSM1012365', 'GSM1012372', 'GSM1012377', 'GSM1012378', 'GSM1012382', 'GSM1012383', 'GSM1012388', 'GSM1012390', 'GSM1012394', 'GSM1012402', 'GSM1012403', 'GSM1012404', 'GSM1012406', 'GSM1012415', 'GSM1012417', 'GSM1012418', 'GSM1012420', 'GSM1012422', 'GSM1012425', 'GSM1012430', 'GSM1012431', 'GSM1012433', 'GSM1012435', 'GSM1012436', 'GSM1012438', 'GSM1012443', 'GSM1012444', 'GSM1012448', 'GSM1012449', 'GSM1012450', 'GSM1012452', 'GSM1012453', 'GSM1012454', 'GSM1012457', 'GSM1012458', 'GSM1012460', 'GSM1012464', 'GSM1012470', 'GSM1012472', 'GSM1012473', 'GSM1012475', 'GSM1012476', 'GSM1012477', 'GSM1012480', 'GSM1012481', 'GSM1012482', 'GSM1012484', 'GSM1012485', 'GSM1012489', 'GSM1012491', 'GSM1012493', 'GSM1012494', 'GSM1012495', 'GSM1012496', 'GSM1012497', 'GSM1012501', 'GSM1012503', 'GSM1012504', 'GSM1012505', 'GSM1012506', 'GSM1012508', 'GSM1012512', 'GSM1012514', 'GSM1012515', 'GSM1012516', 'GSM1012517', 'GSM1012518', 'GSM1012519', 'GSM1012520', 'GSM1012521', 'GSM1012522', 'GSM1012523', 'GSM1012524', 'GSM1012545', 'GSM1012551', 'GSM1012552', 'GSM1012555', 'GSM1012556', 'GSM1012557', 'GSM1012559', 'GSM1012560', 'GSM1012561', 'GSM1012566', 'GSM1012582', 'GSM1012598', 'GSM1012599', 'GSM1012601', 'GSM1012607', 'GSM1012608', 'GSM1012609', 'GSM1012610', 'GSM1012613', 'GSM1012614', 'GSM1012623', 'GSM1012626', 'GSM1012632', 'GSM1012633', 'GSM1012637', 'GSM1012638', 'GSM1012641', 'GSM1012642', 'GSM1012644', 'GSM1012647', 'GSM1012649', 'GSM1012650', 'GSM1012652', 'GSM1012653', 'GSM1012654', 'GSM1012655', 'GSM1012656', 'GSM1012657', 'GSM1012658', 'GSM1012659', 'GSM1012660', 'GSM1012661', 'GSM1012662', 'GSM1012663', 'GSM1012664', 'GSM1012665', 'GSM1012666', 'GSM1012667'] not in index"

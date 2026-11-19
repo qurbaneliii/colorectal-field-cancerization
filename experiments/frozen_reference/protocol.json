@@ -1,0 +1,23 @@
+{
+  "method": "training_quantile_median_pm_percentile_v1",
+  "purpose": "fixed-panel retrospective sensitivity; not fRMA or clinical validation",
+  "seed": 44076,
+  "quantile_grid_points": 4097,
+  "background": "single-array preprocessCore RMA background correction",
+  "probe_summary": "median within-array PM percentile per manufacturer probeset",
+  "reference": "arithmetic mean of training-only PM quantile grids",
+  "transform": "log2 interpolated training target at each probeset median percentile; median uniquely mapped probesets per gene",
+  "task_b_panel": ["CLC", "DYNC1H1", "FOS", "VIP", "SNORA12"],
+  "task_c_panel": ["FOXQ1", "CEMIP", "ETV4"],
+  "task_c_transport_panel": ["CEMIP", "ETV4"],
+  "classifier": "StandardScaler then LogisticRegression C=1 l2 lbfgs max_iter=1000 class_weight=balanced",
+  "model_selection": "none; historical fixed panels are conditional, not de novo nested selection",
+  "partitions": "all archived outer folds for Task B and Task C; paired same-model joint-RMA baseline",
+  "internal_threshold": 0.5,
+  "external_threshold": 0.41,
+  "external_representation": "within-sample percentile ranks over locked shared uniquely annotated gene universe",
+  "external_policy": "previously exposed retrospective evaluation, no outcome tuning",
+  "invariance_atol": 1e-12,
+  "invariance_rtol": 1e-12,
+  "bootstrap": "1000 paired donor-cluster draws of repeat-averaged held-out probabilities; conditional on fitted models"
+}

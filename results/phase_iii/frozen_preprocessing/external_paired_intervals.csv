@@ -1,0 +1,13 @@
+metric,delta_lower,delta_upper,valid_draws,estimand
+f1_macro,0.04188574020961431,0.14960573826265014,1000,conditional_frozen_minus_joint_rma
+balanced_accuracy,0.06992912062369949,0.1896300188131073,1000,conditional_frozen_minus_joint_rma
+roc_auc,-0.004050651021550708,0.0044228286075682546,1000,conditional_frozen_minus_joint_rma
+pr_auc,-0.0011873122702435984,0.0014677451903125133,1000,conditional_frozen_minus_joint_rma
+sensitivity,-0.027781657355679716,0.0,1000,conditional_frozen_minus_joint_rma
+specificity,0.15094339622641517,0.38597488038277517,1000,conditional_frozen_minus_joint_rma
+brier_score,-0.03584994674492293,-0.009001478730126437,1000,conditional_frozen_minus_joint_rma
+log_loss,-0.1094076954290784,-0.028110706350067356,1000,conditional_frozen_minus_joint_rma
+tn,7.975000000000001,21.0,1000,conditional_frozen_minus_joint_rma
+fp,-21.0,-7.975000000000023,1000,conditional_frozen_minus_joint_rma
+fn,0.0,5.0,1000,conditional_frozen_minus_joint_rma
+tp,-5.0,0.0,1000,conditional_frozen_minus_joint_rma

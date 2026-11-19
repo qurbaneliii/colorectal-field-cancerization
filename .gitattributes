@@ -1,0 +1,2 @@
+# Preserve measured execution artifacts byte-for-byte, including recorded digests.
+results/phase_iii/frozen_preprocessing/** -text

@@ -1,0 +1,5 @@
+task,method,f1_macro,balanced_accuracy,roc_auc
+task_b_field_effect,frozen,1.0,1.0,1.0
+task_b_field_effect,joint_rma,1.0,1.0,1.0
+task_c_tumor_vs_adjacent,frozen,0.9948978263699075,0.9948979591836735,0.9996876301541024
+task_c_tumor_vs_adjacent,joint_rma,0.9948978263699075,0.9948979591836735,0.9996876301541024
