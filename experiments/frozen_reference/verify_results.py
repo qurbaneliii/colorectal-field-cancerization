@@ -32,7 +32,7 @@ def main():
     args = parser.parse_args()
     execution = json.loads((args.output / "execution.json").read_text())
     for name, sha in execution["outputs"].items():
-        assert file_sha256(args.output / name) == sha, name
+        assert file_sha256(args.output / name.replace("\\", "/")) == sha, name
     predictions = pd.read_csv(args.output / "heldout_predictions.csv")
     keys = ["task", "repeat", "fold", "method"]
     expected = pd.read_csv(args.output / "fold_metrics.csv").set_index(keys)
